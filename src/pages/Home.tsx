@@ -1,9 +1,14 @@
 import GlobalControls from "../components/GlobalControls"
 import RaisedContainer from "../components/RaisedContainer"
-
+import Timeline from "../components/Timeline"
+import TracksSection from "../components/TracksSection"
+import { useGlobalStateContext } from "../context/GlobalStateContext"
 
 
 const Home = () => {
+
+	const {BPM} =  useGlobalStateContext()
+	console.log(BPM)
 	return (
 		<div className="flex flex-col min-h-screen p-24 ">
 			<RaisedContainer styles="flex-1">
@@ -12,11 +17,12 @@ const Home = () => {
 						<h1 className="flex-1 font-bold text-[4rem] font-title">ER-404</h1>
 						<GlobalControls/>
 					</div>
-					<div className="border h-1/16">
-						<p>TIMELINE</p>
+					<div className="flex items-center justify-center h-1/16">
+						<div className="w-1/8"></div>
+						<Timeline/>
 					</div>
-					<div className="flex-1 border ">
-						<p>TRACKS</p>
+					<div className="flex flex-col flex-1 gap-y-2 ">
+						<TracksSection/>
 					</div>
 					
 				</div>
