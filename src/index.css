@@ -1,1 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+
+
 @import "tailwindcss";
+
+@theme {
+    --color-background: #E9EDF0;
+    --color-text-primary: #8C9FB1;
+    --color-accent: #8E68D0;
+
+    --font-title: "ZCOOL QingKe HuangYou", "sans-serif";
+    --font-digital: "DotGothic16", "system-ui";
+}
