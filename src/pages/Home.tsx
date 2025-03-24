@@ -21,7 +21,7 @@ const Home = () => {
 						<div className="w-1/8"></div>
 						<Timeline/>
 					</div>
-					<div className="flex flex-col flex-1 gap-y-2 ">
+					<div className="flex flex-col flex-1 gap-y-4 ">
 						<TracksSection/>
 					</div>
 					
