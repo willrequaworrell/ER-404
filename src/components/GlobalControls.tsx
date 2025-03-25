@@ -2,9 +2,11 @@ import { FaPlay, FaPause, FaCaretUp, FaCaretDown } from "react-icons/fa"
 import Button from "./Button"
 import ScreenContainer from "./ScreenContainer"
 import { useGlobalStateContext } from "../context/GlobalStateContext"
+import { useTracksContext } from "../context/TracksContext"
 
 const GlobalControls = () => {
     const {BPM, setBPM} = useGlobalStateContext()
+    const {globalPlay} = useTracksContext()
 
     const handleIncrementBPM = () => {
         setBPM(prev => Math.min((prev + 1), 200))
@@ -19,6 +21,7 @@ const GlobalControls = () => {
             <Button
                 icon={<FaPlay />}
                 styles="size-[3rem]"
+                onClick={globalPlay}
             />
             <Button
                 icon={<FaPause />}

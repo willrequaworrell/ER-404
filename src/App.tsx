@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Layout from "./components/Layout"
 import Home from "./pages/Home"
 import { GlobalStateProvider } from "./context/GlobalStateContext"
+import { TracksProvider } from "./context/TracksContext"
 
 
 function App() {
@@ -11,7 +12,9 @@ function App() {
 				<Route path="/" element={<Layout/>}>
 					<Route index element={
 						<GlobalStateProvider>
-							<Home/>
+							<TracksProvider>
+								<Home/>
+							</TracksProvider>
 						</GlobalStateProvider>
 					}/>
 				</Route>
