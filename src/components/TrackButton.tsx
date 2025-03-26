@@ -1,12 +1,40 @@
-import { useState } from "react"
+import { useCallback } from "react"
+import { TrackType } from "../types/track"
 
-const TrackButton = () => {
-    const [active, setActive] = useState<boolean>(false)
+
+interface TrackButtonPropsType {
+    trackIndex: number
+    buttonIndex: number
+    trackButtons: boolean[]
+    setTracks: React.Dispatch<React.SetStateAction<TrackType[]>>
+}
+
+const TrackButton = ({trackIndex, buttonIndex, trackButtons, setTracks}:TrackButtonPropsType) => {
+    const active = trackButtons[buttonIndex]
+
+    const handleUpdateButtonState =  useCallback(
+        () => {
+            setTracks(prevTracksArray => {
+                return prevTracksArray.map((prevTrackObj, i) => {
+                    if (i !== trackIndex) {
+                        return prevTrackObj
+                    } else {
+                        return {
+                            ...prevTrackObj,
+                            trackButtons: prevTrackObj.trackButtons.map((prevButtonActiveVal, i) => {
+                                return (i === buttonIndex) ? !prevButtonActiveVal : prevButtonActiveVal
+                            })}
+                    }
+                    
+                })
+            })
+        }
+    , [trackIndex, buttonIndex, setTracks])
 
     return (
         <button
             type="button"
-            onClick={() => setActive(prev => !prev)}
+            onClick={handleUpdateButtonState}
             className={`
                 h-full
                 w-full

@@ -1,25 +1,13 @@
-import { useEffect, useState } from "react"
 import Track from "./Track"
-
-const dummyTracks = [
-    "KICK",
-    "CLAP",
-    "SNARE",
-    "OPEN HAT",
-]
+import { useTracksContext } from "../context/TracksContext";
 
 const TracksSection = () => {
+    const {tracks, setTracks} = useTracksContext()
 
-    const [tracks, setTracks] = useState<string[]>([])
-
-
-    useEffect( () => {
-        setTracks(dummyTracks)
-    }, [])
-    return (
+    return (   
         <>
             {tracks && tracks.map((track, i) => (
-                <Track key={i} trackName={track} />
+                <Track key={i} track={track} setTracks={setTracks} />
             ))}
 
         </>
