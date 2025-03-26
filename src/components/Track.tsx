@@ -22,7 +22,7 @@ const Track = ({track, setTracks}:TrackPropsType) => {
             </div>
             <div className="flex h-full w-7/8 gap-x-4 ">
                 {track.trackButtons.map( (_, i)  => (
-                    <TrackButton trackIndex={track.index} buttonIndex={i} trackButtons={track.trackButtons} setTracks={setTracks} key={i + Math.random()}/>
+                    <TrackButton trackIndex={track.index} buttonIndex={i} trackButtons={track.trackButtons} setTracks={setTracks} key={`${track.index}-${i}`}/>
                 ))}
             </div>
         </div>

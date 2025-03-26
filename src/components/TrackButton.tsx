@@ -1,3 +1,4 @@
+import { useCallback } from "react"
 import { TrackType } from "../types/track"
 
 
@@ -11,22 +12,24 @@ interface TrackButtonPropsType {
 const TrackButton = ({trackIndex, buttonIndex, trackButtons, setTracks}:TrackButtonPropsType) => {
     const active = trackButtons[buttonIndex]
 
-    const handleUpdateButtonState = () => {
-        setTracks(prevTracksArray => {
-            return prevTracksArray.map((prevTrackObj, i) => {
-                if (i !== trackIndex) {
-                    return prevTrackObj
-                } else {
-                    return {
-                        ...prevTrackObj,
-                        trackButtons: prevTrackObj.trackButtons.map((prevButtonActiveVal, i) => {
-                            return (i === buttonIndex) ? !prevButtonActiveVal : prevButtonActiveVal
-                        })}
-                }
-                
+    const handleUpdateButtonState =  useCallback(
+        () => {
+            setTracks(prevTracksArray => {
+                return prevTracksArray.map((prevTrackObj, i) => {
+                    if (i !== trackIndex) {
+                        return prevTrackObj
+                    } else {
+                        return {
+                            ...prevTrackObj,
+                            trackButtons: prevTrackObj.trackButtons.map((prevButtonActiveVal, i) => {
+                                return (i === buttonIndex) ? !prevButtonActiveVal : prevButtonActiveVal
+                            })}
+                    }
+                    
+                })
             })
-        })
-    }
+        }
+    , [trackIndex, buttonIndex, setTracks])
 
     return (
         <button
