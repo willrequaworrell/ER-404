@@ -19,8 +19,9 @@ const NUM_BUTTONS = 16
 const initialTracks: TrackType[] = [
     {index: 0, name: "KICK", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/KICK.wav", autostart: false,}).toDestination()},
     {index: 1, name: "CLAP", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination()},
-    {index: 2, name: "OPEN HAT", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination()},
-    {index: 3, name: "SNARE", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination()},
+    {index: 2, name: "SNARE", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination()},
+    {index: 3, name: "OPEN HAT", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination()},
+    {index: 4, name: "CLOSED HAT", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination()},
 ]
 
 const TracksContext = createContext<TracksContextType | null>(null)
