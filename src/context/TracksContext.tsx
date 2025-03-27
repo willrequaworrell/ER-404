@@ -11,6 +11,7 @@ interface TracksContextType {
     isPlaying: boolean
     globalPlay: () => void
     globalStop: () => void
+    globalReset: () => void
 }
 
 const NUM_BUTTONS = 16
@@ -91,6 +92,12 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         setIsPlaying(false)
     }
 
+    const globalReset = () => {
+        globalStop()
+        setTracks(initialTracks)
+        tracksRef.current = initialTracks
+    }
+
     useEffect(() => {
         
         return () => {
@@ -119,7 +126,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             currentBeat: currentBeat, 
             isPlaying: isPlaying,
             globalPlay: globalPlay, 
-            globalStop: globalStop
+            globalStop: globalStop,
+            globalReset: globalReset
         }}>
             {children}
         </TracksContext.Provider>

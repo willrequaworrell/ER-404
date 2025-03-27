@@ -1,10 +1,10 @@
-import { FaPlay, FaCaretUp, FaCaretDown, FaStop } from "react-icons/fa"
+import { FaPlay, FaCaretUp, FaCaretDown, FaStop, FaUndoAlt } from "react-icons/fa"
 import Button from "./Button"
 import ScreenContainer from "./ScreenContainer"
 import { useTracksContext } from "../context/TracksContext"
 
 const GlobalControls = () => {
-    const {globalPlay, globalStop, BPM, setBPM} = useTracksContext()
+    const {globalPlay, globalStop, globalReset, BPM, setBPM} = useTracksContext()
 
     const handleIncrementBPM = () => {
         setBPM(prev => Math.min((prev + 1), 200))
@@ -22,6 +22,10 @@ const GlobalControls = () => {
         globalStop()
     }
 
+    const handleReset = () => {
+        globalReset()
+    }
+
     return (
         <div className="flex gap-x-4">
             <Button
@@ -33,6 +37,11 @@ const GlobalControls = () => {
                 icon={<FaStop />}
                 styles="size-[3rem]"
                 onClick={handleStop}
+            />
+            <Button
+                icon={<FaUndoAlt />}
+                styles="size-[3rem]"
+                onClick={handleReset}
             />
             <div className="flex flex-col justify-between gap-y-2">
                 <Button
