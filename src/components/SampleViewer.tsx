@@ -4,7 +4,7 @@ import ScreenContainer from "./ScreenContainer"
 
 const SampleViewer = () => {
     return (
-        <div className="flex w-1/5 h-full gap-x-4 ">
+        <div className="flex flex-1 h-full gap-x-4">
             <ScreenContainer
                 styles="h-full flex-1 p-4"
             >
