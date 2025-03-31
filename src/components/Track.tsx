@@ -12,7 +12,7 @@ const Track = ({track, setTracks}:TrackPropsType) => {
     
 
     return (
-        <div className="flex items-center py-2 h-1/8">
+        <div className="flex items-center flex-1 py-2">
             <div className="h-full pr-4 w-1/8">
                 <ScreenContainer 
                     styles="h-full text-[1.1rem]"

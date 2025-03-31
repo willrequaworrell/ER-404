@@ -1,3 +1,4 @@
+import FXSection from "../components/FXSection"
 import GlobalControls from "../components/GlobalControls"
 import RaisedContainer from "../components/RaisedContainer"
 import Speaker from "../components/Speaker"
@@ -25,6 +26,9 @@ const Home = () => {
 					</div>
 					<div className="flex flex-col flex-1 gap-y-4 ">
 						<TracksSection/>
+					</div>
+					<div className="flex items-center justify-between pt-4 h-1/6">
+						<FXSection/>
 					</div>
 					
 				</div>
