@@ -30,6 +30,7 @@ const GlobalControls = () => {
         <div className="flex gap-x-4">
             <Button
                 icon={<FaPlay />}
+                playButton
                 styles="size-[3rem]"
                 onClick={handlePlay}
             />
