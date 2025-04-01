@@ -1,6 +1,7 @@
 import ScreenContainer from "./ScreenContainer"
 import TrackButton from "./TrackButton"
 import { TrackType } from '../types/track';
+import { useTracksContext } from "../context/TracksContext";
 
 
 interface TrackPropsType {
@@ -9,11 +10,15 @@ interface TrackPropsType {
 }
 
 const Track = ({track, setTracks}:TrackPropsType) => {
-    
+    const {setCurrentTrack} = useTracksContext()
+
+    const handleClick = () => {
+        setCurrentTrack(track.index)
+    }
 
     return (
         <div className="flex items-center flex-1 py-2">
-            <div className="h-full pr-4 w-1/8">
+            <div onClick={handleClick} className="h-full pr-4 cursor-pointer w-1/8">
                 <ScreenContainer 
                     styles="h-full text-[1.1rem]"
                 >
