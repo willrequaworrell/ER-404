@@ -5,6 +5,8 @@ import { TrackType } from "../types/track";
 interface TracksContextType {
     tracks: TrackType[]
     setTracks: React.Dispatch<React.SetStateAction<TrackType[]>>
+    currentTrack: number
+    setCurrentTrack: React.Dispatch<React.SetStateAction<number>>
     BPM: number
     setBPM: React.Dispatch<React.SetStateAction<number>>
     currentBeat: number
@@ -17,11 +19,11 @@ interface TracksContextType {
 const NUM_BUTTONS = 16
 
 const initialTracks: TrackType[] = [
-    {index: 0, name: "KICK", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/KICK.wav", autostart: false,}).toDestination()},
-    {index: 1, name: "CLAP", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination()},
-    {index: 2, name: "SNARE", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination()},
-    {index: 3, name: "OPEN HAT", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination()},
-    {index: 4, name: "CLOSED HAT", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination()},
+    {index: 0, name: "KICK", sampleImgFile: "/KICK_IMG.png",trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/KICK.wav", autostart: false,}).toDestination()},
+    {index: 1, name: "CLAP", sampleImgFile: "/CLAP_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination()},
+    {index: 2, name: "SNARE", sampleImgFile: "/SNARE_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination()},
+    {index: 3, name: "OPEN HAT", sampleImgFile: "/OH_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination()},
+    {index: 4, name: "CLOSED HAT", sampleImgFile: "/CH_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination()},
 ]
 
 const TracksContext = createContext<TracksContextType | null>(null)
@@ -30,6 +32,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
     const [BPM, setBPM] = useState<number>(120)
     const [tracks, setTracks] = useState<TrackType[]>(initialTracks)
+    const [currentTrack, setCurrentTrack] = useState<number>(0)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
 
     const beatRef = useRef(0)
@@ -122,6 +125,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         <TracksContext.Provider value={{
             tracks: tracks, 
             setTracks: setTracks, 
+            currentTrack: currentTrack,
+            setCurrentTrack: setCurrentTrack,
             BPM: BPM, 
             setBPM: setBPM,
             currentBeat: currentBeat, 
