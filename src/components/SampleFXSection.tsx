@@ -10,7 +10,6 @@ const SampleFXSection = () => {
     })
 
     const handleVolumeChange = (newVolumeLevel: number) => {
-        console.log(newVolumeLevel)
         setFXLevelValues(prev => ({ ...prev, volume: newVolumeLevel }))
     }
 

@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useTransform } from "motion/react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 interface KnobPropsType {
     label: string
@@ -16,7 +16,7 @@ const DRAG_RANGE = 200
 
 
 const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: KnobPropsType) => {
-
+    const [isDragging, setIsDragging] = useState<boolean>(false)
     const dragY = useMotionValue(0)
 
     const rotationDegreesFromDragValue = useTransform(
@@ -26,12 +26,17 @@ const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: Kn
     ) 
 
     const handleDrag = (_: MouseEvent | TouchEvent | PointerEvent, info: {delta: {y: number}}) => {
+        setIsDragging(true)
         const yDragValue = Math.max(0, Math.min(DRAG_RANGE, dragY.get() - info.delta.y))
         const newRotationFraction = (yDragValue / DRAG_RANGE)
         const newRotationValue = min + (newRotationFraction * (max - min))
 
         dragY.set(yDragValue)
-        onChange(newRotationValue)
+
+        // round value and only update state if changed 
+        const newRotationValueRounded = Math.round(newRotationValue)
+        if (newRotationValueRounded === value ) return
+        onChange(newRotationValueRounded)
     }
 
     useEffect( () => {
@@ -45,8 +50,16 @@ const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: Kn
         <div className={`relative flex items-center justify-center  ${isMasterVol ? "size-[5rem]" : "size-[2.75rem]"}`}>
         {/* Outer bevel ring */}
         <div
-            className="absolute inset-0 rounded-full bg-accent/50
-            shadow-[4px_4px_8px_rgba(0,0,0,0.15),-4px_-4px_8px_rgba(255,255,255,0.9)]"
+            style={{
+                boxShadow: `
+                  inset -2px -4px 8px rgba(255,255,255,0.6), 
+                  inset 2px 4px 8px rgba(0,0,0,0.3), 
+                  -4px -8px 12px rgba(255,255,255,0.9), 
+                  4px 8px 12px rgba(0,0,0,0.2) 
+                `,
+              }}
+            className="absolute inset-0 rounded-full bg-accent/50 "
+            // shadow-[6px_6px_12px_rgba(0,0,0,0.1),-6px_-6px_12px_rgba(255,255,255,0.8)]
         ></div>
 
         {/* Main knob */}
@@ -60,9 +73,10 @@ const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: Kn
                 cursor: "ns-resize",
               }}
             onDrag={handleDrag}
+            onDragEnd={() => setIsDragging(false)}
             className={`relative ${isMasterVol ? "size-[4.54rem]" : "size-[2.5rem]"} rounded-full bg-background 
-            shadow-[6px_6px_12px_rgba(0,0,0,0.15),-6px_-6px_12px_rgba(255,255,255,0.8)]`}
-            
+            `}
+            // shadow-[6px_6px_12px_rgba(0,0,0,0.15),-6px_-6px_12px_rgba(255,255,255,0.8)]
         >
             {/* Small recessed circular area (dot) */}
             <div
@@ -76,7 +90,7 @@ const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: Kn
         </motion.div>
         
         </div>
-        <div className="text-[.75rem] text-text-primary">{label}</div>
+        <div className="text-[.75rem] text-text-primary">{isDragging ? value : label}</div>
     </div>
     
   );
