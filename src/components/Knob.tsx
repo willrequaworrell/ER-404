@@ -1,23 +1,43 @@
-import React, { useState, useCallback } from 'react';
+import { motion, useMotionValue, useTransform } from "motion/react"
+import { useEffect } from "react"
 
 interface KnobPropsType {
     label: string
+    value: number
+    min?: number
+    max?: number
     isMasterVol?: boolean
+    onChange: (value: number) => void
 }
 
+const ROTATION_RANGE = 300; 
+const ROTATION_OFFSET = 10;
+const DRAG_RANGE = 200
 
 
-const Knob = ({label, isMasterVol=false}: KnobPropsType) => {
-  const [rotation, setRotation] = useState(0);
+const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: KnobPropsType) => {
 
+    const dragY = useMotionValue(0)
 
-  const handleRotate = useCallback((e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
-    setRotation(angle + 90);
-  }, []);
+    const rotationDegreesFromDragValue = useTransform(
+        dragY, 
+        [0,DRAG_RANGE], 
+        [ROTATION_OFFSET , ROTATION_OFFSET + ROTATION_RANGE]
+    ) 
+
+    const handleDrag = (_: MouseEvent | TouchEvent | PointerEvent, info: {delta: {y: number}}) => {
+        const yDragValue = Math.max(0, Math.min(DRAG_RANGE, dragY.get() - info.delta.y))
+        const newRotationFraction = (yDragValue / DRAG_RANGE)
+        const newRotationValue = min + (newRotationFraction * (max - min))
+
+        dragY.set(yDragValue)
+        onChange(newRotationValue)
+    }
+
+    useEffect( () => {
+        const percent = (value - min) / (max - min)
+        dragY.set(percent * DRAG_RANGE)
+    }, [value, min, max])
 
   return (
     <div className='flex flex-col items-center justify-end h-full gap-y-2'>
@@ -30,11 +50,19 @@ const Knob = ({label, isMasterVol=false}: KnobPropsType) => {
         ></div>
 
         {/* Main knob */}
-        <div
+        <motion.div
+            drag="y"
+            dragConstraints={{top:0, bottom: 0}}
+            dragElastic={0}
+            dragMomentum={false}
+            style={{
+                rotate: rotationDegreesFromDragValue, // Bind rotation to motion value
+                cursor: "ns-resize",
+              }}
+            onDrag={handleDrag}
             className={`relative ${isMasterVol ? "size-[4.54rem]" : "size-[2.5rem]"} rounded-full bg-background 
             shadow-[6px_6px_12px_rgba(0,0,0,0.15),-6px_-6px_12px_rgba(255,255,255,0.8)]`}
-            onMouseMove={(e) => e.buttons === 1 && handleRotate(e)}
-            onMouseDown={handleRotate}
+            
         >
             {/* Small recessed circular area (dot) */}
             <div
@@ -45,7 +73,7 @@ const Knob = ({label, isMasterVol=false}: KnobPropsType) => {
                 left: "35%",
             }}
             ></div>
-        </div>
+        </motion.div>
         
         </div>
         <div className="text-[.75rem] text-text-primary">{label}</div>
