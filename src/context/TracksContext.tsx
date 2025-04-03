@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import * as Tone from 'tone';
 import { TrackType } from "../types/track";
+import { initialTracks } from "../util/initialTrackData";
 
 interface TracksContextType {
     tracks: TrackType[]
@@ -14,19 +15,12 @@ interface TracksContextType {
     globalPlay: () => void
     globalStop: () => void
     globalReset: () => void
+    setTrackVolume: (volumeValue: number) => void
 }
 
-const NUM_BUTTONS = 16
-
-const initialTracks: TrackType[] = [
-    {index: 0, name: "KICK", sampleImgFile: "/KICK_IMG.png",trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/KICK.wav", autostart: false,}).toDestination()},
-    {index: 1, name: "CLAP", sampleImgFile: "/CLAP_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination()},
-    {index: 2, name: "SNARE", sampleImgFile: "/SNARE_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination()},
-    {index: 3, name: "OPEN HAT", sampleImgFile: "/OH_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination()},
-    {index: 4, name: "CLOSED HAT", sampleImgFile: "/CH_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination()},
-]
 
 const TracksContext = createContext<TracksContextType | null>(null)
+const NUM_BUTTONS = 16
 
 export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
@@ -102,6 +96,18 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         tracksRef.current = initialTracks
     }
 
+    const setTrackVolume = (volumeValue: number) => {
+        //convert to decibels in range -60 to 0
+        const volumeDb = ((volumeValue / 100) * 60) - 60
+
+        setTracks( prev => {
+            const newTracks = [...prev]
+            newTracks[currentTrack].volume.volume.value = volumeDb
+            return newTracks
+        })
+
+    }
+
     useEffect(() => {
         
         return () => {
@@ -113,6 +119,14 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
        
     }, [])
     
+    useEffect( () => {
+        tracks.forEach(track => {
+            track.player.disconnect()
+
+            track.player.chain(track.volume, Tone.getDestination())
+        })
+    }, [])
+
     useEffect( () => {
         tracksRef.current = tracks
     }, [tracks])
@@ -133,7 +147,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             isPlaying: isPlaying,
             globalPlay: globalPlay, 
             globalStop: globalStop,
-            globalReset: globalReset
+            globalReset: globalReset,
+            setTrackVolume: setTrackVolume,
         }}>
             {children}
         </TracksContext.Provider>

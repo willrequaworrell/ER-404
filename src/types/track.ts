@@ -6,4 +6,5 @@ export interface TrackType {
     sampleImgFile: string
     trackButtons: boolean[]
     player: Tone.Player
+    volume: Tone.Volume
 }

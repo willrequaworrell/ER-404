@@ -2,12 +2,13 @@ import { motion, useMotionValue, useTransform } from "motion/react"
 import { useEffect, useState } from "react"
 
 interface KnobPropsType {
+    id: string
     label: string
     value: number
     min?: number
     max?: number
     isMasterVol?: boolean
-    onChange: (value: number) => void
+    onChange: (id: string, value: number) => void
 }
 
 const ROTATION_RANGE = 300; 
@@ -15,7 +16,7 @@ const ROTATION_OFFSET = 10;
 const DRAG_RANGE = 200
 
 
-const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: KnobPropsType) => {
+const Knob = ({id, label, value=50, min=0, max=100, isMasterVol=false, onChange}: KnobPropsType) => {
     const [isDragging, setIsDragging] = useState<boolean>(false)
     const dragY = useMotionValue(0)
 
@@ -36,7 +37,7 @@ const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: Kn
         // round value and only update state if changed 
         const newRotationValueRounded = Math.round(newRotationValue)
         if (newRotationValueRounded === value ) return
-        onChange(newRotationValueRounded)
+        onChange(id, newRotationValueRounded)
     }
 
     useEffect( () => {
@@ -47,7 +48,7 @@ const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: Kn
   return (
     <div className='flex flex-col items-center justify-end h-full gap-y-2'>
 
-        <div className={`relative flex items-center justify-center  ${isMasterVol ? "size-[5rem]" : "size-[2.75rem]"}`}>
+        <div className={`relative flex items-center justify-center  ${isMasterVol ? "size-[4.5rem]" : "size-[2.75rem]"}`}>
         {/* Outer bevel ring */}
         <div
             style={{
@@ -64,6 +65,7 @@ const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: Kn
 
         {/* Main knob */}
         <motion.div
+            id={id}
             drag="y"
             dragConstraints={{top:0, bottom: 0}}
             dragElastic={0}
@@ -74,7 +76,7 @@ const Knob = ({label, value=50, min=0, max=100, isMasterVol=false, onChange}: Kn
               }}
             onDrag={handleDrag}
             onDragEnd={() => setIsDragging(false)}
-            className={`relative ${isMasterVol ? "size-[4.54rem]" : "size-[2.5rem]"} rounded-full bg-background 
+            className={`relative ${isMasterVol ? "size-[4rem]" : "size-[2.4rem]"} rounded-full bg-background 
             `}
             // shadow-[6px_6px_12px_rgba(0,0,0,0.15),-6px_-6px_12px_rgba(255,255,255,0.8)]
         >
