@@ -3,6 +3,10 @@ import * as Tone from 'tone';
 import { TrackType } from "../types/track";
 import { initialTracks } from "../util/initialTrackData";
 
+interface masterFXSettingsType {
+    volume: number
+}
+
 interface TracksContextType {
     tracks: TrackType[]
     setTracks: React.Dispatch<React.SetStateAction<TrackType[]>>
@@ -15,8 +19,11 @@ interface TracksContextType {
     globalPlay: () => void
     globalStop: () => void
     globalReset: () => void
-    setTrackVolume: (volumeValue: number) => void
+    setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
+    masterFXSettings: masterFXSettingsType
+    handleSetMasterFXSettings: (settingName: keyof masterFXSettingsType, value: number) => void
 }
+
 
 
 const TracksContext = createContext<TracksContextType | null>(null)
@@ -28,6 +35,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [tracks, setTracks] = useState<TrackType[]>(initialTracks)
     const [currentTrack, setCurrentTrack] = useState<number>(0)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
+    const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>({
+        volume: 100
+    })
 
     const beatRef = useRef(0)
     const tracksRef = useRef(tracks)
@@ -96,16 +106,37 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         tracksRef.current = initialTracks
     }
 
-    const setTrackVolume = (volumeValue: number) => {
-        //convert to decibels in range -60 to 0
-        const volumeDb = ((volumeValue / 100) * 60) - 60
-
-        setTracks( prev => {
-            const newTracks = [...prev]
-            newTracks[currentTrack].volume.volume.value = volumeDb
-            return newTracks
+    const handleSetMasterFXSettings = (settingName: keyof masterFXSettingsType, value: number) => {
+        setMasterFXSettings(prevSettings => {
+            return {
+                ...prevSettings,
+                [settingName]: value
+            }
         })
 
+        if (settingName === "volume") {
+            const volumeDb = ((value / 100) * 60) - 60
+            Tone.getDestination().volume.value = volumeDb
+        }
+    }
+
+    const setTrackSetting = (settingName: keyof TrackType['knobSettings'], value: number) => {
+        setTracks( prevTracks => {
+            const newTracks = [...prevTracks]
+            const trackToUpdate = newTracks[currentTrack]
+
+            trackToUpdate.knobSettings = {
+                ...trackToUpdate.knobSettings,
+                [settingName]: value
+            }
+
+            if (settingName === "volume") {
+                const volumeDb = ((value / 100) * 60) - 60 // convert to decibels from -60 to 0
+                trackToUpdate.volume.volume.value = volumeDb
+            }
+
+            return newTracks
+        })
     }
 
     useEffect(() => {
@@ -148,7 +179,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             globalPlay: globalPlay, 
             globalStop: globalStop,
             globalReset: globalReset,
-            setTrackVolume: setTrackVolume,
+            setTrackSetting: setTrackSetting,
+            masterFXSettings: masterFXSettings, 
+            handleSetMasterFXSettings: handleSetMasterFXSettings,
         }}>
             {children}
         </TracksContext.Provider>

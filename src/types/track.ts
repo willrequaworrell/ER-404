@@ -7,4 +7,7 @@ export interface TrackType {
     trackButtons: boolean[]
     player: Tone.Player
     volume: Tone.Volume
+    knobSettings: {
+        volume: number
+    }
 }

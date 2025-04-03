@@ -9,7 +9,10 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/KICK_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         volume: new Tone.Volume(0), 
-        player: new Tone.Player({ url: "/KICK.wav", autostart: false, }).toDestination()
+        player: new Tone.Player({ url: "/KICK.wav", autostart: false, }).toDestination(),
+        knobSettings: {
+            volume: 100
+        }
     },
     {
         index: 1, 
@@ -17,7 +20,10 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/CLAP_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         volume: new Tone.Volume(0), 
-        player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination()
+        player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination(),
+        knobSettings: {
+            volume: 100
+        }
     },
     {
         index: 2, 
@@ -25,7 +31,10 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/SNARE_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         volume: new Tone.Volume(0), 
-        player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination()
+        player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination(),
+        knobSettings: {
+            volume: 100
+        }
     },
     {
         index: 3, 
@@ -33,7 +42,10 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/OH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         volume: new Tone.Volume(0), 
-        player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination()
+        player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination(),
+        knobSettings: {
+            volume: 100
+        }
     },
     {
         index: 4, 
@@ -41,6 +53,9 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/CH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false), 
         volume: new Tone.Volume(0),
-        player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination()
+        player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination(),
+        knobSettings: {
+            volume: 100
+        }
     },
 ]

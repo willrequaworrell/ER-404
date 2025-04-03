@@ -1,31 +1,37 @@
-import { useState } from "react"
+// import { useState } from "react"
 import Knob from "./Knob"
 import VolumeMeter from "./VolumeMeter"
+import { useTracksContext } from "../context/TracksContext"
 
-interface MasterFXKnobsStateType {
-    masterHiCut: number
-    masterLoCut: number
-    masterPhaser: number
-    masterReverb: number
-    masterRatio: number
-    masterThreshold: number
-    masterVolume: number
-}
+// interface MasterFXKnobsStateType {
+//     masterHiCut: number
+//     masterLoCut: number
+//     masterPhaser: number
+//     masterReverb: number
+//     masterRatio: number
+//     masterThreshold: number
+//     masterVolume: number
+// }
 
 const MasterFXSection = () => {
+    const {masterFXSettings, handleSetMasterFXSettings} = useTracksContext()
+    // const [FXLevelValues, setFXLevelValues] = useState<MasterFXKnobsStateType>({
+    //     masterLoCut: 0,
+    //     masterHiCut: 0,
+    //     masterReverb: 0,
+    //     masterPhaser: 0,
+    //     masterRatio: 0,
+    //     masterThreshold: 0,
+    //     masterVolume: 0,
+    // })
 
-    const [FXLevelValues, setFXLevelValues] = useState<MasterFXKnobsStateType>({
-        masterLoCut: 0,
-        masterHiCut: 0,
-        masterReverb: 0,
-        masterPhaser: 0,
-        masterRatio: 0,
-        masterThreshold: 0,
-        masterVolume: 0,
-    })
+    const VALUE_PLACEHOLDER = 50
 
-    const handleKnobChange = (knobId: string, newVolumeLevel: number) => {
-        setFXLevelValues(prev => ({ ...prev, [knobId]: newVolumeLevel }))
+    const handleKnobChange = (knobId: string, newValue: number) => {
+        // setFXLevelValues(prev => ({ ...prev, [knobId]: newVolumeLevel }))
+        if (knobId === "masterVolume") {
+            handleSetMasterFXSettings("volume", newValue)
+        }
     }
 
     
@@ -36,7 +42,7 @@ const MasterFXSection = () => {
                 <Knob 
                     id="masterLoCut"
                     label="Lo Cut"
-                    value={FXLevelValues.masterLoCut}
+                    value={VALUE_PLACEHOLDER}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
@@ -44,7 +50,7 @@ const MasterFXSection = () => {
                 <Knob 
                     id="masterHiCut"
                     label="Hi Cut"
-                    value={FXLevelValues.masterHiCut}
+                    value={VALUE_PLACEHOLDER}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
@@ -52,7 +58,7 @@ const MasterFXSection = () => {
                 <Knob 
                     id="masterReverb"
                     label="Reverb"
-                    value={FXLevelValues.masterReverb}
+                    value={VALUE_PLACEHOLDER}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
@@ -60,7 +66,7 @@ const MasterFXSection = () => {
                 <Knob 
                     id="masterPhaser"
                     label="Phaser"
-                    value={FXLevelValues.masterPhaser}
+                    value={VALUE_PLACEHOLDER}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
@@ -73,7 +79,7 @@ const MasterFXSection = () => {
                     <Knob
                         id="masterRatio"
                         label="Ratio"
-                        value={FXLevelValues.masterRatio}
+                        value={VALUE_PLACEHOLDER}
                         min={0}
                         max={100}
                         onChange={handleKnobChange}
@@ -81,7 +87,7 @@ const MasterFXSection = () => {
                     <Knob
                         id="masterThreshold"
                         label="Threshold"
-                        value={FXLevelValues.masterThreshold}
+                        value={VALUE_PLACEHOLDER}
                         min={0}
                         max={100}
                         onChange={handleKnobChange}
@@ -92,7 +98,7 @@ const MasterFXSection = () => {
                 <Knob
                     id="masterVolume"
                     label="Volume"
-                    value={FXLevelValues.masterVolume}
+                    value={masterFXSettings.volume}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
