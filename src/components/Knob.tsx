@@ -18,7 +18,9 @@ const DRAG_RANGE = 200
 
 const Knob = ({id, label, value=50, min=0, max=100, isMasterVol=false, onChange}: KnobPropsType) => {
     const [isDragging, setIsDragging] = useState<boolean>(false)
-    const dragY = useMotionValue(0)
+
+    const initialDragY = ((value - min) / (max - min)) * DRAG_RANGE;
+    const dragY = useMotionValue(initialDragY)
 
     const rotationDegreesFromDragValue = useTransform(
         dragY, 
@@ -43,7 +45,7 @@ const Knob = ({id, label, value=50, min=0, max=100, isMasterVol=false, onChange}
     useEffect( () => {
         const percent = (value - min) / (max - min)
         dragY.set(percent * DRAG_RANGE)
-    }, [value, min, max])
+    }, [value, min, max, dragY])
 
   return (
     <div className='flex flex-col items-center justify-end h-full gap-y-2'>
