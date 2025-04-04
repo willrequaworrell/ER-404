@@ -2,28 +2,13 @@ import Knob from "./Knob"
 import SampleViewer from "./SampleViewer"
 import { useTracksContext } from "../context/TracksContext"
 
-// interface SampleFXKnobsStateType {
-//     sampleVolume: number
-//     sampleAttack: number
-//     sampleRelease: number
-//     sampleHiCut: number
-//     sampleLoCut: number
-// }
 
 const SampleFXSection = () => {
     const {tracks, currentTrack, setTrackSetting} = useTracksContext()
     const currentSettings = tracks[currentTrack].knobSettings
-    // const [FXLevelValues, setFXLevelValues] = useState<SampleFXKnobsStateType>({
-    //     sampleVolume: 0,
-    //     sampleAttack: 0,
-    //     sampleRelease: 0,
-    //     sampleLoCut: 0,
-    //     sampleHiCut: 0,
-    // })
 
 
     const handleKnobChange = (knobId: string, newLevel: number) => {
-        // setFXLevelValues(prev => ({ ...prev, [knobId]: newLevel }))
 
         if (knobId === "sampleVolume") {
             setTrackSetting("volume", newLevel)
@@ -46,7 +31,6 @@ const SampleFXSection = () => {
                 id="sampleVolume"
                 label="Volume"
                 value={currentSettings.volume}
-                // value={FXLevelValues.sampleVolume}
                 min={0}
                 max={100}
                 onChange={handleKnobChange}

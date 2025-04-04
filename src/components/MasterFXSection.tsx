@@ -3,29 +3,10 @@ import Knob from "./Knob"
 import VolumeMeter from "./VolumeMeter"
 import { useTracksContext } from "../context/TracksContext"
 
-// interface MasterFXKnobsStateType {
-//     masterHiCut: number
-//     masterLoCut: number
-//     masterPhaser: number
-//     masterReverb: number
-//     masterRatio: number
-//     masterThreshold: number
-//     masterVolume: number
-// }
 
 const MasterFXSection = () => {
     const {masterFXSettings, handleSetMasterFXSettings} = useTracksContext()
-    // const [FXLevelValues, setFXLevelValues] = useState<MasterFXKnobsStateType>({
-    //     masterLoCut: 0,
-    //     masterHiCut: 0,
-    //     masterReverb: 0,
-    //     masterPhaser: 0,
-    //     masterRatio: 0,
-    //     masterThreshold: 0,
-    //     masterVolume: 0,
-    // })
 
-    const VALUE_PLACEHOLDER = 50
 
     const handleKnobChange = (knobId: string, newValue: number) => {
         // setFXLevelValues(prev => ({ ...prev, [knobId]: newVolumeLevel }))
@@ -104,8 +85,6 @@ const MasterFXSection = () => {
                         max={100}
                         onChange={handleKnobChange}
                     />
-                    {/* <Knob label="Ratio" />
-                    <Knob label="Threshold" /> */}
                 </div>
                 <Knob
                     id="masterVolume"
