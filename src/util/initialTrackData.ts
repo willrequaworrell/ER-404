@@ -11,7 +11,11 @@ export const initialTracks: TrackType[] = [
         volume: new Tone.Volume(0), 
         player: new Tone.Player({ url: "/KICK.wav", autostart: false, }).toDestination(),
         knobSettings: {
-            volume: 100
+            volume: 100,
+            attack: 0,
+            release: 0,
+            lowCut: 0,
+            highCut: 100
         }
     },
     {
@@ -22,7 +26,11 @@ export const initialTracks: TrackType[] = [
         volume: new Tone.Volume(0), 
         player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination(),
         knobSettings: {
-            volume: 100
+            volume: 100,
+            attack: 0,
+            release: 0,
+            lowCut: 0,
+            highCut: 100
         }
     },
     {
@@ -33,7 +41,11 @@ export const initialTracks: TrackType[] = [
         volume: new Tone.Volume(0), 
         player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination(),
         knobSettings: {
-            volume: 100
+            volume: 100,
+            attack: 0,
+            release: 0,
+            lowCut: 0,
+            highCut: 100
         }
     },
     {
@@ -44,7 +56,11 @@ export const initialTracks: TrackType[] = [
         volume: new Tone.Volume(0), 
         player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination(),
         knobSettings: {
-            volume: 100
+            volume: 100,
+            attack: 0,
+            release: 0,
+            lowCut: 0,
+            highCut: 100
         }
     },
     {
@@ -55,7 +71,11 @@ export const initialTracks: TrackType[] = [
         volume: new Tone.Volume(0),
         player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination(),
         knobSettings: {
-            volume: 100
+            volume: 100,
+            attack: 0,
+            release: 0,
+            lowCut: 0,
+            highCut: 100
         }
     },
 ]

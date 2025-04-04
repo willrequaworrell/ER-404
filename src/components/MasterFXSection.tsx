@@ -29,7 +29,19 @@ const MasterFXSection = () => {
 
     const handleKnobChange = (knobId: string, newValue: number) => {
         // setFXLevelValues(prev => ({ ...prev, [knobId]: newVolumeLevel }))
-        if (knobId === "masterVolume") {
+        if (knobId === "masterLowCut") {
+            handleSetMasterFXSettings("lowCut", newValue)
+        } else if (knobId === "masterHiCut") {
+            handleSetMasterFXSettings("highCut", newValue)
+        } else if (knobId === "masterReverb") {
+            handleSetMasterFXSettings("reverb", newValue)
+        } else if (knobId === "masterPhaser") {
+            handleSetMasterFXSettings("phaser", newValue)
+        } else if (knobId === "masterCompressorRatio") {
+            handleSetMasterFXSettings("compressorRatio", newValue)
+        } else if (knobId === "masterCompressorThreshold") {
+            handleSetMasterFXSettings("compressorThreshold", newValue)
+        } else if (knobId === "masterVolume") {
             handleSetMasterFXSettings("volume", newValue)
         }
     }
@@ -40,9 +52,9 @@ const MasterFXSection = () => {
             <div className="relative flex items-end h-full pb-3 pr-2 border-b-2 gap-x-[1vw] border-text-primary">
                 <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">MASTER</span>
                 <Knob 
-                    id="masterLoCut"
+                    id="masterLowCut"
                     label="Lo Cut"
-                    value={VALUE_PLACEHOLDER}
+                    value={masterFXSettings.lowCut}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
@@ -50,7 +62,7 @@ const MasterFXSection = () => {
                 <Knob 
                     id="masterHiCut"
                     label="Hi Cut"
-                    value={VALUE_PLACEHOLDER}
+                    value={masterFXSettings.highCut}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
@@ -58,7 +70,7 @@ const MasterFXSection = () => {
                 <Knob 
                     id="masterReverb"
                     label="Reverb"
-                    value={VALUE_PLACEHOLDER}
+                    value={masterFXSettings.reverb}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
@@ -66,7 +78,7 @@ const MasterFXSection = () => {
                 <Knob 
                     id="masterPhaser"
                     label="Phaser"
-                    value={VALUE_PLACEHOLDER}
+                    value={masterFXSettings.phaser}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
@@ -77,17 +89,17 @@ const MasterFXSection = () => {
                     <div className="absolute h-2 border-r -right-2 -top-3 border-1 border-text-primary"></div>
                     <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -top-6 left-1/2">COMPRESSOR</span>
                     <Knob
-                        id="masterRatio"
+                        id="masterCompressorRatio"
                         label="Ratio"
-                        value={VALUE_PLACEHOLDER}
+                        value={masterFXSettings.compressorRatio}
                         min={0}
                         max={100}
                         onChange={handleKnobChange}
                     />
                     <Knob
-                        id="masterThreshold"
+                        id="masterCompressorThreshold"
                         label="Threshold"
-                        value={VALUE_PLACEHOLDER}
+                        value={masterFXSettings.compressorThreshold}
                         min={0}
                         max={100}
                         onChange={handleKnobChange}

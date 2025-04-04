@@ -9,5 +9,9 @@ export interface TrackType {
     volume: Tone.Volume
     knobSettings: {
         volume: number
+        attack: number
+        release: number
+        lowCut: number
+        highCut: number
     }
 }

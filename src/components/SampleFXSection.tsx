@@ -12,7 +12,7 @@ import { useTracksContext } from "../context/TracksContext"
 
 const SampleFXSection = () => {
     const {tracks, currentTrack, setTrackSetting} = useTracksContext()
-    const curretSettings = tracks[currentTrack].knobSettings
+    const currentSettings = tracks[currentTrack].knobSettings
     // const [FXLevelValues, setFXLevelValues] = useState<SampleFXKnobsStateType>({
     //     sampleVolume: 0,
     //     sampleAttack: 0,
@@ -21,14 +21,21 @@ const SampleFXSection = () => {
     //     sampleHiCut: 0,
     // })
 
-    const VALUE_PLACEHOLDER = 50
 
-    const handleKnobChange = (knobId: string, newVolumeLevel: number) => {
-        // setFXLevelValues(prev => ({ ...prev, [knobId]: newVolumeLevel }))
+    const handleKnobChange = (knobId: string, newLevel: number) => {
+        // setFXLevelValues(prev => ({ ...prev, [knobId]: newLevel }))
 
         if (knobId === "sampleVolume") {
-            setTrackSetting("volume", newVolumeLevel)
-        }
+            setTrackSetting("volume", newLevel)
+        } else if (knobId === "sampleAttack") {
+            setTrackSetting("attack", newLevel) 
+        } else if (knobId === "sampleRelease") {
+            setTrackSetting("release", newLevel) 
+        } else if (knobId === "sampleLowCut") {
+            setTrackSetting("lowCut", newLevel) 
+        } else if (knobId === "sampleHighCut") {
+            setTrackSetting("highCut", newLevel) 
+        } 
     }
 
     return (
@@ -38,7 +45,7 @@ const SampleFXSection = () => {
             <Knob 
                 id="sampleVolume"
                 label="Volume"
-                value={curretSettings.volume}
+                value={currentSettings.volume}
                 // value={FXLevelValues.sampleVolume}
                 min={0}
                 max={100}
@@ -47,7 +54,7 @@ const SampleFXSection = () => {
             <Knob 
                 id="sampleAttack"
                 label="Attack"
-                value={VALUE_PLACEHOLDER}
+                value={currentSettings.attack}
                 min={0}
                 max={100}
                 onChange={handleKnobChange}
@@ -55,23 +62,23 @@ const SampleFXSection = () => {
             <Knob 
                 id="sampleRelease"
                 label="Release"
-                value={VALUE_PLACEHOLDER}
+                value={currentSettings.release}
                 min={0}
                 max={100}
                 onChange={handleKnobChange}
             />
             <Knob 
-                id="sampleLoCut"
+                id="sampleLowCut"
                 label="Lo Cut"
-                value={VALUE_PLACEHOLDER}
+                value={currentSettings.lowCut}
                 min={0}
                 max={100}
                 onChange={handleKnobChange}
             />
             <Knob 
-                id="sampleHiCut"
+                id="sampleHighCut"
                 label="Hi Cut"
-                value={VALUE_PLACEHOLDER}
+                value={currentSettings.highCut}
                 min={0}
                 max={100}
                 onChange={handleKnobChange}

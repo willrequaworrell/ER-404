@@ -4,6 +4,12 @@ import { TrackType } from "../types/track";
 import { initialTracks } from "../util/initialTrackData";
 
 interface masterFXSettingsType {
+    lowCut: number
+    highCut: number
+    reverb: number
+    phaser: number
+    compressorRatio: number
+    compressorThreshold: number
     volume: number
 }
 
@@ -36,7 +42,13 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [currentTrack, setCurrentTrack] = useState<number>(0)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
     const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>({
-        volume: 100
+        lowCut: 0,
+        highCut: 100,
+        reverb: 0,
+        phaser: 0,
+        compressorRatio: 50,
+        compressorThreshold: 100,
+        volume: 100,
     })
 
     const beatRef = useRef(0)
@@ -117,7 +129,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         if (settingName === "volume") {
             const volumeDb = ((value / 100) * 60) - 60
             Tone.getDestination().volume.value = volumeDb
-        }
+        } 
     }
 
     const setTrackSetting = (settingName: keyof TrackType['knobSettings'], value: number) => {
