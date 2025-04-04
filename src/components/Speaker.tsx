@@ -1,19 +1,18 @@
 const Speaker = () => {
     const rows = [
-        // 28, // Second row: 5 holes
-        44, // Middle row: 7 holes
-        46,
-        48,
-        48,
-        48,
-        48,
-        48,
-        46,
-        44,
+        35, 
+        37,
+        38,
+        // 38,
+        // 38,
+        38,
+        38,
+        37,
+        35,
     ];
 
     return (
-        <div className="absolute flex items-center -translate-x-1/2 -translate-y-1/2 gap-x-24 top-1/2 left-1/2">
+        <div className=" flex items-center gap-x-[2vw] ">
             <div className="flex flex-col items-center justify-center gap-1">
                 {rows.map((cols, rowIndex) => (
                     <div

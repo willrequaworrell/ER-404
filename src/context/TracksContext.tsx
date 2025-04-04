@@ -1,6 +1,17 @@
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import * as Tone from 'tone';
 import { TrackType } from "../types/track";
+import { initialTracks } from "../util/initialTrackData";
+
+interface masterFXSettingsType {
+    lowCut: number
+    highCut: number
+    reverb: number
+    phaser: number
+    compressorRatio: number
+    compressorThreshold: number
+    volume: number
+}
 
 interface TracksContextType {
     tracks: TrackType[]
@@ -14,19 +25,15 @@ interface TracksContextType {
     globalPlay: () => void
     globalStop: () => void
     globalReset: () => void
+    setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
+    masterFXSettings: masterFXSettingsType
+    handleSetMasterFXSettings: (settingName: keyof masterFXSettingsType, value: number) => void
 }
 
-const NUM_BUTTONS = 16
 
-const initialTracks: TrackType[] = [
-    {index: 0, name: "KICK", sampleImgFile: "/KICK_IMG.png",trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/KICK.wav", autostart: false,}).toDestination()},
-    {index: 1, name: "CLAP", sampleImgFile: "/CLAP_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination()},
-    {index: 2, name: "SNARE", sampleImgFile: "/SNARE_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination()},
-    {index: 3, name: "OPEN HAT", sampleImgFile: "/OH_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination()},
-    {index: 4, name: "CLOSED HAT", sampleImgFile: "/CH_IMG.png", trackButtons: new Array(NUM_BUTTONS).fill(false), player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination()},
-]
 
 const TracksContext = createContext<TracksContextType | null>(null)
+const NUM_BUTTONS = 16
 
 export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
@@ -34,6 +41,15 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [tracks, setTracks] = useState<TrackType[]>(initialTracks)
     const [currentTrack, setCurrentTrack] = useState<number>(0)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
+    const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>({
+        lowCut: 0,
+        highCut: 100,
+        reverb: 0,
+        phaser: 0,
+        compressorRatio: 50,
+        compressorThreshold: 100,
+        volume: 100,
+    })
 
     const beatRef = useRef(0)
     const tracksRef = useRef(tracks)
@@ -102,6 +118,39 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         tracksRef.current = initialTracks
     }
 
+    const handleSetMasterFXSettings = (settingName: keyof masterFXSettingsType, value: number) => {
+        setMasterFXSettings(prevSettings => {
+            return {
+                ...prevSettings,
+                [settingName]: value
+            }
+        })
+
+        if (settingName === "volume") {
+            const volumeDb = ((value / 100) * 60) - 60
+            Tone.getDestination().volume.value = volumeDb
+        } 
+    }
+
+    const setTrackSetting = (settingName: keyof TrackType['knobSettings'], value: number) => {
+        setTracks( prevTracks => {
+            const newTracks = [...prevTracks]
+            const trackToUpdate = newTracks[currentTrack]
+
+            trackToUpdate.knobSettings = {
+                ...trackToUpdate.knobSettings,
+                [settingName]: value
+            }
+
+            if (settingName === "volume") {
+                const volumeDb = ((value / 100) * 60) - 60 // convert to decibels from -60 to 0
+                trackToUpdate.volume.volume.value = volumeDb
+            }
+
+            return newTracks
+        })
+    }
+
     useEffect(() => {
         
         return () => {
@@ -113,6 +162,14 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
        
     }, [])
     
+    useEffect( () => {
+        tracks.forEach(track => {
+            track.player.disconnect()
+
+            track.player.chain(track.volume, Tone.getDestination())
+        })
+    }, [])
+
     useEffect( () => {
         tracksRef.current = tracks
     }, [tracks])
@@ -133,7 +190,10 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             isPlaying: isPlaying,
             globalPlay: globalPlay, 
             globalStop: globalStop,
-            globalReset: globalReset
+            globalReset: globalReset,
+            setTrackSetting: setTrackSetting,
+            masterFXSettings: masterFXSettings, 
+            handleSetMasterFXSettings: handleSetMasterFXSettings,
         }}>
             {children}
         </TracksContext.Provider>
