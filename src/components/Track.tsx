@@ -10,10 +10,11 @@ interface TrackPropsType {
 }
 
 const Track = ({track, setTracks}:TrackPropsType) => {
-    const {currentTrack, setCurrentTrack} = useTracksContext()
+    const {tracks, currentTrack, setCurrentTrack} = useTracksContext()
 
     const handleClick = () => {
         setCurrentTrack(track.index)
+        tracks[track.index].player.start()
     }
 
     return (
