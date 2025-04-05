@@ -10,7 +10,7 @@ interface TrackPropsType {
 }
 
 const Track = ({track, setTracks}:TrackPropsType) => {
-    const {setCurrentTrack} = useTracksContext()
+    const {currentTrack, setCurrentTrack} = useTracksContext()
 
     const handleClick = () => {
         setCurrentTrack(track.index)
@@ -20,12 +20,13 @@ const Track = ({track, setTracks}:TrackPropsType) => {
         <div className="flex items-center flex-1 py-2">
             <div onClick={handleClick} className="h-full pr-4 cursor-pointer w-1/8">
                 <ScreenContainer 
-                    styles="h-full text-[1.1rem]"
+                    styles={`relative h-full text-[1.1rem] ${currentTrack === track.index && "text-white"}`}
                 >
+                    {/* {(currentTrack === track.index) && <p className="absolute -translate-y-1/2 top-1/2 left-[10%]">•</p>} */}
                     <p>{track.name}</p>
                 </ScreenContainer>
             </div>
-            <div className="flex h-full w-7/8 gap-x-4 ">
+            <div className="flex h-full w-7/8 gap-x-4">
                 {track.trackButtons.map( (_, i)  => (
                     <TrackButton trackIndex={track.index} buttonIndex={i} trackButtons={track.trackButtons} setTracks={setTracks} key={`${track.index}-${i}`}/>
                 ))}
