@@ -17,7 +17,7 @@ export const initialTracks: TrackType[] = [
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
     {
@@ -34,7 +34,7 @@ export const initialTracks: TrackType[] = [
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
     {
@@ -51,7 +51,7 @@ export const initialTracks: TrackType[] = [
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
     {
@@ -68,7 +68,7 @@ export const initialTracks: TrackType[] = [
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
     {
@@ -85,7 +85,7 @@ export const initialTracks: TrackType[] = [
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
 ]

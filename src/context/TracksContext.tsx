@@ -143,10 +143,23 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             }
 
             if (settingName === "volume") {
-                const volumeDb = ((value / 100) * 60) - 60 // convert to decibels from -60 to 0
+                const volumeDb = ((value / 100) * 60) - 60 // convert 0-100 value to decibels in -60 to 0
                 trackToUpdate.volume.volume.value = volumeDb
             }
 
+            if (settingName === "lowCut") {
+                // filter cutoff from 0 to 2k 
+                const freqRange = 2000 - 0  
+                const lowCutFreq = ((value / 100) * freqRange)
+                trackToUpdate.lowCut.frequency.value = lowCutFreq
+            }
+            
+            if (settingName === "highCut") {
+                // filter cutoff from 20k to 2k  
+                const freqRange = 20000 - 2000 
+                const highCutFreq = 20000 - ((value / 100) * freqRange)
+                trackToUpdate.highCut.frequency.value = highCutFreq
+            }
             return newTracks
         })
     }
@@ -166,7 +179,12 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         tracks.forEach(track => {
             track.player.disconnect()
 
-            track.player.chain(track.volume, Tone.getDestination())
+            track.player.chain(
+                track.lowCut,
+                track.highCut,
+                track.volume, 
+                Tone.getDestination()
+            )
         })
     }, [])
 
