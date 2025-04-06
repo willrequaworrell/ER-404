@@ -7,6 +7,8 @@ export interface TrackType {
     trackButtons: boolean[]
     player: Tone.Player
     volume: Tone.Volume
+    lowCut: Tone.Filter
+    highCut: Tone.Filter
     knobSettings: {
         volume: number
         attack: number

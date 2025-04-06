@@ -8,14 +8,16 @@ export const initialTracks: TrackType[] = [
         index: 0, name: "KICK", 
         sampleImgFile: "/KICK_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
-        volume: new Tone.Volume(0), 
         player: new Tone.Player({ url: "/KICK.wav", autostart: false, }).toDestination(),
+        volume: new Tone.Volume(0), 
+        lowCut: new Tone.Filter(0, "highpass"),
+        highCut: new Tone.Filter(20000, "lowpass"),
         knobSettings: {
             volume: 100,
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
     {
@@ -23,14 +25,16 @@ export const initialTracks: TrackType[] = [
         name: "CLAP", 
         sampleImgFile: "/CLAP_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
-        volume: new Tone.Volume(0), 
         player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination(),
+        volume: new Tone.Volume(0),
+        lowCut: new Tone.Filter(0, "highpass"),
+        highCut: new Tone.Filter(20000, "lowpass"), 
         knobSettings: {
             volume: 100,
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
     {
@@ -38,14 +42,16 @@ export const initialTracks: TrackType[] = [
         name: "SNARE", 
         sampleImgFile: "/SNARE_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
-        volume: new Tone.Volume(0), 
         player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination(),
+        volume: new Tone.Volume(0),
+        lowCut: new Tone.Filter(0, "highpass"),
+        highCut: new Tone.Filter(20000, "lowpass"), 
         knobSettings: {
             volume: 100,
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
     {
@@ -53,14 +59,16 @@ export const initialTracks: TrackType[] = [
         name: "OPEN HAT", 
         sampleImgFile: "/OH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
-        volume: new Tone.Volume(0), 
         player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination(),
+        volume: new Tone.Volume(0),
+        lowCut: new Tone.Filter(0, "highpass"),
+        highCut: new Tone.Filter(20000, "lowpass"), 
         knobSettings: {
             volume: 100,
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
     {
@@ -68,14 +76,16 @@ export const initialTracks: TrackType[] = [
         name: "CLOSED HAT", 
         sampleImgFile: "/CH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false), 
-        volume: new Tone.Volume(0),
         player: new Tone.Player({url: "/CH.wav", autostart: false,}).toDestination(),
+        volume: new Tone.Volume(0),
+        lowCut: new Tone.Filter(0, "highpass"),
+        highCut: new Tone.Filter(20000, "lowpass"),
         knobSettings: {
             volume: 100,
             attack: 0,
             release: 0,
             lowCut: 0,
-            highCut: 100
+            highCut: 0
         }
     },
 ]
