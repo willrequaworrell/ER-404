@@ -14,8 +14,8 @@ const SampleFXSection = () => {
             setTrackSetting("volume", newLevel)
         } else if (knobId === "sampleAttack") {
             setTrackSetting("attack", newLevel) 
-        } else if (knobId === "sampleRelease") {
-            setTrackSetting("release", newLevel) 
+        } else if (knobId === "sampleDecay") {
+            setTrackSetting("decay", newLevel) 
         } else if (knobId === "sampleLowCut") {
             setTrackSetting("lowCut", newLevel) 
         } else if (knobId === "sampleHighCut") {
@@ -44,9 +44,9 @@ const SampleFXSection = () => {
                 onChange={handleKnobChange}
             />
             <Knob 
-                id="sampleRelease"
-                label="Release"
-                value={currentSettings.release}
+                id="sampleDecay"
+                label="Decay"
+                value={currentSettings.decay}
                 min={0}
                 max={100}
                 onChange={handleKnobChange}
