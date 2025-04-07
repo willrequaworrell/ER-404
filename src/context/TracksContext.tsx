@@ -63,6 +63,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 tracksRef.current.forEach(track => {
                     if (track.trackButtons[beatRef.current]) {
                         track.player.start(time)
+                        track.envelope.triggerAttack(time)
+                        track.envelope.triggerRelease(time + Number(track.envelope.attack) + Number(track.envelope.decay) + 0.01)
                     }
                 })
     
@@ -160,6 +162,20 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 const highCutFreq = 20000 - ((value / 100) * freqRange)
                 trackToUpdate.highCut.frequency.value = highCutFreq
             }
+
+            if (settingName === "attack") {
+                const attackRange = .2 - 0
+                const attackSeconds = ((value / 100) * attackRange)
+                trackToUpdate.envelope.attack = attackSeconds
+            }
+            
+            if (settingName === "decay") {
+                const MIN_DECAY_TIME = 0.05
+                const decayRange = 3 - MIN_DECAY_TIME
+                const decaySeconds = MIN_DECAY_TIME + ((value / 100) * decayRange)
+                trackToUpdate.envelope.decay = decaySeconds
+            }
+
             return newTracks
         })
     }
@@ -180,6 +196,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             track.player.disconnect()
 
             track.player.chain(
+                track.envelope,
                 track.lowCut,
                 track.highCut,
                 track.volume, 

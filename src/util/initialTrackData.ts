@@ -12,10 +12,16 @@ export const initialTracks: TrackType[] = [
         volume: new Tone.Volume(0), 
         lowCut: new Tone.Filter(0, "highpass"),
         highCut: new Tone.Filter(20000, "lowpass"),
+        envelope: new Tone.AmplitudeEnvelope({
+            attack: 0,
+            decay: 3,
+            sustain: 0,
+            release: 0
+        }),
         knobSettings: {
             volume: 100,
             attack: 0,
-            release: 0,
+            decay: 100,
             lowCut: 0,
             highCut: 0
         }
@@ -28,11 +34,17 @@ export const initialTracks: TrackType[] = [
         player: new Tone.Player({url: "/CLAP.wav", autostart: false,}).toDestination(),
         volume: new Tone.Volume(0),
         lowCut: new Tone.Filter(0, "highpass"),
-        highCut: new Tone.Filter(20000, "lowpass"), 
+        highCut: new Tone.Filter(20000, "lowpass"),
+        envelope: new Tone.AmplitudeEnvelope({
+            attack: 0,
+            decay: 3,
+            sustain: 0,
+            release: 0
+        }), 
         knobSettings: {
             volume: 100,
             attack: 0,
-            release: 0,
+            decay: 100,
             lowCut: 0,
             highCut: 0
         }
@@ -45,11 +57,17 @@ export const initialTracks: TrackType[] = [
         player: new Tone.Player({url: "/SNARE.wav", autostart: false,}).toDestination(),
         volume: new Tone.Volume(0),
         lowCut: new Tone.Filter(0, "highpass"),
-        highCut: new Tone.Filter(20000, "lowpass"), 
+        highCut: new Tone.Filter(20000, "lowpass"),
+        envelope: new Tone.AmplitudeEnvelope({
+            attack: 0,
+            decay: 3,
+            sustain: 0,
+            release: 0
+        }), 
         knobSettings: {
             volume: 100,
             attack: 0,
-            release: 0,
+            decay: 100,
             lowCut: 0,
             highCut: 0
         }
@@ -62,11 +80,17 @@ export const initialTracks: TrackType[] = [
         player: new Tone.Player({url: "/OH.wav", autostart: false,}).toDestination(),
         volume: new Tone.Volume(0),
         lowCut: new Tone.Filter(0, "highpass"),
-        highCut: new Tone.Filter(20000, "lowpass"), 
+        highCut: new Tone.Filter(20000, "lowpass"),
+        envelope: new Tone.AmplitudeEnvelope({
+            attack: 0,
+            decay: 3,
+            sustain: 0,
+            release: 0
+        }), 
         knobSettings: {
             volume: 100,
             attack: 0,
-            release: 0,
+            decay: 100,
             lowCut: 0,
             highCut: 0
         }
@@ -80,10 +104,16 @@ export const initialTracks: TrackType[] = [
         volume: new Tone.Volume(0),
         lowCut: new Tone.Filter(0, "highpass"),
         highCut: new Tone.Filter(20000, "lowpass"),
+        envelope: new Tone.AmplitudeEnvelope({
+            attack: 0,
+            decay: 3,
+            sustain: 0,
+            release: 0
+        }),
         knobSettings: {
             volume: 100,
             attack: 0,
-            release: 0,
+            decay: 100,
             lowCut: 0,
             highCut: 0
         }

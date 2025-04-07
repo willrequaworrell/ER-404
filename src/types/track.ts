@@ -9,10 +9,11 @@ export interface TrackType {
     volume: Tone.Volume
     lowCut: Tone.Filter
     highCut: Tone.Filter
+    envelope: Tone.AmplitudeEnvelope
     knobSettings: {
         volume: number
         attack: number
-        release: number
+        decay: number
         lowCut: number
         highCut: number
     }
