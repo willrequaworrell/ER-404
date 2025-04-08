@@ -147,7 +147,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             if (settingName === "volume") {
                 const MIN_VOLUME_DBS = 24
                 const volumeDb = (-1 * MIN_VOLUME_DBS) + ((value / 100) * MIN_VOLUME_DBS) // convert 0-100 value to decibels in -MIN_VOLUME_DBS to 0
-                // const volumeDb = ((value / 100) * MIN_VOLUME_DBS) - MIN_VOLUME_DBS // convert 0-100 value to decibels in -MIN_VOLUME_DBS to 0
                 trackToUpdate.volume.volume.value = volumeDb
             }
 
@@ -166,7 +165,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             }
 
             if (settingName === "attack") {
-                const attackRange = .2 - 0
+                const attackRange = 0.2 - 0
                 const attackSeconds = ((value / 100) * attackRange)
                 trackToUpdate.envelope.attack = attackSeconds
             }
