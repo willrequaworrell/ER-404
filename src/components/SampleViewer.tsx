@@ -11,7 +11,7 @@ const SampleViewer = () => {
     return (
         <div className="flex flex-1 h-full gap-x-4">
             <ScreenContainer
-                styles="h-full flex-1 p-4"
+                styles="h-full w-full p-4"
             >
                 <img src={tracks[currentTrack].sampleImgFile} className="h-full" alt="current track sample visualized" />
             </ScreenContainer>

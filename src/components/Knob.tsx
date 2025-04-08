@@ -49,15 +49,15 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatt
     }, [value, min, max])
 
   return (
-    <div className='flex flex-col items-center justify-end h-full gap-y-2'>
+    <div className='flex flex-col items-center justify-end w-[4vw] h-full gap-y-2 '>
 
-        <div className={`relative flex items-center justify-center  ${isMasterVol ? "size-[4.5rem]" : "size-[2.75rem]"}`}>
+        <div className={`relative flex items-center justify-center ${isMasterVol ? "size-[4.5rem]" : "size-[2.75rem]"}`}>
         {/* Outer bevel ring */}
         <div
             style={{
                 boxShadow: `
-                  inset -2px -4px 8px rgba(255,255,255,0.6), 
-                  inset 2px 4px 8px rgba(0,0,0,0.3), 
+                  inset -2px -4px 8px rgba(0,0,0,0.3), 
+                  inset 2px 4px 8px rgba(255,255,255,0.6), 
                   -4px -8px 12px rgba(255,255,255,0.9), 
                   4px 8px 12px rgba(0,0,0,0.2) 
                 `,
