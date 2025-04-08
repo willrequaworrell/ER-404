@@ -1,4 +1,4 @@
-import { MouseEventHandler, ReactNode } from "react"
+import { MouseEventHandler, ReactNode, TouchEventHandler } from "react"
 import { useTracksContext } from "../context/TracksContext"
 
 interface ButtonPropsType {
@@ -6,18 +6,28 @@ interface ButtonPropsType {
     playButton?: boolean
     styles?: string
     onClick?: MouseEventHandler<HTMLButtonElement>
+    onMouseDown?: MouseEventHandler<HTMLButtonElement>
+    onMouseUp?: () => void
+    onMouseLeave?: () => void
+    onTouchStart?: TouchEventHandler<HTMLButtonElement>
+    onTouchEnd?: TouchEventHandler<HTMLButtonElement>
 }
 
 const activatedStyles = "shadow-[inset_-4px_-4px_9px_#ffffffe0,inset_2px_2px_4px_#718eab1a]"
 const activatedStylesPlayButton = "shadow-[inset_-4px_-4px_9px_#ffffffe0,inset_2px_2px_4px_#718eab1a] cursor-not-allowed"
 
-const Button = ({icon, playButton=false, styles="", onClick}:ButtonPropsType) => {
-    const {isPlaying} = useTracksContext()
+const Button = ({ icon, playButton = false, styles = "", onClick, onMouseDown, onMouseUp, onMouseLeave, onTouchStart, onTouchEnd }: ButtonPropsType) => {
+    const { isPlaying } = useTracksContext()
 
     return (
-        <button 
+        <button
             type="button"
             onClick={onClick}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+            onMouseLeave={onMouseLeave}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
             className={`
                 flex
                 justify-center

@@ -1,18 +1,11 @@
-import { FaPlay, FaCaretUp, FaCaretDown, FaStop, FaUndoAlt } from "react-icons/fa"
+import { FaPlay, FaStop, FaUndoAlt } from "react-icons/fa"
 import Button from "./Button"
-import ScreenContainer from "./ScreenContainer"
 import { useTracksContext } from "../context/TracksContext"
+import BPMDisplay from "./BPMDisplay"
 
 const GlobalControls = () => {
-    const {globalPlay, globalStop, globalReset, BPM, setBPM} = useTracksContext()
+    const {globalPlay, globalStop, globalReset} = useTracksContext()
 
-    const handleIncrementBPM = () => {
-        setBPM(prev => Math.min((prev + 1), 200))
-    }
-
-    const handleDecrementBPM = () => {
-        setBPM(prev => Math.max((prev - 1), 50))
-    }
 
     const handlePlay = () => {
         globalPlay()
@@ -44,23 +37,7 @@ const GlobalControls = () => {
                 styles="size-[3rem]"
                 onClick={handleReset}
             />
-            <div className="flex flex-col justify-between gap-y-2">
-                <Button
-                    icon={<FaCaretUp />}
-                    styles="w-[3rem] h-1/2"
-                    onClick={handleIncrementBPM}
-                />
-                <Button
-                    icon={<FaCaretDown />}
-                    styles="w-[3rem] h-1/2"
-                    onClick={handleDecrementBPM}
-                />
-            </div>
-            <ScreenContainer
-                styles="w-[6rem] text-[1.5rem]"
-            >
-                <p>{BPM}</p>
-            </ScreenContainer>
+            <BPMDisplay/>
         </div>
     )
 }
