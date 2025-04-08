@@ -1,6 +1,7 @@
 import Knob from "./Knob"
 import SampleViewer from "./SampleViewer"
 import { useTracksContext } from "../context/TracksContext"
+import { formatVolume } from "../util/knobValueFormatters"
 
 
 const SampleFXSection = () => {
@@ -33,6 +34,7 @@ const SampleFXSection = () => {
                 value={currentSettings.volume}
                 min={0}
                 max={100}
+                valueFormatter={formatVolume}
                 onChange={handleKnobChange}
             />
             <Knob 

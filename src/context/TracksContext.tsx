@@ -145,7 +145,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             }
 
             if (settingName === "volume") {
-                const volumeDb = ((value / 100) * 60) - 60 // convert 0-100 value to decibels in -60 to 0
+                const MIN_VOLUME_DBS = 24
+                const volumeDb = (-1 * MIN_VOLUME_DBS) + ((value / 100) * MIN_VOLUME_DBS) // convert 0-100 value to decibels in -MIN_VOLUME_DBS to 0
+                // const volumeDb = ((value / 100) * MIN_VOLUME_DBS) - MIN_VOLUME_DBS // convert 0-100 value to decibels in -MIN_VOLUME_DBS to 0
                 trackToUpdate.volume.volume.value = volumeDb
             }
 
