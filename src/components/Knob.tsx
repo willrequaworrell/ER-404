@@ -8,6 +8,7 @@ interface KnobPropsType {
     min?: number
     max?: number
     isMasterVol?: boolean
+    valueFormatter?: (value: number) => string
     onChange: (id: string, value: number) => void
 }
 
@@ -16,7 +17,7 @@ const ROTATION_OFFSET = 10;
 const DRAG_RANGE = 200
 
 
-const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, onChange}: KnobPropsType) => {
+const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatter, onChange}: KnobPropsType) => {
     const [isDragging, setIsDragging] = useState<boolean>(false)
 
     const initialDragY = ((value - min) / (max - min)) * DRAG_RANGE;
@@ -94,7 +95,7 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, onChange}: K
         </motion.div>
         
         </div>
-        <div className="text-[.75rem] text-text-primary">{isDragging ? value : label}</div>
+        <div className="text-[.75rem] text-text-primary">{isDragging ? (valueFormatter ? valueFormatter(value) : value) : label}</div>
     </div>
     
   );
