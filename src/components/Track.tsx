@@ -1,3 +1,4 @@
+import * as Tone from 'tone'
 import ScreenContainer from "./ScreenContainer"
 import TrackButton from "./TrackButton"
 import { TrackType } from '../types/track';
@@ -10,11 +11,20 @@ interface TrackPropsType {
 }
 
 const Track = ({track, setTracks}:TrackPropsType) => {
-    const {tracks, currentTrack, setCurrentTrack} = useTracksContext()
+    const {currentTrack, setCurrentTrack, isPlaying} = useTracksContext()
 
-    const handleClick = () => {
+    const handleClick = async () => {
         setCurrentTrack(track.index)
-        tracks[track.index].player.start()
+        
+        if (isPlaying) return 
+        
+        await Tone.start();
+        track.player.stop()
+
+        const now = Tone.now()
+        track.envelope.triggerAttack(now)
+        track.envelope.triggerRelease(now + Number(track.envelope.attack) + Number(track.envelope.decay) + 0.01)
+        track.player.start(now)
     }
 
     return (
