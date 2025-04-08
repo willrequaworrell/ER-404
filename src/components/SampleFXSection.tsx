@@ -25,7 +25,7 @@ const SampleFXSection = () => {
     }
 
     return (
-        <div className="relative flex items-center w-1/2 h-full pb-3 pr-2 border-b-2 gap-x-[1vw] border-text-primary">
+        <div className="relative flex items-center justify-between flex-1 max-w-1/2 h-full pb-3 pr-2 border-b-2 gap-x-[1vw] border-text-primary">
             <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">SAMPLE</span>
             <SampleViewer />
             <Knob 

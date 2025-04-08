@@ -18,7 +18,7 @@ const Track = ({track, setTracks}:TrackPropsType) => {
     }
 
     return (
-        <div className="flex items-center flex-1 py-2">
+        <div className="flex items-center flex-1 py-[.75vh]">
             <div onClick={handleClick} className="h-full pr-4 cursor-pointer w-1/8">
                 <ScreenContainer 
                     styles={`relative h-full text-[1.1rem] ${currentTrack === track.index && "text-white"}`}
@@ -27,7 +27,7 @@ const Track = ({track, setTracks}:TrackPropsType) => {
                     <p>{track.name}</p>
                 </ScreenContainer>
             </div>
-            <div className="flex h-full w-7/8 gap-x-4">
+            <div className="flex h-full w-7/8 gap-x-[1vw]">
                 {track.trackButtons.map( (_, i)  => (
                     <TrackButton trackIndex={track.index} buttonIndex={i} trackButtons={track.trackButtons} setTracks={setTracks} key={`${track.index}-${i}`}/>
                 ))}
