@@ -28,6 +28,7 @@ interface TracksContextType {
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
     masterFXSettings: masterFXSettingsType
     handleSetMasterFXSettings: (settingName: keyof masterFXSettingsType, value: number) => void
+    masterVolumeLevel: number
 }
 
 
@@ -41,12 +42,13 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [tracks, setTracks] = useState<TrackType[]>(initialTracks)
     const [currentTrack, setCurrentTrack] = useState<number>(0)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
+    const [masterVolumeLevel, setMasterVolumeLevel] = useState<number>(0)
     const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>({
         lowCut: 0,
         highCut: 100,
         reverb: 0,
         phaser: 0,
-        compressorRatio: 50,
+        compressorRatio: 0,
         compressorThreshold: 100,
         volume: 100,
     })
@@ -54,6 +56,11 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const beatRef = useRef(0)
     const tracksRef = useRef(tracks)
     const scheduleIdRef = useRef<number | null>(null)
+    const masterCompressorRef = useRef<Tone.Compressor | null>(null)
+    const masterLimiterRef = useRef<Tone.Limiter | null>(null)
+    const masterMeterRef = useRef<Tone.Meter | null>(null)
+    
+
 
 
     const confirmOrCreateSchedule = () => {
@@ -129,9 +136,21 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         })
 
         if (settingName === "volume") {
-            const volumeDb = ((value / 100) * 60) - 60
+            const volumeDb = -60 + ((value / 100) * 60) 
             Tone.getDestination().volume.value = volumeDb
-        } 
+        }
+
+        if (settingName === "compressorThreshold") {
+            if (!masterCompressorRef.current) return 
+            const thresholdVal = -30 + ((value / 100) * 30)
+            masterCompressorRef.current.threshold.value = thresholdVal
+        }
+
+        if (settingName === "compressorRatio") {
+            if (!masterCompressorRef.current) return 
+            const ratioVal = 1 + ((value / 100) * 7)
+            masterCompressorRef.current.ratio.value = ratioVal
+        }
     }
 
     const setTrackSetting = (settingName: keyof TrackType['knobSettings'], value: number) => {
@@ -181,6 +200,72 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         })
     }
 
+    // initialize master chain refs & dispose on unmount
+    useEffect(() => {
+        
+        masterCompressorRef.current = new Tone.Compressor({
+            ratio: 8,
+            threshold: 0,
+            attack: 0.02,
+            release: 0.1
+        })
+        masterLimiterRef.current = new Tone.Limiter(-0.5)
+        masterMeterRef.current = new Tone.Meter();
+    
+        
+        return () => {
+            masterCompressorRef.current?.dispose()
+            masterLimiterRef.current?.dispose()
+            masterMeterRef.current?.dispose()
+        };
+    }, []);
+
+    
+    // Set up chain for each track
+    useEffect( () => {
+
+        tracks.forEach(track => {
+            track.player.disconnect()
+            track.player.chain(
+                track.envelope,
+                track.lowCut,
+                track.highCut,
+                track.volume, 
+                masterCompressorRef.current!,
+                masterLimiterRef.current!,
+                masterMeterRef.current!,
+                Tone.getDestination()
+            )
+        })
+    }, [])
+
+    // handle master volume tracking
+    useEffect(() => {
+        if (!isPlaying || !masterMeterRef.current) return;
+        
+        const meterInterval = setInterval(() => {
+            const level = masterMeterRef.current!.getValue();
+            
+            const levelDB = typeof level === 'number' 
+                ? level 
+                : 20 * Math.log10(Math.max(level[0], level[1]));
+                
+            setMasterVolumeLevel(levelDB)
+        }, 100); 
+        
+        // Clean up interval when not playing
+        return () => clearInterval(meterInterval);
+    }, [isPlaying]);
+
+    useEffect( () => {
+        tracksRef.current = tracks
+    }, [tracks])
+
+    useEffect( () => {
+        Tone.getTransport().bpm.value = BPM
+    }, [BPM])
+
+    // handle transport schedule cleanup
     useEffect(() => {
         
         return () => {
@@ -192,27 +277,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
        
     }, [])
     
-    useEffect( () => {
-        tracks.forEach(track => {
-            track.player.disconnect()
 
-            track.player.chain(
-                track.envelope,
-                track.lowCut,
-                track.highCut,
-                track.volume, 
-                Tone.getDestination()
-            )
-        })
-    }, [])
-
-    useEffect( () => {
-        tracksRef.current = tracks
-    }, [tracks])
-
-    useEffect( () => {
-        Tone.getTransport().bpm.value = BPM
-    }, [BPM])
 
     return (
         <TracksContext.Provider value={{
@@ -230,6 +295,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             setTrackSetting: setTrackSetting,
             masterFXSettings: masterFXSettings, 
             handleSetMasterFXSettings: handleSetMasterFXSettings,
+            masterVolumeLevel: masterVolumeLevel
         }}>
             {children}
         </TracksContext.Provider>

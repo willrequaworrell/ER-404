@@ -2,6 +2,7 @@
 import Knob from "./Knob"
 import VolumeMeter from "./VolumeMeter"
 import { useTracksContext } from "../context/TracksContext"
+import { formatMasterCompressorRatio, formatMasterCompressorThreshold, formatMasterVolume } from "../util/knobValueFormatters"
 
 
 const MasterFXSection = () => {
@@ -75,6 +76,7 @@ const MasterFXSection = () => {
                         value={masterFXSettings.compressorRatio}
                         min={0}
                         max={100}
+                        valueFormatter={formatMasterCompressorRatio}
                         onChange={handleKnobChange}
                     />
                     <Knob
@@ -83,6 +85,7 @@ const MasterFXSection = () => {
                         value={masterFXSettings.compressorThreshold}
                         min={0}
                         max={100}
+                        valueFormatter={formatMasterCompressorThreshold}
                         onChange={handleKnobChange}
                     />
                 </div>
@@ -92,6 +95,7 @@ const MasterFXSection = () => {
                     value={masterFXSettings.volume}
                     min={0}
                     max={100}
+                    valueFormatter={formatMasterVolume}
                     onChange={handleKnobChange}
                     isMasterVol
                 />

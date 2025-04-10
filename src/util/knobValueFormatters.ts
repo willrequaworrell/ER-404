@@ -1,8 +1,9 @@
-export const formatVolume = (value: number) => {
-    const MIN_VOLUME_DBS = 24
-    const volumeDbs = (-1 *MIN_VOLUME_DBS) + ((value / 100) * MIN_VOLUME_DBS)
+export const formatSampleVolume = (value: number) => {
+    const DB_RANGE = 24
+    const volumeDbs = (-1 * DB_RANGE) + ((value / 100) * DB_RANGE)
     return `${volumeDbs.toFixed(0)} dB`
 }
+
 
 export const formatAttack = (value: number) => {
     const attackRange = 200 - 0
@@ -28,3 +29,21 @@ export const formatHighCutFrequency = (value: number) => {
     const highCutFreq = 20000 - ((value / 100) * freqRange)
     return `${highCutFreq.toFixed(0)} Hz`
 }
+
+
+export const formatMasterVolume = (value: number) => {
+    const DB_RANGE = 60
+    const volumeDbs = (-1 * DB_RANGE) + ((value / 100) * DB_RANGE)
+    return `${volumeDbs.toFixed(0)} dB`
+}
+
+export const formatMasterCompressorThreshold = (value: number) => {
+    const thresholdVal = -30 + ((value / 100) * 30)
+    return `${thresholdVal.toFixed(0)} dB`
+}
+
+export const formatMasterCompressorRatio = (value: number) => {
+    const ratioVal = 1 + ((value / 100) * 7)
+    return `${ratioVal.toFixed(0)}:1`
+}
+
