@@ -4,13 +4,9 @@ import RaisedContainer from "../components/RaisedContainer"
 import Speaker from "../components/Speaker"
 import Timeline from "../components/Timeline"
 import TracksSection from "../components/TracksSection"
-import { useTracksContext } from "../context/TracksContext"
-
 
 const Home = () => {
 
-	const {BPM} =  useTracksContext()
-	console.log(BPM)
 	return (
 		<div className="flex flex-col min-h-screen p-20 ">
 			<RaisedContainer styles="flex-1">
