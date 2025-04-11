@@ -166,12 +166,12 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             masterReverbRef.current.wet.value = wetVal
         }
 
-        if (settingName === "delay") {
-            if (!masterDelayRef.current) return 
-            const WET_RANGE = 1
-            const wetVal = (value / 100) * WET_RANGE
-            masterDelayRef.current.wet.value = wetVal
-        }
+        // if (settingName === "delay") {
+        //     if (!masterDelayRef.current) return 
+        //     const WET_RANGE = 1
+        //     const wetVal = (value / 100) * WET_RANGE
+        //     masterDelayRef.current.wet.value = wetVal
+        // }
 
         if (settingName === "highCut") {
             if (!masterHighCutRef.current) return 
@@ -231,6 +231,12 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 const decaySeconds = MIN_DECAY_TIME + ((value / 100) * decayRange)
                 trackToUpdate.envelope.decay = decaySeconds
             }
+            
+            if (settingName === "delay") {
+                const WET_RANGE = 1
+                const wetVal = (value / 100) * WET_RANGE
+                trackToUpdate.delay.wet.value = wetVal
+            }
 
             return newTracks
         })
@@ -284,6 +290,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 track.lowCut,
                 track.highCut,
                 track.volume,
+                track.delay,
                 masterLowCutRef.current!,
                 masterHighCutRef.current!,
                 masterDelayRef.current!,

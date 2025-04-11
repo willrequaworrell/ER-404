@@ -21,6 +21,8 @@ const SampleFXSection = () => {
             setTrackSetting("lowCut", newLevel) 
         } else if (knobId === "sampleHighCut") {
             setTrackSetting("highCut", newLevel) 
+        } else if (knobId === "sampleDelay") {
+            setTrackSetting("delay", newLevel) 
         } 
     }
 
@@ -53,6 +55,14 @@ const SampleFXSection = () => {
                 min={0}
                 max={100}
                 valueFormatter={formatDecay}
+                onChange={handleKnobChange}
+            />
+            <Knob
+                id="sampleDelay"
+                label="Delay"
+                value={currentSettings.delay}
+                min={0}
+                max={100}
                 onChange={handleKnobChange}
             />
             <Knob 

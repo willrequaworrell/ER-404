@@ -17,8 +17,6 @@ const MasterFXSection = () => {
             handleSetMasterFXSettings("highCut", newValue)
         } else if (knobId === "masterReverb") {
             handleSetMasterFXSettings("reverb", newValue)
-        } else if (knobId === "masterDelay") {
-            handleSetMasterFXSettings("delay", newValue)
         } else if (knobId === "masterCompressorRatio") {
             handleSetMasterFXSettings("compressorRatio", newValue)
         } else if (knobId === "masterCompressorThreshold") {
@@ -55,14 +53,6 @@ const MasterFXSection = () => {
                     id="masterReverb"
                     label="Reverb"
                     value={masterFXSettings.reverb}
-                    min={0}
-                    max={100}
-                    onChange={handleKnobChange}
-                />
-                <Knob 
-                    id="masterDelay"
-                    label="Delay"
-                    value={masterFXSettings.delay}
                     min={0}
                     max={100}
                     onChange={handleKnobChange}
