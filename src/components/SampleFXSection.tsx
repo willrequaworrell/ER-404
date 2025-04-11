@@ -21,11 +21,15 @@ const SampleFXSection = () => {
             setTrackSetting("lowCut", newLevel) 
         } else if (knobId === "sampleHighCut") {
             setTrackSetting("highCut", newLevel) 
+        } else if (knobId === "sampleReverb") {
+            setTrackSetting("reverb", newLevel) 
+        } else if (knobId === "sampleDelay") {
+            setTrackSetting("delay", newLevel) 
         } 
     }
 
     return (
-        <div className="relative flex items-center justify-between flex-1 max-w-1/2 h-full pb-3 pr-2 border-b-2 gap-x-[1vw] border-text-primary">
+        <div className="relative flex items-center justify-between flex-1 max-w-3/5 h-full pb-3 pr-2 border-b-2 gap-x-[1vw] border-text-primary">
             <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">SAMPLE</span>
             <SampleViewer />
             <Knob 
@@ -53,6 +57,22 @@ const SampleFXSection = () => {
                 min={0}
                 max={100}
                 valueFormatter={formatDecay}
+                onChange={handleKnobChange}
+            />
+            <Knob 
+                id="sampleReverb"
+                label="Reverb"
+                value={currentSettings.reverb}
+                min={0}
+                max={100}
+                onChange={handleKnobChange}
+            />
+            <Knob
+                id="sampleDelay"
+                label="Delay"
+                value={currentSettings.delay}
+                min={0}
+                max={100}
                 onChange={handleKnobChange}
             />
             <Knob 

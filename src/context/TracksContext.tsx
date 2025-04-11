@@ -58,7 +58,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const scheduleIdRef = useRef<number | null>(null)
     const masterLowCutRef = useRef<Tone.Filter | null>(null)
     const masterHighCutRef = useRef<Tone.Filter | null>(null)
-    const masterDelayRef = useRef<Tone.PingPongDelay | null>(null)
     const masterReverbRef = useRef<Tone.Reverb | null>(null)
     const masterCompressorRef = useRef<Tone.Compressor | null>(null)
     const masterLimiterRef = useRef<Tone.Limiter | null>(null)
@@ -166,13 +165,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             masterReverbRef.current.wet.value = wetVal
         }
 
-        if (settingName === "delay") {
-            if (!masterDelayRef.current) return 
-            const WET_RANGE = 1
-            const wetVal = (value / 100) * WET_RANGE
-            masterDelayRef.current.wet.value = wetVal
-        }
-
         if (settingName === "highCut") {
             if (!masterHighCutRef.current) return 
             const freqRange = 20000 - 2000 
@@ -232,6 +224,22 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 trackToUpdate.envelope.decay = decaySeconds
             }
 
+            if (settingName === "reverb") {
+                const WET_RANGE = 0.5
+                const DECAY_RANGE = 2.9
+                const wetVal = (value / 100) * WET_RANGE
+                const decayVal = 0.1 + ((value / 100) * DECAY_RANGE)
+                trackToUpdate.reverb.wet.value = wetVal
+                trackToUpdate.reverb.decay = decayVal
+                // masterReverbRef.current.decay = decayVal
+            }
+            
+            if (settingName === "delay") {
+                const WET_RANGE = 1
+                const wetVal = (value / 100) * WET_RANGE
+                trackToUpdate.delay.wet.value = wetVal
+            }
+
             return newTracks
         })
     }
@@ -240,13 +248,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     useEffect(() => {
         masterLowCutRef.current = new Tone.Filter(0, "highpass")
         masterHighCutRef.current = new Tone.Filter(20000, "lowpass")
-        masterDelayRef.current = new Tone.PingPongDelay({
-            wet: 0,
-            delayTime: "8n",
-            feedback: 0.05,
-            maxDelay: 1
-
-        })
         masterReverbRef.current = new Tone.Reverb({
             wet: 0, 
             decay: 0.1,
@@ -265,7 +266,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         return () => {
             masterLowCutRef.current?.dispose()
             masterHighCutRef.current?.dispose()
-            masterDelayRef.current?.dispose()
             masterReverbRef.current?.dispose()
             masterCompressorRef.current?.dispose()
             masterLimiterRef.current?.dispose()
@@ -284,10 +284,10 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 track.lowCut,
                 track.highCut,
                 track.volume,
+                track.delay,
+                track.reverb,
                 masterLowCutRef.current!,
                 masterHighCutRef.current!,
-                masterDelayRef.current!,
-                masterReverbRef.current!,
                 masterCompressorRef.current!,
                 masterLimiterRef.current!,
                 masterMeterRef.current!,
