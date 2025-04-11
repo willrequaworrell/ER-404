@@ -6,20 +6,15 @@ import { useTracksContext } from "../context/TracksContext"
 
 
 const SampleViewer = () => {
-    const {tracks, currentTrack} = useTracksContext()
+    const { tracks, currentTrack } = useTracksContext()
 
     return (
-        <div className="flex flex-1 h-full gap-x-4">
-            <ScreenContainer
-                styles="h-full w-full p-4"
-            >
-                <img src={tracks[currentTrack].sampleImgFile} className="h-full" alt="current track sample visualized" />
-            </ScreenContainer>
-            <div className="flex flex-col items-center justify-center h-full gap-y-4">
-                <Button icon={<FaHeadphones/>} styles="size-[2rem]"/>
-                <Button icon={<FaVolumeMute/>} styles="size-[2rem]"/>
-            </div>
-        </div>
+        <ScreenContainer
+            styles="h-full w-full p-4"
+        >
+            <img src={tracks[currentTrack].sampleImgFile} className="h-full" alt="current track sample visualized" />
+        </ScreenContainer>
+
     )
 }
 
