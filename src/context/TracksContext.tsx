@@ -7,7 +7,7 @@ interface masterFXSettingsType {
     lowCut: number
     highCut: number
     reverb: number
-    phaser: number
+    delay: number
     compressorRatio: number
     compressorThreshold: number
     volume: number
@@ -47,7 +47,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         lowCut: 0,
         highCut: 100,
         reverb: 0,
-        phaser: 0,
+        delay: 0,
         compressorRatio: 0,
         compressorThreshold: 100,
         volume: 100,
@@ -56,6 +56,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const beatRef = useRef(0)
     const tracksRef = useRef(tracks)
     const scheduleIdRef = useRef<number | null>(null)
+    const masterDelayRef = useRef<Tone.PingPongDelay | null>(null)
+    const masterPhaserRef = useRef<Tone.Phaser | null>(null)
+    const masterReverbRef = useRef<Tone.Reverb | null>(null)
     const masterCompressorRef = useRef<Tone.Compressor | null>(null)
     const masterLimiterRef = useRef<Tone.Limiter | null>(null)
     const masterMeterRef = useRef<Tone.Meter | null>(null)
@@ -151,6 +154,24 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             const ratioVal = 1 + ((value / 100) * 7)
             masterCompressorRef.current.ratio.value = ratioVal
         }
+
+        if (settingName === "reverb") {
+            if (!masterReverbRef.current) return 
+            const WET_RANGE = 0.5
+            const DECAY_RANGE = 2.9
+            const wetVal = (value / 100) * WET_RANGE
+            const decayVal = 0.1 + ((value / 100) * DECAY_RANGE)
+            masterReverbRef.current.decay = decayVal
+            masterReverbRef.current.wet.value = wetVal
+        }
+
+        if (settingName === "delay") {
+            if (!masterDelayRef.current) return 
+            const WET_RANGE = 1
+            const wetVal = (value / 100) * WET_RANGE
+            masterDelayRef.current.wet.value = wetVal
+        }
+
     }
 
     const setTrackSetting = (settingName: keyof TrackType['knobSettings'], value: number) => {
@@ -202,7 +223,24 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     // initialize master chain refs & dispose on unmount
     useEffect(() => {
-        
+        masterDelayRef.current = new Tone.PingPongDelay({
+            wet: 0,
+            delayTime: "8n",
+            feedback: 0.05,
+            maxDelay: 1
+
+        })
+        masterPhaserRef.current = new Tone.Phaser({
+            wet: 0,
+            frequency: 12, 
+            octaves: 2,
+            baseFrequency: 1000
+        })
+        masterReverbRef.current = new Tone.Reverb({
+            wet: 0, 
+            decay: 0.1,
+            preDelay: 0.01
+        })
         masterCompressorRef.current = new Tone.Compressor({
             ratio: 8,
             threshold: 0,
@@ -214,6 +252,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     
         
         return () => {
+            masterDelayRef.current?.dispose()
+            masterReverbRef.current?.dispose()
             masterCompressorRef.current?.dispose()
             masterLimiterRef.current?.dispose()
             masterMeterRef.current?.dispose()
@@ -231,6 +271,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 track.lowCut,
                 track.highCut,
                 track.volume, 
+                // masterPhaserRef.current!,
+                masterDelayRef.current!,
+                masterReverbRef.current!,
                 masterCompressorRef.current!,
                 masterLimiterRef.current!,
                 masterMeterRef.current!,
