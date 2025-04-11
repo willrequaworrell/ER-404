@@ -45,7 +45,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [masterVolumeLevel, setMasterVolumeLevel] = useState<number>(0)
     const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>({
         lowCut: 0,
-        highCut: 100,
+        highCut: 0,
         reverb: 0,
         delay: 0,
         compressorRatio: 0,
@@ -56,8 +56,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const beatRef = useRef(0)
     const tracksRef = useRef(tracks)
     const scheduleIdRef = useRef<number | null>(null)
+    const masterLowCutRef = useRef<Tone.Filter | null>(null)
+    const masterHighCutRef = useRef<Tone.Filter | null>(null)
     const masterDelayRef = useRef<Tone.PingPongDelay | null>(null)
-    const masterPhaserRef = useRef<Tone.Phaser | null>(null)
     const masterReverbRef = useRef<Tone.Reverb | null>(null)
     const masterCompressorRef = useRef<Tone.Compressor | null>(null)
     const masterLimiterRef = useRef<Tone.Limiter | null>(null)
@@ -172,6 +173,20 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             masterDelayRef.current.wet.value = wetVal
         }
 
+        if (settingName === "highCut") {
+            if (!masterHighCutRef.current) return 
+            const freqRange = 20000 - 2000 
+            const highCutFreq = 20000 - ((value / 100) * freqRange)
+            masterHighCutRef.current.frequency.value = highCutFreq
+        }
+
+        if (settingName === "lowCut") {
+            if (!masterLowCutRef.current) return 
+            const freqRange = 2000 - 0  
+            const lowCutFreq = ((value / 100) * freqRange)
+            masterLowCutRef.current.frequency.value = lowCutFreq
+        }
+
     }
 
     const setTrackSetting = (settingName: keyof TrackType['knobSettings'], value: number) => {
@@ -223,18 +238,14 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     // initialize master chain refs & dispose on unmount
     useEffect(() => {
+        masterLowCutRef.current = new Tone.Filter(0, "highpass")
+        masterHighCutRef.current = new Tone.Filter(20000, "lowpass")
         masterDelayRef.current = new Tone.PingPongDelay({
             wet: 0,
             delayTime: "8n",
             feedback: 0.05,
             maxDelay: 1
 
-        })
-        masterPhaserRef.current = new Tone.Phaser({
-            wet: 0,
-            frequency: 12, 
-            octaves: 2,
-            baseFrequency: 1000
         })
         masterReverbRef.current = new Tone.Reverb({
             wet: 0, 
@@ -252,6 +263,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     
         
         return () => {
+            masterLowCutRef.current?.dispose()
+            masterHighCutRef.current?.dispose()
             masterDelayRef.current?.dispose()
             masterReverbRef.current?.dispose()
             masterCompressorRef.current?.dispose()
@@ -270,8 +283,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 track.envelope,
                 track.lowCut,
                 track.highCut,
-                track.volume, 
-                // masterPhaserRef.current!,
+                track.volume,
+                masterLowCutRef.current!,
+                masterHighCutRef.current!,
                 masterDelayRef.current!,
                 masterReverbRef.current!,
                 masterCompressorRef.current!,
