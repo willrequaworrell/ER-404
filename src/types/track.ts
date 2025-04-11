@@ -10,11 +10,13 @@ export interface TrackType {
     lowCut: Tone.Filter
     highCut: Tone.Filter
     delay: Tone.PingPongDelay
+    reverb: Tone.Reverb
     envelope: Tone.AmplitudeEnvelope
     knobSettings: {
         volume: number
         attack: number
         decay: number
+        reverb: number
         delay: number
         lowCut: number
         highCut: number

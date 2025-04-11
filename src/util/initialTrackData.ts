@@ -15,8 +15,12 @@ export const initialTracks: TrackType[] = [
             delayTime: "8n",
             feedback: 0.05,
             maxDelay: 1
-
-        }),  
+        }),
+        reverb: new Tone.Reverb({
+            wet: 0, 
+            decay: 0.1,
+            preDelay: 0.01
+        }), 
         lowCut: new Tone.Filter(0, "highpass"),
         highCut: new Tone.Filter(20000, "lowpass"),
         envelope: new Tone.AmplitudeEnvelope({
@@ -29,6 +33,7 @@ export const initialTracks: TrackType[] = [
             volume: 100,
             attack: 0,
             decay: 100,
+            reverb: 0,
             delay: 0,
             lowCut: 0,
             highCut: 0
@@ -46,7 +51,11 @@ export const initialTracks: TrackType[] = [
             delayTime: "8n",
             feedback: 0.05,
             maxDelay: 1
-
+        }),
+        reverb: new Tone.Reverb({
+            wet: 0, 
+            decay: 0.1,
+            preDelay: 0.01
         }), 
         lowCut: new Tone.Filter(0, "highpass"),
         highCut: new Tone.Filter(20000, "lowpass"),
@@ -60,6 +69,7 @@ export const initialTracks: TrackType[] = [
             volume: 100,
             attack: 0,
             decay: 100,
+            reverb: 0,
             delay: 0,
             lowCut: 0,
             highCut: 0
@@ -77,7 +87,11 @@ export const initialTracks: TrackType[] = [
             delayTime: "8n",
             feedback: 0.05,
             maxDelay: 1
-
+        }),
+        reverb: new Tone.Reverb({
+            wet: 0, 
+            decay: 0.1,
+            preDelay: 0.01
         }), 
         lowCut: new Tone.Filter(0, "highpass"),
         highCut: new Tone.Filter(20000, "lowpass"),
@@ -91,6 +105,7 @@ export const initialTracks: TrackType[] = [
             volume: 100,
             attack: 0,
             decay: 100,
+            reverb: 0,
             delay: 0,
             lowCut: 0,
             highCut: 0
@@ -108,7 +123,11 @@ export const initialTracks: TrackType[] = [
             delayTime: "8n",
             feedback: 0.05,
             maxDelay: 1
-
+        }),
+        reverb: new Tone.Reverb({
+            wet: 0, 
+            decay: 0.1,
+            preDelay: 0.01
         }), 
         lowCut: new Tone.Filter(0, "highpass"),
         highCut: new Tone.Filter(20000, "lowpass"),
@@ -122,6 +141,7 @@ export const initialTracks: TrackType[] = [
             volume: 100,
             attack: 0,
             decay: 100,
+            reverb: 0,
             delay: 0,
             lowCut: 0,
             highCut: 0
@@ -139,7 +159,11 @@ export const initialTracks: TrackType[] = [
             delayTime: "8n",
             feedback: 0.05,
             maxDelay: 1
-
+        }),
+        reverb: new Tone.Reverb({
+            wet: 0, 
+            decay: 0.1,
+            preDelay: 0.01
         }), 
         lowCut: new Tone.Filter(0, "highpass"),
         highCut: new Tone.Filter(20000, "lowpass"),
@@ -153,6 +177,7 @@ export const initialTracks: TrackType[] = [
             volume: 100,
             attack: 0,
             decay: 100,
+            reverb: 0,
             delay: 0,
             lowCut: 0,
             highCut: 0
