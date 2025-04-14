@@ -8,6 +8,7 @@ export const initialTracks: TrackType[] = [
         index: 0, name: "KICK", 
         sampleImgFile: "/KICK_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
+        isMuted: false,
         player: new Tone.Player({ url: "/KICK.wav", autostart: false, }),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
@@ -44,6 +45,7 @@ export const initialTracks: TrackType[] = [
         name: "CLAP", 
         sampleImgFile: "/CLAP_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
+        isMuted: false,
         player: new Tone.Player({url: "/CLAP.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
@@ -80,6 +82,7 @@ export const initialTracks: TrackType[] = [
         name: "SNARE", 
         sampleImgFile: "/SNARE_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
+        isMuted: false,
         player: new Tone.Player({url: "/SNARE.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
@@ -116,6 +119,7 @@ export const initialTracks: TrackType[] = [
         name: "OPEN HAT", 
         sampleImgFile: "/OH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
+        isMuted: false,
         player: new Tone.Player({url: "/OH.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
@@ -151,7 +155,8 @@ export const initialTracks: TrackType[] = [
         index: 4, 
         name: "CLOSED HAT", 
         sampleImgFile: "/CH_IMG.png", 
-        trackButtons: new Array(NUM_BUTTONS).fill(false), 
+        trackButtons: new Array(NUM_BUTTONS).fill(false),
+        isMuted: false, 
         player: new Tone.Player({url: "/CH.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({

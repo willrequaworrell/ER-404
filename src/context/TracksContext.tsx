@@ -25,6 +25,8 @@ interface TracksContextType {
     globalPlay: () => void
     globalStop: () => void
     globalReset: () => void
+    handleToggleTrackMute: (trackIngex: number) => void
+    handleToggleTrackSolo: (trackIngex: number) => void
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
     masterFXSettings: masterFXSettingsType
     handleSetMasterFXSettings: (settingName: keyof masterFXSettingsType, value: number) => void
@@ -130,6 +132,70 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         tracksRef.current = initialTracks
     }
 
+    const handleToggleTrackMute = (trackIndex: number) => {
+        
+        setTracks(prevTracks => {
+            return prevTracks.map((track, index) => {
+                if (index !== trackIndex) return track
+
+                const newMuteState = !track.isMuted
+
+                const updatedTrack = {
+                    ...track,
+                    isMuted: newMuteState
+                }
+                
+                updatedTrack.player.mute = newMuteState
+
+                return updatedTrack
+            })
+        })
+    }
+
+    const handleToggleTrackSolo = (trackIndex: number) => {
+        console.log("solo toggle for", tracks[trackIndex].name)
+        setTracks(prevTracks => {
+            
+            // update track state with target track solo toggled
+            const tracksSoloUpdated = prevTracks.map(track => {
+                if (trackIndex !== track.index) return track
+                
+                return {
+                    ...track,
+                    isSoloed: !track.isSoloed
+                }
+
+            })
+            
+            // check if any tracks are soloed
+            const anyTracksSoloed: boolean = tracksSoloUpdated.some(track => track.isSoloed === true)
+
+            // update tracks mute states based on new soloed states
+            const tracksWithSoloAndMuteUpdate = tracksSoloUpdated.map(track => {
+                if (anyTracksSoloed) {
+                    return {
+                        ...track,
+                        isMuted: !track.isSoloed
+                    }
+                } else {
+                    return {
+                        ...track, 
+                        isMuted: false
+                    }
+                }
+            })
+
+            // sync new mute states with actual player mute states in tone.js
+            tracksWithSoloAndMuteUpdate.forEach(track => {
+                track.player.mute = track.isMuted
+            })
+
+            return tracksWithSoloAndMuteUpdate
+
+        })
+
+    }
+
     const handleSetMasterFXSettings = (settingName: keyof masterFXSettingsType, value: number) => {
         setMasterFXSettings(prevSettings => {
             return {
@@ -231,7 +297,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 const decayVal = 0.1 + ((value / 100) * DECAY_RANGE)
                 trackToUpdate.reverb.wet.value = wetVal
                 trackToUpdate.reverb.decay = decayVal
-                // masterReverbRef.current.decay = decayVal
             }
             
             if (settingName === "delay") {
@@ -349,6 +414,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             globalPlay: globalPlay, 
             globalStop: globalStop,
             globalReset: globalReset,
+            handleToggleTrackMute: handleToggleTrackMute,
+            handleToggleTrackSolo: handleToggleTrackSolo,
             setTrackSetting: setTrackSetting,
             masterFXSettings: masterFXSettings, 
             handleSetMasterFXSettings: handleSetMasterFXSettings,

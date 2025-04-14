@@ -5,6 +5,8 @@ export interface TrackType {
     name: string
     sampleImgFile: string
     trackButtons: boolean[]
+    isMuted: boolean
+    isSoloed: boolean
     player: Tone.Player
     volume: Tone.Volume
     lowCut: Tone.Filter

@@ -2,10 +2,11 @@ import Knob from "./Knob"
 import SampleViewer from "./SampleViewer"
 import { useTracksContext } from "../context/TracksContext"
 import { formatAttack, formatDecay, formatHighCutFrequency, formatLowCutFrequency, formatSampleVolume } from "../util/knobValueFormatters"
+import MuteSoloControl from "./MuteSoloControl"
 
 
 const SampleFXSection = () => {
-    const {tracks, currentTrack, setTrackSetting} = useTracksContext()
+    const {tracks, currentTrack, setTrackSetting, handleToggleTrackMute, handleToggleTrackSolo} = useTracksContext()
     const currentSettings = tracks[currentTrack].knobSettings
 
 
@@ -31,7 +32,16 @@ const SampleFXSection = () => {
     return (
         <div className="relative flex items-center justify-between flex-1 max-w-3/5 h-full pb-3 pr-2 border-b-2 gap-x-[1vw] border-text-primary">
             <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">SAMPLE</span>
-            <SampleViewer />
+            <div className="flex flex-1 h-full gap-x-4">
+                <SampleViewer />
+                <MuteSoloControl
+                    trackId={currentTrack}
+                    isMuted={tracks[currentTrack].isMuted}
+                    isSoloed={tracks[currentTrack].isSoloed}
+                    onToggleMute={handleToggleTrackMute}
+                    onToggleSolo={handleToggleTrackSolo}
+                />
+            </div>
             <Knob 
                 id="sampleVolume"
                 label="Volume"
