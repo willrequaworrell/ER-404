@@ -6,7 +6,7 @@ import MuteSoloControl from "./MuteSoloControl"
 
 
 const SampleFXSection = () => {
-    const {tracks, currentTrack, setTrackSetting, handleToggleTrackMute} = useTracksContext()
+    const {tracks, currentTrack, setTrackSetting, handleToggleTrackMute, handleToggleTrackSolo} = useTracksContext()
     const currentSettings = tracks[currentTrack].knobSettings
 
 
@@ -37,7 +37,9 @@ const SampleFXSection = () => {
                 <MuteSoloControl
                     trackId={currentTrack}
                     isMuted={tracks[currentTrack].isMuted}
+                    isSoloed={tracks[currentTrack].isSoloed}
                     onToggleMute={handleToggleTrackMute}
+                    onToggleSolo={handleToggleTrackSolo}
                 />
             </div>
             <Knob 
