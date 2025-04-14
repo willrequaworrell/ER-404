@@ -1,8 +1,5 @@
-import { FaHeadphones, FaVolumeMute } from "react-icons/fa"
-import Button from "./Button"
 import ScreenContainer from "./ScreenContainer"
 import { useTracksContext } from "../context/TracksContext"
-
 
 
 const SampleViewer = () => {

@@ -25,6 +25,7 @@ interface TracksContextType {
     globalPlay: () => void
     globalStop: () => void
     globalReset: () => void
+    handleToggleTrackMute: (trackIngex: number) => void
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
     masterFXSettings: masterFXSettingsType
     handleSetMasterFXSettings: (settingName: keyof masterFXSettingsType, value: number) => void
@@ -128,6 +129,26 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         globalStop()
         setTracks(initialTracks)
         tracksRef.current = initialTracks
+    }
+
+    const handleToggleTrackMute = (trackIndex: number) => {
+        
+        setTracks(prevTracks => {
+            return prevTracks.map((track, index) => {
+                if (index !== trackIndex) return track
+
+                const newMuteState = !track.isMuted
+
+                const updatedTrack = {
+                    ...track,
+                    isMuted: newMuteState
+                }
+                
+                updatedTrack.player.mute = newMuteState
+
+                return updatedTrack
+            })
+        })
     }
 
     const handleSetMasterFXSettings = (settingName: keyof masterFXSettingsType, value: number) => {
@@ -349,6 +370,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             globalPlay: globalPlay, 
             globalStop: globalStop,
             globalReset: globalReset,
+            handleToggleTrackMute: handleToggleTrackMute,
             setTrackSetting: setTrackSetting,
             masterFXSettings: masterFXSettings, 
             handleSetMasterFXSettings: handleSetMasterFXSettings,

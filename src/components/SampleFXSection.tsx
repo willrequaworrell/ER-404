@@ -6,7 +6,7 @@ import MuteSoloControl from "./MuteSoloControl"
 
 
 const SampleFXSection = () => {
-    const {tracks, currentTrack, setTrackSetting} = useTracksContext()
+    const {tracks, currentTrack, setTrackSetting, handleToggleTrackMute} = useTracksContext()
     const currentSettings = tracks[currentTrack].knobSettings
 
 
@@ -34,7 +34,11 @@ const SampleFXSection = () => {
             <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">SAMPLE</span>
             <div className="flex flex-1 h-full gap-x-4">
                 <SampleViewer />
-                <MuteSoloControl/>
+                <MuteSoloControl
+                    trackId={currentTrack}
+                    isMuted={tracks[currentTrack].isMuted}
+                    onToggleMute={handleToggleTrackMute}
+                />
             </div>
             <Knob 
                 id="sampleVolume"
