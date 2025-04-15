@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import { TrackType } from "../types/track";
 
-const NUM_BUTTONS = 32
+const NUM_BUTTONS = 16
 
 export const initialTracks: TrackType[] = [
     {

@@ -8,7 +8,7 @@ import TracksSection from "../components/TracksSection"
 const Home = () => {
 
 	return (
-		<div className="flex flex-col min-h-screen p-20 ">
+		<div className="flex flex-col min-h-screen p-18 ">
 			<RaisedContainer styles="flex-1">
 				<div className="flex flex-col flex-1 gap-y-2">
 					<div className="relative flex items-center justify-between h-1/8">
@@ -17,7 +17,7 @@ const Home = () => {
 						<GlobalControls/>
 					</div>
 					<div className="flex items-center justify-center h-1/16">
-						<div className="w-1/8"></div>
+						<div className="w-1/10"></div>
 						<Timeline/>
 					</div>
 					<div className="flex flex-col flex-1 gap-y-4 ">

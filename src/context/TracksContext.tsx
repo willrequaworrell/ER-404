@@ -36,7 +36,7 @@ interface TracksContextType {
 
 
 const TracksContext = createContext<TracksContextType | null>(null)
-const NUM_BUTTONS = 32
+const NUM_BUTTONS = 16
 
 export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
