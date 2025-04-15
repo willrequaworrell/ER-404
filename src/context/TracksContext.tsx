@@ -70,23 +70,30 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     const confirmOrCreateSchedule = () => {
         if (!scheduleIdRef.current) {
-            scheduleIdRef.current = Tone.getTransport().scheduleRepeat(time => {
-        
-                tracksRef.current.forEach(track => {
-                    if (track.trackButtons[beatRef.current]) {
-                        track.player.start(time)
-                        track.envelope.triggerAttack(time)
-                        track.envelope.triggerRelease(time + Number(track.envelope.attack) + Number(track.envelope.decay) + 0.01)
-                    }
-                })
-    
-                Tone.getDraw().schedule(() => {
-                    beatRef.current = (beatRef.current + 1) % NUM_BUTTONS
-                    setCurrentBeat(beatRef.current)
-                }, time)
-    
             
-            }, "8n")
+            scheduleIdRef.current = Tone.getTransport().scheduleRepeat(time => {
+                
+                const currentBeatFromRef = beatRef.current;
+                const nextBeat = (currentBeatFromRef + 1) % NUM_BUTTONS;
+                beatRef.current = nextBeat;
+
+                Tone.getDraw().schedule(() => {
+                    setCurrentBeat(nextBeat);
+                }, time);
+            
+                
+                tracksRef.current.forEach(track => {
+                    if (track.trackButtons[currentBeatFromRef]) {
+                        track.player.start(time);
+                        track.envelope.triggerAttack(time);
+                        track.envelope.triggerRelease(
+                            time + Number(track.envelope.attack) + Number(track.envelope.decay) + 0.001
+                        );
+                    }
+                });  
+              
+            
+            }, "16n")
         }
     }
 
