@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import { TrackType } from "../types/track";
 
-const NUM_BUTTONS = 16
+const NUM_BUTTONS = 32
 
 export const initialTracks: TrackType[] = [
     {
@@ -9,6 +9,7 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/KICK_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
+        isSoloed: false,
         player: new Tone.Player({ url: "/KICK.wav", autostart: false, }),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
@@ -46,6 +47,7 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/CLAP_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
+        isSoloed: false,
         player: new Tone.Player({url: "/CLAP.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
@@ -83,6 +85,7 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/SNARE_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
+        isSoloed: false,
         player: new Tone.Player({url: "/SNARE.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
@@ -120,6 +123,7 @@ export const initialTracks: TrackType[] = [
         sampleImgFile: "/OH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
+        isSoloed: false,
         player: new Tone.Player({url: "/OH.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
@@ -156,7 +160,8 @@ export const initialTracks: TrackType[] = [
         name: "CLOSED HAT", 
         sampleImgFile: "/CH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
-        isMuted: false, 
+        isMuted: false,
+        isSoloed: false, 
         player: new Tone.Player({url: "/CH.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
