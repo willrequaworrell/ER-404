@@ -28,7 +28,7 @@ const Speaker = () => {
                     </div>
                 ))}
             </div>
-            <div className="flex flex-col items-center justify-center gap-1">
+            {/* <div className="flex flex-col items-center justify-center gap-1">
                 {rows.map((cols, rowIndex) => (
                     <div
                         key={rowIndex}
@@ -42,7 +42,7 @@ const Speaker = () => {
                         ))}
                     </div>
                 ))}
-            </div>
+            </div> */}
         </div>
     );
 };

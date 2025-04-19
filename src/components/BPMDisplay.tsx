@@ -45,11 +45,11 @@ const BPMDisplay = () => {
     }
 
     return (
-        <>
-            <div className="flex flex-col justify-between gap-y-2">
+        <div className="flex items-center w-full h-full gap-x-4">
+            <div className="flex flex-col justify-between w-1/3 h-full py-1 gap-y-2">
                 <Button
                     icon={<FaCaretUp />}
-                    styles="w-[3rem] h-1/2"
+                    styles="w-full h-1/2"
                     onMouseDown={() => handleButtonActivate("increment")}
                     onMouseUp={handleButtonCleanup}
                     onMouseLeave={handleButtonCleanup}
@@ -58,20 +58,23 @@ const BPMDisplay = () => {
                 />
                 <Button
                     icon={<FaCaretDown />}
-                    styles="w-[3rem] h-1/2"
+                    styles="w-full h-1/2"
                     onMouseDown={() => handleButtonActivate("decrement")}
                     onMouseUp={handleButtonCleanup}
                     onMouseLeave={handleButtonCleanup}
-                    onTouchStart={() => handleButtonActivate("increment")}
+                    onTouchStart={() => handleButtonActivate("decrement")}
                     onTouchEnd={handleButtonCleanup}
                 />
             </div>
-            <ScreenContainer
-                styles="w-[6rem] text-[1.5rem]"
-            >
-                <p>{BPM}</p>
-            </ScreenContainer>
-        </>
+            <div className="flex items-center h-full w-2/3">
+                <ScreenContainer
+                    styles="h-full w-full text-[1.5rem]"
+                >
+                    <p>{BPM}</p>
+                </ScreenContainer>
+
+            </div>
+        </div>
     )
 }
 
