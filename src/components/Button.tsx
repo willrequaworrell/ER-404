@@ -13,7 +13,7 @@ interface ButtonPropsType {
     onTouchEnd?: TouchEventHandler<HTMLButtonElement>
 }
 
-const activatedStyles = "shadow-[inset_-4px_-4px_9px_#ffffffe0,inset_2px_2px_4px_#718eab1a]"
+// const activatedStyles = "shadow-[inset_-4px_-4px_9px_#ffffffe0,inset_2px_2px_4px_#718eab1a]"
 const activatedStylesPlayButton = "shadow-[inset_-4px_-4px_9px_#ffffffe0,inset_2px_2px_4px_#718eab1a] cursor-not-allowed"
 
 const Button = ({ icon, playButton = false, styles = "", onClick, onMouseDown, onMouseUp, onMouseLeave, onTouchStart, onTouchEnd }: ButtonPropsType) => {
