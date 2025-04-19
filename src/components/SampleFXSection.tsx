@@ -31,7 +31,7 @@ const SampleFXSection = () => {
 
     return (
         <div className="relative flex items-center justify-between flex-1 max-w-3/5 h-full pb-3 pr-2 border-b-2 gap-x-[1vw] border-text-primary">
-            <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">SAMPLE</span>
+            <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">SAMPLE FX</span>
             <div className="flex flex-1 h-full gap-x-4">
                 <SampleViewer />
                 <MuteSoloControl

@@ -49,9 +49,9 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatt
     }, [value, min, max])
 
   return (
-    <div className='flex flex-col items-center justify-end w-[4vw] h-full gap-y-2 '>
+    <div className={`flex flex-col items-center justify-end h-full gap-y-2 ${isMasterVol ? "w-[6vw]" : "w-[4vw]"}`}>
 
-        <div className={`relative flex items-center justify-center ${isMasterVol ? "size-[4.5rem]" : "size-[2.75rem]"}`}>
+        <div className={`relative flex items-center justify-center ${isMasterVol ? "size-[5rem]" : "size-[2.75rem]"}`}>
         {/* Outer bevel ring */}
         <div
             style={{
@@ -79,7 +79,7 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatt
               }}
             onDrag={handleDrag}
             onDragEnd={() => setIsDragging(false)}
-            className={`relative ${isMasterVol ? "size-[4rem]" : "size-[2.4rem]"} rounded-full bg-background 
+            className={`relative ${isMasterVol ? "size-[4.5rem]" : "size-[2.4rem]"} rounded-full bg-background 
             `}
             // shadow-[6px_6px_12px_rgba(0,0,0,0.15),-6px_-6px_12px_rgba(255,255,255,0.8)]
         >

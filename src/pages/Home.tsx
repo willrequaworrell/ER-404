@@ -22,7 +22,7 @@ const Home = () => {
 					<div className="flex flex-col flex-1 gap-y-4 ">
 						<TracksSection/>
 					</div>
-					<div className="flex items-center justify-between pt-4 h-1/6">
+					<div className="flex items-center justify-between pt-4 h-1/5">
 						<FXSection/>
 					</div>
 					
