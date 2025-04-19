@@ -6,6 +6,4 @@ Built with React + TypeScript app to emulate a retro drum machine (e.g. TR-909) 
 
 Styled with Tailwind 
 
-![ER404 CHECKPOINT UI](https://github.com/user-attachments/assets/6488a4a7-c25e-4c9d-a896-f82125a6b259)
-
-
+<img width="1470" alt="er404-4192025" src="https://github.com/user-attachments/assets/cf05bb2b-6741-45ac-9331-400264edfd79" />
