@@ -10,7 +10,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({ url: "/KICK.wav", autostart: false, }),
+        player: new Tone.Player({ url: "/HOUSE_KICK.wav", autostart: false, }),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -48,7 +48,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/CLAP.wav", autostart: false,}),
+        player: new Tone.Player({url: "/HOUSE_CLAP.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -86,7 +86,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/SNARE.wav", autostart: false,}),
+        player: new Tone.Player({url: "/HOUSE_SNARE.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -124,7 +124,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/OH.wav", autostart: false,}),
+        player: new Tone.Player({url: "/HOUSE_OH.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -162,7 +162,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false, 
-        player: new Tone.Player({url: "/CH.wav", autostart: false,}),
+        player: new Tone.Player({url: "/HOUSE_CH.wav", autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
