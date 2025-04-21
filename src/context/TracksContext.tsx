@@ -2,16 +2,9 @@ import { createContext, ReactNode, useContext, useEffect, useRef, useState } fro
 import * as Tone from 'tone';
 import { TrackType } from "../types/track";
 import { initialTracks } from "../util/initialTrackData";
+import { masterFXSettingsType } from "../types/masterFXSettings";
+import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 
-interface masterFXSettingsType {
-    lowCut: number
-    highCut: number
-    reverb: number
-    delay: number
-    compressorRatio: number
-    compressorThreshold: number
-    volume: number
-}
 
 interface TracksContextType {
     tracks: TrackType[]
@@ -39,13 +32,22 @@ const TracksContext = createContext<TracksContextType | null>(null)
 const NUM_BUTTONS = 16
 
 export const TracksProvider = ({children}: {children: ReactNode}) => {
+    const savedState = LoadStateFromLocalStorage()
+
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
-    const [BPM, setBPM] = useState<number>(120)
-    const [tracks, setTracks] = useState<TrackType[]>(initialTracks)
-    const [currentTrack, setCurrentTrack] = useState<number>(0)
-    const [currentBeat, setCurrentBeat] = useState<number>(0)
-    const [masterVolumeLevel, setMasterVolumeLevel] = useState<number>(0)
-    const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>({
+    const [BPM, setBPM] = useState<number>(savedState?.BPM || 120)
+    const [tracks, setTracks] = useState<TrackType[]>(initialTracks.map((track, index) => {
+        return {
+            ...track, 
+            trackButtons: savedState?.tracks[index].trackButtons || track.trackButtons,
+            knobSettings: savedState?.tracks[index].knobSettings || track.knobSettings,
+            isMuted: savedState?.tracks[index].isMuted || track.isMuted,
+            isSoloed: savedState?.tracks[index].isSoloed || track.isSoloed
+        }
+    }))
+
+
+    const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>(savedState?.masterFXSettings || {
         lowCut: 0,
         highCut: 0,
         reverb: 0,
@@ -54,6 +56,10 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         compressorThreshold: 100,
         volume: 100,
     })
+
+    const [currentTrack, setCurrentTrack] = useState<number>(0)
+    const [currentBeat, setCurrentBeat] = useState<number>(0)
+    const [masterVolumeLevel, setMasterVolumeLevel] = useState<number>(0)
 
     const beatRef = useRef(0)
     const tracksRef = useRef(tracks)
@@ -135,8 +141,29 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     const globalReset = () => {
         globalStop()
-        setTracks(initialTracks)
-        tracksRef.current = initialTracks
+
+        const resetTracks = initialTracks.map(track => ({
+            ...track,
+            trackButtons: new Array(NUM_BUTTONS).fill(false),
+            isMuted: false,
+            isSoloed: false,
+            knobSettings: { ...track.knobSettings }
+        }))
+
+        const resetMasterFXSettings = {
+            lowCut: 0,
+            highCut: 0,
+            reverb: 0,
+            delay: 0,
+            compressorRatio: 0,
+            compressorThreshold: 100,
+            volume: 100,
+        }
+
+        setTracks(resetTracks)
+        setMasterFXSettings(resetMasterFXSettings);
+
+        tracksRef.current = resetTracks
     }
 
     const handleToggleTrackMute = (trackIndex: number) => {
@@ -346,6 +373,30 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     }, []);
 
     
+    useEffect(() => {
+        const saveCurrentState = () => {
+            const state = {
+                tracks: tracks.map(track => ({
+                    trackButtons: track.trackButtons,
+                    knobSettings: track.knobSettings,
+                    isMuted: track.isMuted, 
+                    isSoloed: track.isSoloed
+                })), 
+                masterFXSettings: masterFXSettings,
+                BPM: BPM,
+            }
+            saveStateToLocalStorage(state)
+        }
+        
+        const localStorageUpdateInterval = setInterval(saveCurrentState, 1000)
+
+        return () => {
+            clearInterval(localStorageUpdateInterval)
+            saveCurrentState()
+        }
+
+    }, [tracks, masterFXSettings, BPM])
+
     // Set up chain for each track
     useEffect( () => {
 
