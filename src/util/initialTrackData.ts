@@ -1,7 +1,11 @@
 import * as Tone from "tone";
 import { TrackType } from "../types/track";
+import { allSamples } from "./samplesData";
+
 
 const NUM_BUTTONS = 16
+
+
 
 export const initialTracks: TrackType[] = [
     {
@@ -10,7 +14,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({ url: "/HOUSE_KICK.wav", autostart: false, }),
+        player: new Tone.Player({ url: allSamples.kick[0].file, autostart: false, }),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -48,7 +52,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/HOUSE_CLAP.wav", autostart: false,}),
+        player: new Tone.Player({url: allSamples.clap[0].file, autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -86,7 +90,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/HOUSE_SNARE.wav", autostart: false,}),
+        player: new Tone.Player({url: allSamples.snare[0].file, autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -124,7 +128,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/HOUSE_OH.wav", autostart: false,}),
+        player: new Tone.Player({url: allSamples.openHat[0].file, autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -162,7 +166,7 @@ export const initialTracks: TrackType[] = [
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false, 
-        player: new Tone.Player({url: "/HOUSE_CH.wav", autostart: false,}),
+        player: new Tone.Player({url: allSamples.closedHat[0].file, autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
