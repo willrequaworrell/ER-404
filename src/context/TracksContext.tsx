@@ -4,6 +4,7 @@ import { TrackType } from "../types/track";
 import { initialTracks } from "../util/initialTrackData";
 import { masterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
+import { SampleType } from "../types/sample";
 
 
 interface TracksContextType {
@@ -20,6 +21,7 @@ interface TracksContextType {
     globalReset: () => void
     handleToggleTrackMute: (trackIngex: number) => void
     handleToggleTrackSolo: (trackIngex: number) => void
+    handleChangeTrackSample: (trackIndex: number, newSample: SampleType) => void
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
     masterFXSettings: masterFXSettingsType
     handleSetMasterFXSettings: (settingName: keyof masterFXSettingsType, value: number) => void
@@ -37,12 +39,18 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
     const [BPM, setBPM] = useState<number>(savedState?.BPM || 120)
     const [tracks, setTracks] = useState<TrackType[]>(initialTracks.map((track, index) => {
+        // get saved sample if it exists, otherwise fallback on initial
+        const playerSample = savedState?.tracks[index].currentSample.file || track.currentSample.file
+        const newPlayer = new Tone.Player({url: playerSample, autostart: false})
+        
         return {
             ...track, 
             trackButtons: savedState?.tracks[index].trackButtons || track.trackButtons,
             knobSettings: savedState?.tracks[index].knobSettings || track.knobSettings,
             isMuted: savedState?.tracks[index].isMuted || track.isMuted,
-            isSoloed: savedState?.tracks[index].isSoloed || track.isSoloed
+            isSoloed: savedState?.tracks[index].isSoloed || track.isSoloed,
+            currentSample: savedState?.tracks[index].currentSample || track.currentSample,
+            player: savedState?.tracks[index].currentSample ? newPlayer : track.player
         }
     }))
 
@@ -164,6 +172,44 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         setMasterFXSettings(resetMasterFXSettings);
 
         tracksRef.current = resetTracks
+    }
+
+    const handleChangeTrackSample = (trackIndex: number, newSample: SampleType) => {
+        setTracks(prevTracks => {
+            return prevTracks.map((track, index) => {
+                if (index !== trackIndex) return track
+
+
+                // get rid of old track player
+                track.player.stop()
+                track.player.dispose()
+                const newTrack = {...track}
+                // create new player with new sample and connect it to signal chain 
+                const newPlayer = new Tone.Player({url: newSample.file, autostart: false})
+                newPlayer.chain(
+                    track.envelope,
+                    track.lowCut,
+                    track.highCut,
+                    track.volume,
+                    track.delay,
+                    track.reverb,
+                    masterLowCutRef.current!,
+                    masterHighCutRef.current!,
+                    masterCompressorRef.current!,
+                    masterLimiterRef.current!,
+                    masterMeterRef.current!,
+                    Tone.getDestination()
+
+                )
+
+                // return the track with the new sample & player
+                return {
+                    ...newTrack,
+                    currentSample: newSample,
+                    player: newPlayer
+                }
+            })
+        })
     }
 
     const handleToggleTrackMute = (trackIndex: number) => {
@@ -380,7 +426,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                     trackButtons: track.trackButtons,
                     knobSettings: track.knobSettings,
                     isMuted: track.isMuted, 
-                    isSoloed: track.isSoloed
+                    isSoloed: track.isSoloed,
+                    currentSample: track.currentSample
                 })), 
                 masterFXSettings: masterFXSettings,
                 BPM: BPM,
@@ -474,6 +521,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             globalReset: globalReset,
             handleToggleTrackMute: handleToggleTrackMute,
             handleToggleTrackSolo: handleToggleTrackSolo,
+            handleChangeTrackSample,
             setTrackSetting: setTrackSetting,
             masterFXSettings: masterFXSettings, 
             handleSetMasterFXSettings: handleSetMasterFXSettings,

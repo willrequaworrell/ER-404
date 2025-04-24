@@ -1,4 +1,5 @@
 import { masterFXSettingsType } from "../types/masterFXSettings"
+import { SampleType } from "../types/sample"
 import { TrackType } from "../types/track"
 
 export const STORAGE_KEY = "ER-404 Settings"
@@ -10,6 +11,7 @@ export interface PersistedDataType {
         knobSettings: TrackType['knobSettings']
         isMuted: boolean
         isSoloed: boolean
+        currentSample: SampleType
     }>
     masterFXSettings: masterFXSettingsType
     BPM: number

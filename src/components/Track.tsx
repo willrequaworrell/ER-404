@@ -3,6 +3,8 @@ import ScreenContainer from "./ScreenContainer"
 import TrackButton from "./TrackButton"
 import { TrackType } from '../types/track';
 import { useTracksContext } from "../context/TracksContext";
+import DropdownSelect from './DropdownSelect';
+import { useState } from 'react';
 
 
 interface TrackPropsType {
@@ -11,7 +13,10 @@ interface TrackPropsType {
 }
 
 const Track = ({track, setTracks}:TrackPropsType) => {
-    const {currentTrack, setCurrentTrack, isPlaying} = useTracksContext()
+    const {currentTrack, setCurrentTrack, isPlaying, handleChangeTrackSample} = useTracksContext()
+    const [showDropdownSelectArrow, setShowDropdownSelectArrow] = useState<boolean>(false)
+
+    const sampleOptions = track.availableSamples.map(sample => sample.kit)
 
     const handleClick = async () => {
         setCurrentTrack(track.index)
@@ -27,14 +32,42 @@ const Track = ({track, setTracks}:TrackPropsType) => {
         track.player.start(now)
     }
 
+    const handleMouseEnterTrackName = () => {
+        setShowDropdownSelectArrow(true)
+    }
+
+    const handleMouseLeaveTrackName = () => {
+        setShowDropdownSelectArrow(false)
+    }
+
+    const handleSampleChange = (trackIndex: number, selectedKit: string) => {
+        const newSample = track.availableSamples.find(sample => sample.kit === selectedKit)
+        if (!newSample) return
+
+        handleChangeTrackSample(trackIndex, newSample)
+    }
+
     return (
         <div className="flex items-center flex-1 py-[.75vh]">
-            <div onClick={handleClick} className="h-full pr-4 cursor-pointer w-1/10">
+            <div 
+                onClick={handleClick} 
+                onMouseEnter={handleMouseEnterTrackName} 
+                onMouseLeave={handleMouseLeaveTrackName}
+                className="h-full pr-4 cursor-pointer w-1/9"
+            >
                 <ScreenContainer 
-                    styles={`relative h-full text-[1.1rem] ${currentTrack === track.index && "text-white"}`}
+                    styles={`relative flex-row-reverse px-4 h-full gap-2 text-[.9rem] ${currentTrack === track.index && "text-white"}`}
                 >
-                    {/* {(currentTrack === track.index) && <p className="absolute -translate-y-1/2 top-1/2 left-[10%]">•</p>} */}
-                    <p>{track.name}</p>
+                    <DropdownSelect 
+                        trackIndex={track.index}
+                        options={sampleOptions}
+                        value={track.currentSample.kit}
+                        onChange={handleSampleChange}
+                        arrowVisible={showDropdownSelectArrow}
+                    />
+                    <div className='flex-1 '>
+                        <button className=' text-nowrap'>{track.name}</button>
+                    </div>
                 </ScreenContainer>
             </div>
             <div className="flex h-full items-center w-9/10 gap-x-[1vw]">

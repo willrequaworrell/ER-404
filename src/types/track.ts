@@ -1,8 +1,11 @@
 import * as Tone from 'tone';
+import { SampleType } from './sample';
 
 export interface TrackType {
     index: number
     name: string
+    availableSamples: SampleType[]
+    currentSample: SampleType
     sampleImgFile: string
     trackButtons: boolean[]
     isMuted: boolean
