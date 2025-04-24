@@ -1,4 +1,4 @@
-import { masterFXSettingsType } from "../types/masterFXSettings"
+import { MasterFXSettingsType } from "../types/masterFXSettings"
 import { SampleType } from "../types/sample"
 import { TrackType } from "../types/track"
 
@@ -13,7 +13,7 @@ export interface PersistedDataType {
         isSoloed: boolean
         currentSample: SampleType
     }>
-    masterFXSettings: masterFXSettingsType
+    masterFXSettings: MasterFXSettingsType
     BPM: number
 }
 
