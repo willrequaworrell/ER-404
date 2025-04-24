@@ -2,8 +2,10 @@ import { createContext, ReactNode, useContext, useEffect, useRef, useState } fro
 import * as Tone from 'tone';
 import { TrackType } from "../types/track";
 import { initialTracks } from "../util/initialTrackData";
-import { masterFXSettingsType } from "../types/masterFXSettings";
+import { MasterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
+import { SampleType } from "../types/sample";
+import { applyMasterKnobSettings, applySampleKnobSettings } from "../util/tracksHelperFunctions";
 
 
 interface TracksContextType {
@@ -20,9 +22,10 @@ interface TracksContextType {
     globalReset: () => void
     handleToggleTrackMute: (trackIngex: number) => void
     handleToggleTrackSolo: (trackIngex: number) => void
+    handleChangeTrackSample: (trackIndex: number, newSample: SampleType) => void
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
-    masterFXSettings: masterFXSettingsType
-    handleSetMasterFXSettings: (settingName: keyof masterFXSettingsType, value: number) => void
+    masterFXSettings: MasterFXSettingsType
+    handleSetMasterFXSettings: (settingName: keyof MasterFXSettingsType, value: number) => void
     masterVolumeLevel: number
 }
 
@@ -37,20 +40,25 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
     const [BPM, setBPM] = useState<number>(savedState?.BPM || 120)
     const [tracks, setTracks] = useState<TrackType[]>(initialTracks.map((track, index) => {
+        // get saved sample if it exists, otherwise fallback on initial
+        const playerSample = savedState?.tracks[index].currentSample.file || track.currentSample.file
+        const newPlayer = new Tone.Player({url: playerSample, autostart: false})
+        
         return {
             ...track, 
             trackButtons: savedState?.tracks[index].trackButtons || track.trackButtons,
             knobSettings: savedState?.tracks[index].knobSettings || track.knobSettings,
             isMuted: savedState?.tracks[index].isMuted || track.isMuted,
-            isSoloed: savedState?.tracks[index].isSoloed || track.isSoloed
+            isSoloed: savedState?.tracks[index].isSoloed || track.isSoloed,
+            currentSample: savedState?.tracks[index].currentSample || track.currentSample,
+            player: savedState?.tracks[index].currentSample ? newPlayer : track.player
         }
     }))
 
 
-    const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>(savedState?.masterFXSettings || {
+    const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(savedState?.masterFXSettings || {
         lowCut: 0,
         highCut: 0,
-        reverb: 0,
         delay: 0,
         compressorRatio: 0,
         compressorThreshold: 100,
@@ -66,7 +74,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const scheduleIdRef = useRef<number | null>(null)
     const masterLowCutRef = useRef<Tone.Filter | null>(null)
     const masterHighCutRef = useRef<Tone.Filter | null>(null)
-    const masterReverbRef = useRef<Tone.Reverb | null>(null)
     const masterCompressorRef = useRef<Tone.Compressor | null>(null)
     const masterLimiterRef = useRef<Tone.Limiter | null>(null)
     const masterMeterRef = useRef<Tone.Meter | null>(null)
@@ -166,6 +173,44 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         tracksRef.current = resetTracks
     }
 
+    const handleChangeTrackSample = (trackIndex: number, newSample: SampleType) => {
+        setTracks(prevTracks => {
+            return prevTracks.map((track, index) => {
+                if (index !== trackIndex) return track
+
+
+                // get rid of old track player
+                track.player.stop()
+                track.player.dispose()
+                const newTrack = {...track}
+                // create new player with new sample and connect it to signal chain 
+                const newPlayer = new Tone.Player({url: newSample.file, autostart: false})
+                newPlayer.chain(
+                    track.envelope,
+                    track.lowCut,
+                    track.highCut,
+                    track.volume,
+                    track.delay,
+                    track.reverb,
+                    masterLowCutRef.current!,
+                    masterHighCutRef.current!,
+                    masterCompressorRef.current!,
+                    masterLimiterRef.current!,
+                    masterMeterRef.current!,
+                    Tone.getDestination()
+
+                )
+
+                // return the track with the new sample & player
+                return {
+                    ...newTrack,
+                    currentSample: newSample,
+                    player: newPlayer
+                }
+            })
+        })
+    }
+
     const handleToggleTrackMute = (trackIndex: number) => {
         
         setTracks(prevTracks => {
@@ -230,7 +275,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     }
 
-    const handleSetMasterFXSettings = (settingName: keyof masterFXSettingsType, value: number) => {
+    const handleSetMasterFXSettings = (settingName: keyof MasterFXSettingsType, value: number) => {
         setMasterFXSettings(prevSettings => {
             return {
                 ...prevSettings,
@@ -255,15 +300,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             masterCompressorRef.current.ratio.value = ratioVal
         }
 
-        if (settingName === "reverb") {
-            if (!masterReverbRef.current) return 
-            const WET_RANGE = 0.5
-            const DECAY_RANGE = 2.9
-            const wetVal = (value / 100) * WET_RANGE
-            const decayVal = 0.1 + ((value / 100) * DECAY_RANGE)
-            masterReverbRef.current.decay = decayVal
-            masterReverbRef.current.wet.value = wetVal
-        }
 
         if (settingName === "highCut") {
             if (!masterHighCutRef.current) return 
@@ -347,11 +383,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     useEffect(() => {
         masterLowCutRef.current = new Tone.Filter(0, "highpass")
         masterHighCutRef.current = new Tone.Filter(20000, "lowpass")
-        masterReverbRef.current = new Tone.Reverb({
-            wet: 0, 
-            decay: 0.1,
-            preDelay: 0.01
-        })
         masterCompressorRef.current = new Tone.Compressor({
             ratio: 8,
             threshold: 0,
@@ -365,7 +396,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         return () => {
             masterLowCutRef.current?.dispose()
             masterHighCutRef.current?.dispose()
-            masterReverbRef.current?.dispose()
             masterCompressorRef.current?.dispose()
             masterLimiterRef.current?.dispose()
             masterMeterRef.current?.dispose()
@@ -380,7 +410,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                     trackButtons: track.trackButtons,
                     knobSettings: track.knobSettings,
                     isMuted: track.isMuted, 
-                    isSoloed: track.isSoloed
+                    isSoloed: track.isSoloed,
+                    currentSample: track.currentSample
                 })), 
                 masterFXSettings: masterFXSettings,
                 BPM: BPM,
@@ -457,7 +488,15 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
        
     }, [])
     
-
+    useEffect(() => {
+        applySampleKnobSettings(tracks)
+        applyMasterKnobSettings(
+            masterFXSettings,
+            masterCompressorRef,
+            masterLowCutRef,
+            masterHighCutRef
+        )
+    }, [])
 
     return (
         <TracksContext.Provider value={{
@@ -474,6 +513,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             globalReset: globalReset,
             handleToggleTrackMute: handleToggleTrackMute,
             handleToggleTrackSolo: handleToggleTrackSolo,
+            handleChangeTrackSample,
             setTrackSetting: setTrackSetting,
             masterFXSettings: masterFXSettings, 
             handleSetMasterFXSettings: handleSetMasterFXSettings,

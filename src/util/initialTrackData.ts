@@ -1,16 +1,22 @@
 import * as Tone from "tone";
 import { TrackType } from "../types/track";
+import { allSamples } from "./samplesData";
+
 
 const NUM_BUTTONS = 16
+
+
 
 export const initialTracks: TrackType[] = [
     {
         index: 0, name: "KICK", 
+        availableSamples: allSamples.kick,
+        currentSample: allSamples.kick[0],
         sampleImgFile: "/KICK_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({ url: "/HOUSE_KICK.wav", autostart: false, }),
+        player: new Tone.Player({ url: allSamples.kick[0].file, autostart: false, }),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -44,11 +50,13 @@ export const initialTracks: TrackType[] = [
     {
         index: 1, 
         name: "CLAP", 
+        availableSamples: allSamples.clap,
+        currentSample: allSamples.clap[0],
         sampleImgFile: "/CLAP_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/HOUSE_CLAP.wav", autostart: false,}),
+        player: new Tone.Player({url: allSamples.clap[0].file, autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -82,11 +90,13 @@ export const initialTracks: TrackType[] = [
     {
         index: 2, 
         name: "SNARE", 
+        availableSamples: allSamples.snare,
+        currentSample: allSamples.snare[0],
         sampleImgFile: "/SNARE_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/HOUSE_SNARE.wav", autostart: false,}),
+        player: new Tone.Player({url: allSamples.snare[0].file, autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -120,11 +130,13 @@ export const initialTracks: TrackType[] = [
     {
         index: 3, 
         name: "OPEN HAT", 
+        availableSamples: allSamples.openHat,
+        currentSample: allSamples.openHat[0],
         sampleImgFile: "/OH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false,
-        player: new Tone.Player({url: "/HOUSE_OH.wav", autostart: false,}),
+        player: new Tone.Player({url: allSamples.openHat[0].file, autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,
@@ -158,11 +170,13 @@ export const initialTracks: TrackType[] = [
     {
         index: 4, 
         name: "CLOSED HAT", 
+        availableSamples: allSamples.closedHat,
+        currentSample: allSamples.closedHat[0],
         sampleImgFile: "/CH_IMG.png", 
         trackButtons: new Array(NUM_BUTTONS).fill(false),
         isMuted: false,
         isSoloed: false, 
-        player: new Tone.Player({url: "/HOUSE_CH.wav", autostart: false,}),
+        player: new Tone.Player({url: allSamples.closedHat[0].file, autostart: false,}),
         volume: new Tone.Volume(0),
         delay: new Tone.PingPongDelay({
             wet: 0,

@@ -1,7 +1,6 @@
-export interface masterFXSettingsType {
+export interface MasterFXSettingsType {
     lowCut: number
     highCut: number
-    reverb: number
     delay: number
     compressorRatio: number
     compressorThreshold: number
