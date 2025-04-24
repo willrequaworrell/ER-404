@@ -2,9 +2,10 @@ import { createContext, ReactNode, useContext, useEffect, useRef, useState } fro
 import * as Tone from 'tone';
 import { TrackType } from "../types/track";
 import { initialTracks } from "../util/initialTrackData";
-import { masterFXSettingsType } from "../types/masterFXSettings";
+import { MasterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 import { SampleType } from "../types/sample";
+import { applyMasterKnobSettings, applySampleKnobSettings } from "../util/tracksHelperFunctions";
 
 
 interface TracksContextType {
@@ -23,8 +24,8 @@ interface TracksContextType {
     handleToggleTrackSolo: (trackIngex: number) => void
     handleChangeTrackSample: (trackIndex: number, newSample: SampleType) => void
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
-    masterFXSettings: masterFXSettingsType
-    handleSetMasterFXSettings: (settingName: keyof masterFXSettingsType, value: number) => void
+    masterFXSettings: MasterFXSettingsType
+    handleSetMasterFXSettings: (settingName: keyof MasterFXSettingsType, value: number) => void
     masterVolumeLevel: number
 }
 
@@ -55,10 +56,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     }))
 
 
-    const [masterFXSettings, setMasterFXSettings] = useState<masterFXSettingsType>(savedState?.masterFXSettings || {
+    const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(savedState?.masterFXSettings || {
         lowCut: 0,
         highCut: 0,
-        reverb: 0,
         delay: 0,
         compressorRatio: 0,
         compressorThreshold: 100,
@@ -74,7 +74,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const scheduleIdRef = useRef<number | null>(null)
     const masterLowCutRef = useRef<Tone.Filter | null>(null)
     const masterHighCutRef = useRef<Tone.Filter | null>(null)
-    const masterReverbRef = useRef<Tone.Reverb | null>(null)
     const masterCompressorRef = useRef<Tone.Compressor | null>(null)
     const masterLimiterRef = useRef<Tone.Limiter | null>(null)
     const masterMeterRef = useRef<Tone.Meter | null>(null)
@@ -276,7 +275,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     }
 
-    const handleSetMasterFXSettings = (settingName: keyof masterFXSettingsType, value: number) => {
+    const handleSetMasterFXSettings = (settingName: keyof MasterFXSettingsType, value: number) => {
         setMasterFXSettings(prevSettings => {
             return {
                 ...prevSettings,
@@ -301,15 +300,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             masterCompressorRef.current.ratio.value = ratioVal
         }
 
-        if (settingName === "reverb") {
-            if (!masterReverbRef.current) return 
-            const WET_RANGE = 0.5
-            const DECAY_RANGE = 2.9
-            const wetVal = (value / 100) * WET_RANGE
-            const decayVal = 0.1 + ((value / 100) * DECAY_RANGE)
-            masterReverbRef.current.decay = decayVal
-            masterReverbRef.current.wet.value = wetVal
-        }
 
         if (settingName === "highCut") {
             if (!masterHighCutRef.current) return 
@@ -393,11 +383,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     useEffect(() => {
         masterLowCutRef.current = new Tone.Filter(0, "highpass")
         masterHighCutRef.current = new Tone.Filter(20000, "lowpass")
-        masterReverbRef.current = new Tone.Reverb({
-            wet: 0, 
-            decay: 0.1,
-            preDelay: 0.01
-        })
         masterCompressorRef.current = new Tone.Compressor({
             ratio: 8,
             threshold: 0,
@@ -411,7 +396,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         return () => {
             masterLowCutRef.current?.dispose()
             masterHighCutRef.current?.dispose()
-            masterReverbRef.current?.dispose()
             masterCompressorRef.current?.dispose()
             masterLimiterRef.current?.dispose()
             masterMeterRef.current?.dispose()
@@ -504,7 +488,15 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
        
     }, [])
     
-
+    useEffect(() => {
+        applySampleKnobSettings(tracks)
+        applyMasterKnobSettings(
+            masterFXSettings,
+            masterCompressorRef,
+            masterLowCutRef,
+            masterHighCutRef
+        )
+    }, [])
 
     return (
         <TracksContext.Provider value={{
