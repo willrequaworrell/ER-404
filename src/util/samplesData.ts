@@ -1,7 +1,5 @@
-interface SampleType {
-    file: string
-    kit: "House" | "Trap" | "Garage" | "BoomBap"
-}
+import { SampleType } from "../types/sample"
+
 
 
 const kickSamples: SampleType[] = [
