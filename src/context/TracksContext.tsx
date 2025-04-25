@@ -481,16 +481,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     }, [BPM])
 
     
-    useEffect(() => {
-        const anyTracksSoloed = tracks.some(track => track.isSoloed)
-
-        tracks.forEach(track => {
-
-            const shouldMute = anyTracksSoloed ? !track.isSoloed : track.isMuted
-
-            track.player.mute = shouldMute
-        })
-    }, [tracks])
 
     useEffect(() => {
         applySampleKnobSettings(tracks)
