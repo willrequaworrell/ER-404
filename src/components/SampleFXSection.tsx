@@ -1,7 +1,7 @@
 import Knob from "./Knob"
 import SampleViewer from "./SampleViewer"
 import { useTracksContext } from "../context/TracksContext"
-import { formatAttack, formatDecay, formatHighCutFrequency, formatLowCutFrequency, formatSampleVolume } from "../util/knobValueHelperFunctions"
+import { formatAttack, formatDecay, formatHighCutFrequency, formatLowCutFrequency, formatSampleVolume } from "../util/knobValueHelpers"
 import MuteSoloControl from "./MuteSoloControl"
 
 
