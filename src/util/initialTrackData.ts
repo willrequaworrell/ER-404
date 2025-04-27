@@ -38,7 +38,7 @@ export const initialTracks: TrackType[] = [
             release: 0
         }),
         knobSettings: {
-            volume: 100,
+            volume: 85,
             attack: 0,
             decay: 100,
             reverb: 0,
@@ -78,7 +78,7 @@ export const initialTracks: TrackType[] = [
             release: 0
         }), 
         knobSettings: {
-            volume: 100,
+            volume: 85,
             attack: 0,
             decay: 100,
             reverb: 0,
@@ -118,7 +118,7 @@ export const initialTracks: TrackType[] = [
             release: 0
         }), 
         knobSettings: {
-            volume: 100,
+            volume: 85,
             attack: 0,
             decay: 100,
             reverb: 0,
@@ -158,7 +158,7 @@ export const initialTracks: TrackType[] = [
             release: 0
         }), 
         knobSettings: {
-            volume: 100,
+            volume: 85,
             attack: 0,
             decay: 100,
             reverb: 0,
@@ -198,7 +198,7 @@ export const initialTracks: TrackType[] = [
             release: 0
         }),
         knobSettings: {
-            volume: 100,
+            volume: 85,
             attack: 0,
             decay: 100,
             reverb: 0,
