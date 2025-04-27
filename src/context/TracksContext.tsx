@@ -80,35 +80,47 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     
 
 
-
     const confirmOrCreateSchedule = () => {
         if (!scheduleIdRef.current) {
-            
             scheduleIdRef.current = Tone.getTransport().scheduleRepeat(time => {
-                
-                const currentBeatFromRef = beatRef.current;
-                const nextBeat = (currentBeatFromRef + 1) % NUM_BUTTONS;
-                beatRef.current = nextBeat;
 
+                const current = beatRef.current
+                const next = (current + 1) % NUM_BUTTONS
+                beatRef.current = next
+                // update UI
                 Tone.getDraw().schedule(() => {
-                    setCurrentBeat(nextBeat);
-                }, time);
-            
-                
+                    
+                    setCurrentBeat(next)
+                }, time)
+
+                // determine if any track is soloed
+                const anySoloed = tracksRef.current.some(t => t.isSoloed)
+
+                // play each track according to solo/mute state
                 tracksRef.current.forEach(track => {
-                    if (track.trackButtons[currentBeatFromRef]) {
-                        track.player.start(time);
-                        track.envelope.triggerAttack(time);
+                    const activatedNote = track.trackButtons[current]
+
+                    // if solos exist, skip non-soloed tracks
+                    if (anySoloed && !track.isSoloed) return
+
+                    // if no solos, skip muted tracks
+                    if (!anySoloed && track.isMuted) return
+
+                    if (activatedNote) {
+                        track.player.start(time)
+                        track.envelope.triggerAttack(time)
                         track.envelope.triggerRelease(
-                            time + Number(track.envelope.attack) + Number(track.envelope.decay) + 0.001
-                        );
+                            time + Number(track.envelope.attack)
+                            + Number(track.envelope.decay)
+                            + 0.001
+                        )
                     }
-                });  
-              
-            
+                })
+
             }, "16n")
         }
     }
+      
 
     const globalPlay = async () => {
 
@@ -224,7 +236,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                     isMuted: newMuteState
                 }
                 
-                updatedTrack.player.mute = newMuteState
+                // updatedTrack.player.mute = newMuteState
 
                 return updatedTrack
             })
@@ -235,41 +247,17 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         console.log("solo toggle for", tracks[trackIndex].name)
         setTracks(prevTracks => {
             
-            // update track state with target track solo toggled
-            const tracksSoloUpdated = prevTracks.map(track => {
+            return prevTracks.map(track => {
                 if (trackIndex !== track.index) return track
                 
+                const newSoloState = !track.isSoloed
+
                 return {
                     ...track,
-                    isSoloed: !track.isSoloed
+                    isSoloed: newSoloState
                 }
 
             })
-            
-            // check if any tracks are soloed
-            const anyTracksSoloed: boolean = tracksSoloUpdated.some(track => track.isSoloed === true)
-
-            // update tracks mute states based on new soloed states
-            const tracksWithSoloAndMuteUpdate = tracksSoloUpdated.map(track => {
-                if (anyTracksSoloed) {
-                    return {
-                        ...track,
-                        isMuted: !track.isSoloed
-                    }
-                } else {
-                    return {
-                        ...track, 
-                        isMuted: false
-                    }
-                }
-            })
-
-            // sync new mute states with actual player mute states in tone.js
-            tracksWithSoloAndMuteUpdate.forEach(track => {
-                track.player.mute = track.isMuted
-            })
-
-            return tracksWithSoloAndMuteUpdate
 
         })
 
@@ -379,6 +367,18 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         })
     }
 
+    // handle previous transport schedule cleanup
+    useEffect(() => {
+        
+        return () => {
+            if (scheduleIdRef.current !== null) {
+                Tone.getTransport().clear(scheduleIdRef.current);
+                scheduleIdRef.current = null;
+            }
+        };
+       
+    }, [])
+
     // initialize master chain refs & dispose on unmount
     useEffect(() => {
         masterLowCutRef.current = new Tone.Filter(0, "highpass")
@@ -402,7 +402,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         };
     }, []);
 
-    
+    // setup local storage sync interval
     useEffect(() => {
         const saveCurrentState = () => {
             const state = {
@@ -468,26 +468,20 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         return () => clearInterval(meterInterval);
     }, [isPlaying]);
 
+
+
+    // keep tracks Ref in sync with tracks state
     useEffect( () => {
         tracksRef.current = tracks
     }, [tracks])
 
+    // keep BPM in sync with UI state
     useEffect( () => {
         Tone.getTransport().bpm.value = BPM
     }, [BPM])
 
-    // handle transport schedule cleanup
-    useEffect(() => {
-        
-        return () => {
-            if (scheduleIdRef.current !== null) {
-                Tone.getTransport().clear(scheduleIdRef.current);
-                scheduleIdRef.current = null;
-            }
-        };
-       
-    }, [])
     
+
     useEffect(() => {
         applySampleKnobSettings(tracks)
         applyMasterKnobSettings(
