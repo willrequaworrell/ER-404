@@ -1,7 +1,17 @@
+
+
+export const convertVolume = (value: number, min: number, max: number) => {
+    const volumeRange = max - min
+    return (min) + ((value / 100) * volumeRange)
+}
+
+
 export const formatSampleVolume = (value: number) => {
-    const DB_RANGE = 24
-    const volumeDbs = (-1 * DB_RANGE) + ((value / 100) * DB_RANGE)
-    return `${volumeDbs.toFixed(0)} dB`
+    const converted = Math.trunc(convertVolume(value, -24, 4))
+    const formatted = `${converted > 0 ? "+": ""}${converted.toFixed(0)} dB`
+
+    return formatted
+
 }
 
 
@@ -32,9 +42,9 @@ export const formatHighCutFrequency = (value: number) => {
 
 
 export const formatMasterVolume = (value: number) => {
-    const DB_RANGE = 60
-    const volumeDbs = (-1 * DB_RANGE) + ((value / 100) * DB_RANGE)
-    return `${volumeDbs.toFixed(0)} dB`
+    const converted = convertVolume(value, -60, 0)
+    const formatted = `${converted.toFixed(0)} dB`
+    return formatted
 }
 
 export const formatMasterCompressorThreshold = (value: number) => {

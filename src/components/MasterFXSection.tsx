@@ -1,7 +1,7 @@
 // import { useState } from "react"
 import Knob from "./Knob"
 import { useTracksContext } from "../context/TracksContext"
-import { formatHighCutFrequency, formatLowCutFrequency, formatMasterCompressorRatio, formatMasterCompressorThreshold, formatMasterVolume } from "../util/knobValueFormatters"
+import { formatHighCutFrequency, formatLowCutFrequency, formatMasterCompressorRatio, formatMasterCompressorThreshold, formatMasterVolume } from "../util/knobValueHelperFunctions"
 
 
 const MasterFXSection = () => {

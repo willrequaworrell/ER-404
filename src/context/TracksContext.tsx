@@ -6,6 +6,7 @@ import { MasterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 import { SampleType } from "../types/sample";
 import { applyMasterKnobSettings, applySampleKnobSettings } from "../util/tracksHelperFunctions";
+import { convertVolume } from "../util/knobValueHelperFunctions";
 
 
 interface TracksContextType {
@@ -316,9 +317,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             }
 
             if (settingName === "volume") {
-                const MIN_VOLUME_DBS = 24
-                const volumeDb = (-1 * MIN_VOLUME_DBS) + ((value / 100) * MIN_VOLUME_DBS) // convert 0-100 value to decibels in -MIN_VOLUME_DBS to 0
-                trackToUpdate.volume.volume.value = volumeDb
+                trackToUpdate.volume.volume.value = convertVolume(value, -24, 4)
             }
 
             if (settingName === "lowCut") {
