@@ -273,35 +273,28 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         })
 
         if (settingName === "volume") {
-            const volumeDb = -60 + ((value / 100) * 60) 
-            Tone.getDestination().volume.value = volumeDb
+            Tone.getDestination().volume.value = mapKnobValueToRange(value, -60, 0)
         }
 
         if (settingName === "compressorThreshold") {
             if (!masterCompressorRef.current) return 
-            const thresholdVal = -30 + ((value / 100) * 30)
-            masterCompressorRef.current.threshold.value = thresholdVal
+            masterCompressorRef.current.threshold.value = mapKnobValueToRange(value, -30, 0)
         }
 
         if (settingName === "compressorRatio") {
             if (!masterCompressorRef.current) return 
-            const ratioVal = 1 + ((value / 100) * 7)
-            masterCompressorRef.current.ratio.value = ratioVal
+            masterCompressorRef.current.ratio.value = mapKnobValueToRange(value, 1, 8)
         }
 
 
         if (settingName === "highCut") {
             if (!masterHighCutRef.current) return 
-            const freqRange = 20000 - 2000 
-            const highCutFreq = 20000 - ((value / 100) * freqRange)
-            masterHighCutRef.current.frequency.value = highCutFreq
+            masterHighCutRef.current.frequency.value = mapKnobValueToRange(value, 2000, 20000)
         }
 
         if (settingName === "lowCut") {
             if (!masterLowCutRef.current) return 
-            const freqRange = 2000 - 0  
-            const lowCutFreq = ((value / 100) * freqRange)
-            masterLowCutRef.current.frequency.value = lowCutFreq
+            masterLowCutRef.current.frequency.value = mapKnobValueToRange(value, 0, 2000)
         }
 
     }

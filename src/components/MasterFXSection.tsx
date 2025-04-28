@@ -30,7 +30,7 @@ const MasterFXSection = () => {
                 
                 <Knob 
                     id="masterLowCut"
-                    label="Lo Cut"
+                    label="HP Freq"
                     value={masterFXSettings.lowCut}
                     min={0}
                     max={100}
@@ -39,7 +39,7 @@ const MasterFXSection = () => {
                 />
                 <Knob 
                     id="masterHiCut"
-                    label="Hi Cut"
+                    label="LP Freq"
                     value={masterFXSettings.highCut}
                     min={0}
                     max={100}

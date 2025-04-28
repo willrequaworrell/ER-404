@@ -36,7 +36,6 @@ export const formatAttack = (value: number) => {
 }
 
 
-
 export const formatDecay = (value: number) => {
     const converted = mapKnobValueToRange(value, 0.05, 3)
     const formatted = `${converted.toFixed(1)} sec`
@@ -65,7 +64,7 @@ export const formatMasterCompressorThreshold = (value: number) => {
 export const formatMasterCompressorRatio = (value: number) => {
     const converted = mapKnobValueToRange(value, 1, 8)
     const formatted = `${converted.toFixed(0)}:1`
-    
+
     return formatted
 }
 
