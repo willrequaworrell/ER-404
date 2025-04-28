@@ -5,7 +5,8 @@ import { initialTracks } from "../util/initialTrackData";
 import { MasterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 import { SampleType } from "../types/sample";
-import { applyMasterKnobSettings, applySampleKnobSettings } from "../util/tracksHelperFunctions";
+import { applyMasterKnobSettings, applySampleKnobSettings } from "../util/tracksHelpers";
+import { mapKnobValueToRange } from "../util/knobValueHelpers";
 
 
 interface TracksContextType {
@@ -272,35 +273,28 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         })
 
         if (settingName === "volume") {
-            const volumeDb = -60 + ((value / 100) * 60) 
-            Tone.getDestination().volume.value = volumeDb
+            Tone.getDestination().volume.value = mapKnobValueToRange(value, -60, 0)
         }
 
         if (settingName === "compressorThreshold") {
             if (!masterCompressorRef.current) return 
-            const thresholdVal = -30 + ((value / 100) * 30)
-            masterCompressorRef.current.threshold.value = thresholdVal
+            masterCompressorRef.current.threshold.value = mapKnobValueToRange(value, -30, 0)
         }
 
         if (settingName === "compressorRatio") {
             if (!masterCompressorRef.current) return 
-            const ratioVal = 1 + ((value / 100) * 7)
-            masterCompressorRef.current.ratio.value = ratioVal
+            masterCompressorRef.current.ratio.value = mapKnobValueToRange(value, 1, 8)
         }
 
 
         if (settingName === "highCut") {
             if (!masterHighCutRef.current) return 
-            const freqRange = 20000 - 2000 
-            const highCutFreq = 20000 - ((value / 100) * freqRange)
-            masterHighCutRef.current.frequency.value = highCutFreq
+            masterHighCutRef.current.frequency.value = mapKnobValueToRange(value, 2000, 20000)
         }
 
         if (settingName === "lowCut") {
             if (!masterLowCutRef.current) return 
-            const freqRange = 2000 - 0  
-            const lowCutFreq = ((value / 100) * freqRange)
-            masterLowCutRef.current.frequency.value = lowCutFreq
+            masterLowCutRef.current.frequency.value = mapKnobValueToRange(value, 0, 2000)
         }
 
     }
@@ -316,51 +310,32 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             }
 
             if (settingName === "volume") {
-                const MIN_VOLUME_DBS = 24
-                const volumeDb = (-1 * MIN_VOLUME_DBS) + ((value / 100) * MIN_VOLUME_DBS) // convert 0-100 value to decibels in -MIN_VOLUME_DBS to 0
-                trackToUpdate.volume.volume.value = volumeDb
+                trackToUpdate.volume.volume.value = mapKnobValueToRange(value, -24, 4)
             }
 
             if (settingName === "lowCut") {
-                // filter cutoff from 0 to 2k 
-                const freqRange = 2000 - 0  
-                const lowCutFreq = ((value / 100) * freqRange)
-                trackToUpdate.lowCut.frequency.value = lowCutFreq
+                trackToUpdate.lowCut.frequency.value = mapKnobValueToRange(value, 0, 2000)
             }
             
             if (settingName === "highCut") {
-                // filter cutoff from 20k to 2k  
-                const freqRange = 20000 - 2000 
-                const highCutFreq = 20000 - ((value / 100) * freqRange)
-                trackToUpdate.highCut.frequency.value = highCutFreq
+                trackToUpdate.highCut.frequency.value = mapKnobValueToRange(value, 2000, 20000)
             }
 
             if (settingName === "attack") {
-                const attackRange = 0.2 - 0
-                const attackSeconds = ((value / 100) * attackRange)
-                trackToUpdate.envelope.attack = attackSeconds
+                trackToUpdate.envelope.attack = mapKnobValueToRange(value, 0, 20)
             }
             
             if (settingName === "decay") {
-                const MIN_DECAY_TIME = 0.05
-                const decayRange = 3 - MIN_DECAY_TIME
-                const decaySeconds = MIN_DECAY_TIME + ((value / 100) * decayRange)
-                trackToUpdate.envelope.decay = decaySeconds
+                trackToUpdate.envelope.decay = mapKnobValueToRange(value, 0.05, 3)
             }
 
             if (settingName === "reverb") {
-                const WET_RANGE = 0.5
-                const DECAY_RANGE = 2.9
-                const wetVal = (value / 100) * WET_RANGE
-                const decayVal = 0.1 + ((value / 100) * DECAY_RANGE)
-                trackToUpdate.reverb.wet.value = wetVal
-                trackToUpdate.reverb.decay = decayVal
+                trackToUpdate.reverb.wet.value = mapKnobValueToRange(value, 0, 0.5)
+                trackToUpdate.reverb.decay = mapKnobValueToRange(value, 0.1, 3)
             }
             
             if (settingName === "delay") {
-                const WET_RANGE = 1
-                const wetVal = (value / 100) * WET_RANGE
-                trackToUpdate.delay.wet.value = wetVal
+                trackToUpdate.delay.wet.value = mapKnobValueToRange(value, 0, .75)
             }
 
             return newTracks

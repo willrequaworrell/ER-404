@@ -1,7 +1,7 @@
 import Knob from "./Knob"
 import SampleViewer from "./SampleViewer"
 import { useTracksContext } from "../context/TracksContext"
-import { formatAttack, formatDecay, formatHighCutFrequency, formatLowCutFrequency, formatSampleVolume } from "../util/knobValueFormatters"
+import { formatAttack, formatDecay, formatHighCutFrequency, formatLowCutFrequency, formatSampleVolume } from "../util/knobValueHelpers"
 import MuteSoloControl from "./MuteSoloControl"
 
 
@@ -87,7 +87,7 @@ const SampleFXSection = () => {
             />
             <Knob 
                 id="sampleLowCut"
-                label="Lo Cut"
+                label="HP Freq"
                 value={currentSettings.lowCut}
                 min={0}
                 max={100}
@@ -96,7 +96,7 @@ const SampleFXSection = () => {
             />
             <Knob 
                 id="sampleHighCut"
-                label="Hi Cut"
+                label="LP Freq"
                 value={currentSettings.highCut}
                 min={0}
                 max={100}

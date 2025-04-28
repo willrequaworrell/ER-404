@@ -1,7 +1,7 @@
 // import { useState } from "react"
 import Knob from "./Knob"
 import { useTracksContext } from "../context/TracksContext"
-import { formatHighCutFrequency, formatLowCutFrequency, formatMasterCompressorRatio, formatMasterCompressorThreshold, formatMasterVolume } from "../util/knobValueFormatters"
+import { formatHighCutFrequency, formatLowCutFrequency, formatMasterCompressorRatio, formatMasterCompressorThreshold, formatMasterVolume } from "../util/knobValueHelpers"
 
 
 const MasterFXSection = () => {
@@ -30,7 +30,7 @@ const MasterFXSection = () => {
                 
                 <Knob 
                     id="masterLowCut"
-                    label="Lo Cut"
+                    label="HP Freq"
                     value={masterFXSettings.lowCut}
                     min={0}
                     max={100}
@@ -39,7 +39,7 @@ const MasterFXSection = () => {
                 />
                 <Knob 
                     id="masterHiCut"
-                    label="Hi Cut"
+                    label="LP Freq"
                     value={masterFXSettings.highCut}
                     min={0}
                     max={100}
