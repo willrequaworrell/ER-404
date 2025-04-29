@@ -1,8 +1,9 @@
+import { MasterFXSettingsType } from "../types/masterFXSettings"
 import { TrackType } from "../types/track"
 
 // Helper to convert a knobId into the corresponding property name in a track object
-export const mapKnobIdToProperty = (knobId: string): keyof TrackType['knobSettings'] | undefined => {
-    const map: Record<string, keyof TrackType['knobSettings']> = {
+export const mapKnobIdToProperty = (knobId: string): keyof TrackType['knobSettings'] | keyof MasterFXSettingsType | undefined => {
+    const map: Record<string, (keyof TrackType['knobSettings'] | keyof MasterFXSettingsType)> = {
         sampleVolume: 'volume',
         sampleAttack: 'attack',
         sampleDecay: 'decay',
@@ -10,11 +11,18 @@ export const mapKnobIdToProperty = (knobId: string): keyof TrackType['knobSettin
         sampleDelay: 'delay',
         sampleLowCut: 'lowCut',
         sampleHighCut: 'highCut',
+        masterLowCut: 'lowCut',
+        masterHiCut: 'highCut',
+        masterDelay: 'delay',
+        masterCompressorRatio: 'compressorRatio',
+        masterCompressorThreshold: 'compressorThreshold',
+        masterVolume: 'volume',
         
     }
 
-    return map[knobId] || null
+    return map[knobId]
 }
+
 
 
 // Helper to convert a knob value 0-100 to a relative value in a range from min-max

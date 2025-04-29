@@ -6,7 +6,7 @@ import MuteSoloControl from "./MuteSoloControl"
 
 
 const SampleFXSection = () => {
-    const {tracks, currentTrack, setTrackSetting, handleToggleTrackMute, handleToggleTrackSolo} = useTracksContext()
+    const {tracks, currentTrack, setTrackSetting, handleToggleTrackMute, handleToggleTrackSolo, resetSampleFXKnobValue} = useTracksContext()
     const currentSettings = tracks[currentTrack].knobSettings
 
 
@@ -50,6 +50,7 @@ const SampleFXSection = () => {
                 max={100}
                 valueFormatter={formatSampleVolume}
                 onChange={handleKnobChange}
+                onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleVolume")}
             />
             <Knob 
                 id="sampleAttack"
@@ -59,6 +60,7 @@ const SampleFXSection = () => {
                 max={100}
                 valueFormatter={formatAttack}
                 onChange={handleKnobChange}
+                onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleAttack")}
             />
             <Knob 
                 id="sampleDecay"
@@ -68,6 +70,7 @@ const SampleFXSection = () => {
                 max={100}
                 valueFormatter={formatDecay}
                 onChange={handleKnobChange}
+                onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleDecay")}
             />
             <Knob 
                 id="sampleReverb"
@@ -76,6 +79,7 @@ const SampleFXSection = () => {
                 min={0}
                 max={100}
                 onChange={handleKnobChange}
+                onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleReverb")}
             />
             <Knob
                 id="sampleDelay"
@@ -84,6 +88,7 @@ const SampleFXSection = () => {
                 min={0}
                 max={100}
                 onChange={handleKnobChange}
+                onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleDelay")}
             />
             <Knob 
                 id="sampleLowCut"
@@ -93,6 +98,7 @@ const SampleFXSection = () => {
                 max={100}
                 valueFormatter={formatLowCutFrequency}
                 onChange={handleKnobChange}
+                onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleLowCut")}
             />
             <Knob 
                 id="sampleHighCut"
@@ -102,6 +108,7 @@ const SampleFXSection = () => {
                 max={100}
                 valueFormatter={formatHighCutFrequency}
                 onChange={handleKnobChange}
+                onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleHighCut")}
             />
             
             <div className="absolute bottom-0 left-0 h-2 border-l border-1 border-text-primary"></div>

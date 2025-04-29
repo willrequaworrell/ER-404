@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useRef, useState } fro
 import * as Tone from 'tone';
 import { TrackType } from "../types/track";
 import { initialTracks } from "../util/initialTrackData";
-import { MasterFXSettingsType } from "../types/masterFXSettings";
+import { defaultMasterFXSettings, MasterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 import { SampleType } from "../types/sample";
 import { applyMasterKnobSettings, applySampleKnobSettings } from "../util/tracksHelpers";
@@ -21,6 +21,7 @@ interface TracksContextType {
     globalPlay: () => void
     globalStop: () => void
     globalReset: () => void
+    resetMasterFXKnobValue: (knobId: string) => void
     resetSampleFXKnobValue: (trackIndex: number, knobId: string) => void
     handleToggleTrackMute: (trackIndex: number) => void
     handleToggleTrackSolo: (trackIndex: number) => void
@@ -58,14 +59,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     }))
 
 
-    const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(savedState?.masterFXSettings || {
-        lowCut: 0,
-        highCut: 100,
-        delay: 0,
-        compressorRatio: 0,
-        compressorThreshold: 100,
-        volume: 100,
-    })
+    const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(savedState?.masterFXSettings || defaultMasterFXSettings)
 
     const [currentTrack, setCurrentTrack] = useState<number>(0)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
@@ -187,6 +181,48 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         tracksRef.current = resetTracks
     }
 
+
+    const resetMasterFXKnobValue = (knobId: string) => {
+        const property = mapKnobIdToProperty(knobId) as keyof MasterFXSettingsType
+        if (!property) return
+
+        const defaultValue = defaultMasterFXSettings[property] 
+
+        setMasterFXSettings(prevSettings => {
+            const newSettings = {
+                ...prevSettings,
+                [property]: defaultValue
+            }
+            return newSettings
+        })
+
+        if (property === 'volume') {
+            Tone.getDestination().volume.value =
+                mapKnobValueToRange(defaultValue, -60, 0)
+        } else if (property === 'compressorThreshold') {
+            if (masterCompressorRef.current) {
+                masterCompressorRef.current.threshold.value =
+                    mapKnobValueToRange(defaultValue, -30, 0)
+            }
+        } else if (property === 'compressorRatio') {
+            if (masterCompressorRef.current) {
+                masterCompressorRef.current.ratio.value =
+                    mapKnobValueToRange(defaultValue, 1, 8)
+            }
+        } else if (property === 'lowCut') {
+            if (masterLowCutRef.current) {
+                masterLowCutRef.current.frequency.value =
+                    mapKnobValueToRange(defaultValue, 0, 2000)
+            }
+        } else if (property === 'highCut') {
+            if (masterHighCutRef.current) {
+                masterHighCutRef.current.frequency.value =
+                    mapKnobValueToRange(defaultValue, 2000, 20000)
+            }
+        }
+          
+    }
+
     const resetSampleFXKnobValue = (trackIndex: number, knobId: string ) => {
 
         setTracks(prevTracks => {
@@ -194,7 +230,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 if (track.index !== trackIndex) return track
 
                 // update ui state to default 
-                const property = mapKnobIdToProperty(knobId)
+                const property = mapKnobIdToProperty(knobId) as keyof TrackType['knobSettings']
                 if (!property) return track
                 const defaultValue = initialTracks[trackIndex].knobSettings[property]
 
@@ -521,6 +557,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             globalPlay: globalPlay, 
             globalStop: globalStop,
             globalReset: globalReset,
+            resetMasterFXKnobValue: resetMasterFXKnobValue,
             resetSampleFXKnobValue: resetSampleFXKnobValue,
             handleToggleTrackMute: handleToggleTrackMute,
             handleToggleTrackSolo: handleToggleTrackSolo,
