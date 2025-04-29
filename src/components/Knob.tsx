@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useTransform } from "motion/react"
 import { useEffect, useState } from "react"
+import { useTracksContext } from "../context/TracksContext"
 
 interface KnobPropsType {
     id: string
@@ -18,6 +19,8 @@ const DRAG_RANGE = 200
 
 
 const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatter, onChange}: KnobPropsType) => {
+    const {currentTrack, resetSampleFXKnobValue} = useTracksContext()
+
     const [isDragging, setIsDragging] = useState<boolean>(false)
 
     const initialDragY = ((value - min) / (max - min)) * DRAG_RANGE;
@@ -79,6 +82,7 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatt
               }}
             onDrag={handleDrag}
             onDragEnd={() => setIsDragging(false)}
+            onDoubleClick={() => resetSampleFXKnobValue(currentTrack, id)}
             className={`relative ${isMasterVol ? "size-[4.5rem]" : "size-[2.65rem]"} rounded-full bg-background 
             `}
         >

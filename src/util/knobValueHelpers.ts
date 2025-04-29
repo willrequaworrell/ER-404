@@ -1,3 +1,21 @@
+import { TrackType } from "../types/track"
+
+// Helper to convert a knobId into the corresponding property name in a track object
+export const mapKnobIdToProperty = (knobId: string): keyof TrackType['knobSettings'] | undefined => {
+    const map: Record<string, keyof TrackType['knobSettings']> = {
+        sampleVolume: 'volume',
+        sampleAttack: 'attack',
+        sampleDecay: 'decay',
+        sampleReverb: 'reverb',
+        sampleDelay: 'delay',
+        sampleLowCut: 'lowCut',
+        sampleHighCut: 'highCut',
+        
+    }
+
+    return map[knobId] || null
+}
+
 
 // Helper to convert a knob value 0-100 to a relative value in a range from min-max
 export const mapKnobValueToRange = (value: number, min: number, max: number) => {

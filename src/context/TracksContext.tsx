@@ -6,7 +6,7 @@ import { MasterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 import { SampleType } from "../types/sample";
 import { applyMasterKnobSettings, applySampleKnobSettings } from "../util/tracksHelpers";
-import { mapKnobValueToRange } from "../util/knobValueHelpers";
+import { mapKnobIdToProperty, mapKnobValueToRange } from "../util/knobValueHelpers";
 
 
 interface TracksContextType {
@@ -21,8 +21,9 @@ interface TracksContextType {
     globalPlay: () => void
     globalStop: () => void
     globalReset: () => void
-    handleToggleTrackMute: (trackIngex: number) => void
-    handleToggleTrackSolo: (trackIngex: number) => void
+    resetSampleFXKnobValue: (trackIndex: number, knobId: string) => void
+    handleToggleTrackMute: (trackIndex: number) => void
+    handleToggleTrackSolo: (trackIndex: number) => void
     handleChangeTrackSample: (trackIndex: number, newSample: SampleType) => void
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
     masterFXSettings: MasterFXSettingsType
@@ -59,7 +60,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(savedState?.masterFXSettings || {
         lowCut: 0,
-        highCut: 0,
+        highCut: 100,
         delay: 0,
         compressorRatio: 0,
         compressorThreshold: 100,
@@ -186,6 +187,48 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         tracksRef.current = resetTracks
     }
 
+    const resetSampleFXKnobValue = (trackIndex: number, knobId: string ) => {
+
+        setTracks(prevTracks => {
+            return prevTracks.map(track => {
+                if (track.index !== trackIndex) return track
+
+                // update ui state to default 
+                const property = mapKnobIdToProperty(knobId)
+                if (!property) return track
+                const defaultValue = initialTracks[trackIndex].knobSettings[property]
+
+                const newKnobSettings = {
+                    ...track.knobSettings,
+                    [property]: defaultValue
+                }
+
+                // update tone.js state to match ui state
+                if (property === 'volume') {
+                    track.volume.volume.value = mapKnobValueToRange(defaultValue, -24, 4)
+                } else if (property === 'attack') {
+                    track.envelope.attack = mapKnobValueToRange(defaultValue, 0, 20)
+                } else if (property === 'decay') {
+                    track.envelope.decay = mapKnobValueToRange(defaultValue, 0.05, 3)
+                } else if (property === 'reverb') {
+                    track.reverb.wet.value = mapKnobValueToRange(defaultValue, 0, 0.5)
+                    track.reverb.decay = mapKnobValueToRange(defaultValue, 0.1, 3)
+                } else if (property === 'delay') {
+                    track.delay.wet.value = mapKnobValueToRange(defaultValue, 0, 0.75)
+                } else if (property === 'lowCut') {
+                    track.lowCut.frequency.value = mapKnobValueToRange(defaultValue, 0, 2000)
+                } else if (property === 'highCut') {
+                    track.highCut.frequency.value = mapKnobValueToRange(defaultValue, 2000, 20000)
+                }
+
+                return {
+                    ...track,
+                    knobSettings: newKnobSettings
+                }
+            })
+        })
+    }
+
     const handleChangeTrackSample = (trackIndex: number, newSample: SampleType) => {
         setTracks(prevTracks => {
             return prevTracks.map((track, index) => {
@@ -237,8 +280,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                     isMuted: newMuteState
                 }
                 
-                // updatedTrack.player.mute = newMuteState
-
                 return updatedTrack
             })
         })
@@ -480,6 +521,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             globalPlay: globalPlay, 
             globalStop: globalStop,
             globalReset: globalReset,
+            resetSampleFXKnobValue: resetSampleFXKnobValue,
             handleToggleTrackMute: handleToggleTrackMute,
             handleToggleTrackSolo: handleToggleTrackSolo,
             handleChangeTrackSample,
