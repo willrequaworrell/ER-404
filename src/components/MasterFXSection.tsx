@@ -5,7 +5,7 @@ import { formatHighCutFrequency, formatLowCutFrequency, formatMasterCompressorRa
 
 
 const MasterFXSection = () => {
-    const {masterFXSettings, handleSetMasterFXSettings} = useTracksContext()
+    const {masterFXSettings, handleSetMasterFXSettings, resetMasterFXKnobValue} = useTracksContext()
 
 
     const handleKnobChange = (knobId: string, newValue: number) => {
@@ -36,6 +36,7 @@ const MasterFXSection = () => {
                     max={100}
                     valueFormatter={formatLowCutFrequency}
                     onChange={handleKnobChange}
+                    onDoubleClick={() => resetMasterFXKnobValue("masterLowCut")}
                 />
                 <Knob 
                     id="masterHiCut"
@@ -45,6 +46,7 @@ const MasterFXSection = () => {
                     max={100}
                     valueFormatter={formatHighCutFrequency}
                     onChange={handleKnobChange}
+                    onDoubleClick={() => resetMasterFXKnobValue("masterHiCut")}
                 />
                 
                 <div className="relative flex gap-x-[1vw] justify-between  border-text-primary">
@@ -60,6 +62,7 @@ const MasterFXSection = () => {
                         max={100}
                         valueFormatter={formatMasterCompressorRatio}
                         onChange={handleKnobChange}
+                        onDoubleClick={() => resetMasterFXKnobValue("masterCompressorRatio")}
                     />
                     <Knob
                         id="masterCompressorThreshold"
@@ -69,6 +72,7 @@ const MasterFXSection = () => {
                         max={100}
                         valueFormatter={formatMasterCompressorThreshold}
                         onChange={handleKnobChange}
+                        onDoubleClick={() => resetMasterFXKnobValue("masterCompressorThreshold")}
                     />
                 </div>
                 <Knob
@@ -79,6 +83,7 @@ const MasterFXSection = () => {
                     max={100}
                     valueFormatter={formatMasterVolume}
                     onChange={handleKnobChange}
+                    onDoubleClick={() => resetMasterFXKnobValue("masterVolume")}
                     isMasterVol
                 />
 

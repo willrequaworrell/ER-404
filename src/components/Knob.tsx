@@ -10,6 +10,7 @@ interface KnobPropsType {
     isMasterVol?: boolean
     valueFormatter?: (value: number) => string
     onChange: (id: string, value: number) => void
+    onDoubleClick?: () => void
 }
 
 const ROTATION_RANGE = 300; 
@@ -17,7 +18,8 @@ const ROTATION_OFFSET = 10;
 const DRAG_RANGE = 200
 
 
-const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatter, onChange}: KnobPropsType) => {
+const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatter, onChange, onDoubleClick}: KnobPropsType) => {
+
     const [isDragging, setIsDragging] = useState<boolean>(false)
 
     const initialDragY = ((value - min) / (max - min)) * DRAG_RANGE;
@@ -79,6 +81,7 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatt
               }}
             onDrag={handleDrag}
             onDragEnd={() => setIsDragging(false)}
+            onDoubleClick={onDoubleClick}
             className={`relative ${isMasterVol ? "size-[4.5rem]" : "size-[2.65rem]"} rounded-full bg-background 
             `}
         >
