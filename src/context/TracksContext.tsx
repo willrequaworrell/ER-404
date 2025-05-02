@@ -5,7 +5,7 @@ import { initialTracks } from "../util/initialTrackData";
 import { defaultMasterFXSettings, MasterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 import { SampleType } from "../types/sample";
-import { applyMasterKnobSettings, applySampleKnobSettings } from "../util/tracksHelpers";
+import { applyMasterKnobSettings, applySampleKnobSettings, rebuildTrackChain } from "../util/tracksHelpers";
 import { mapKnobIdToProperty, mapKnobValueToRange } from "../util/knobValueHelpers";
 
 
@@ -122,10 +122,31 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
         try {
             await Tone.start()
-    
+            
+            Tone.getTransport().stop()
+            Tone.getTransport().cancel()
             Tone.getTransport().position = 0
             beatRef.current = 0
             setCurrentBeat(0)
+
+            const masterNodes = [
+                masterLowCutRef.current!,
+                masterHighCutRef.current!,
+                masterCompressorRef.current!,
+                masterLimiterRef.current!,
+                masterMeterRef.current!,
+            ]
+
+            applySampleKnobSettings(tracksRef.current);
+            applyMasterKnobSettings(
+                masterFXSettings,
+                masterCompressorRef,
+                masterLowCutRef,
+                masterHighCutRef
+            );
+            tracksRef.current.forEach(track =>
+                rebuildTrackChain(track, masterNodes)
+            );
 
             confirmOrCreateSchedule()
 
@@ -167,7 +188,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
         const resetMasterFXSettings = {
             lowCut: 0,
-            highCut: 0,
+            highCut: 100,
             reverb: 0,
             delay: 0,
             compressorRatio: 0,
@@ -274,7 +295,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 // get rid of old track player
                 track.player.stop()
                 track.player.dispose()
-                const newTrack = {...track}
+                const newTrack: TrackType = {
+                    ...track,
+                }
                 // create new player with new sample and connect it to signal chain 
                 const newPlayer = new Tone.Player({url: newSample.file, autostart: false})
                 newPlayer.chain(
@@ -282,7 +305,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                     track.lowCut,
                     track.highCut,
                     track.volume,
-                    track.delay,
+                    // track.delay,
                     track.reverb,
                     masterLowCutRef.current!,
                     masterHighCutRef.current!,
@@ -297,7 +320,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 return {
                     ...newTrack,
                     currentSample: newSample,
-                    player: newPlayer
+                    player: newPlayer,
+                    sampleImgFile: newSample.img
                 }
             })
         })
@@ -415,6 +439,15 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 trackToUpdate.delay.wet.value = mapKnobValueToRange(value, 0, .75)
             }
 
+            const masterNodes = [
+                masterLowCutRef.current!,
+                masterHighCutRef.current!,
+                masterCompressorRef.current!,
+                masterLimiterRef.current!,
+                masterMeterRef.current!,
+            ]
+            rebuildTrackChain(trackToUpdate, masterNodes);
+
             return newTracks
         })
     }
@@ -482,25 +515,30 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     // Set up chain for each track
     useEffect( () => {
+        const masterNodes = [
+            masterLowCutRef.current!,
+            masterHighCutRef.current!,
+            masterCompressorRef.current!,
+            masterLimiterRef.current!,
+            masterMeterRef.current!,
+        ];
 
-        tracks.forEach(track => {
-            track.player.disconnect()
-            track.player.chain(
-                track.envelope,
-                track.lowCut,
-                track.highCut,
-                track.volume,
-                track.delay,
-                track.reverb,
-                masterLowCutRef.current!,
-                masterHighCutRef.current!,
-                masterCompressorRef.current!,
-                masterLimiterRef.current!,
-                masterMeterRef.current!,
-                Tone.getDestination()
-            )
-        })
-    }, [])
+
+        // 1) apply all track FX values (including delay wet = 0)
+        applySampleKnobSettings(tracks);
+
+        // 2) apply master FX values
+        applyMasterKnobSettings(
+            masterFXSettings,
+            masterCompressorRef,
+            masterLowCutRef,
+            masterHighCutRef
+        );
+
+        // 3) rebuild each track’s chain, skipping delay when delay=0
+        tracks.forEach(track => rebuildTrackChain(track, masterNodes));
+        
+    }, [tracks, masterFXSettings])
 
     // handle master volume tracking
     useEffect(() => {

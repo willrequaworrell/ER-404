@@ -17,7 +17,7 @@ const Track = ({track, setTracks}:TrackPropsType) => {
     const [showDropdownSelectArrow, setShowDropdownSelectArrow] = useState<boolean>(false)
 
     const sampleOptions = track.availableSamples.map(sample => sample.kit)
-
+    console.log(track.delay.wet.value)
     const handleClick = async () => {
         setCurrentTrack(track.index)
         
@@ -43,7 +43,7 @@ const Track = ({track, setTracks}:TrackPropsType) => {
     const handleSampleChange = (trackIndex: number, selectedKit: string) => {
         const newSample = track.availableSamples.find(sample => sample.kit === selectedKit)
         if (!newSample) return
-
+        
         handleChangeTrackSample(trackIndex, newSample)
     }
 

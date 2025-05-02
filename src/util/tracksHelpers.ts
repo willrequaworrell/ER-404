@@ -52,3 +52,38 @@ export const applyMasterKnobSettings = (
       Tone.getDestination().volume.value = masterVolumeDb;
 
 }
+
+
+
+export function rebuildTrackChain(track: TrackType, masterNodes: Array<Tone.ToneAudioNode>) {
+	// 1. Disconnect everything
+	track.player.disconnect();
+	track.delay?.disconnect();   
+  	track.reverb.disconnect();  
+
+	// 2. Build an array: always include these
+	const nodes: Tone.ToneAudioNode[] = [
+		track.envelope,
+		track.lowCut,
+		track.highCut,
+		track.volume,
+	];
+
+	// 3. Conditionally insert delay
+	if (track.knobSettings.delay > 0) {
+		nodes.push(track.delay);
+	}
+
+	// 4. Then reverb
+	nodes.push(track.reverb);
+
+	// 5. Then any master chain nodes
+	nodes.push(...masterNodes);
+
+	// 6. Finally the destination
+	nodes.push(Tone.getDestination());
+
+	console.log(nodes)
+	// 7. Chain them all
+	track.player.chain(...nodes);
+}
