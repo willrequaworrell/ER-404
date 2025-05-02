@@ -9,7 +9,7 @@ const SampleViewer = () => {
         <ScreenContainer
             styles="h-full w-full p-4"
         >
-            <img src={tracks[currentTrack].sampleImgFile} className="h-full" alt="current track sample visualized" />
+            <img src={tracks[currentTrack].currentSample.img} className="h-full" alt="current track sample visualized" />
         </ScreenContainer>
 
     )

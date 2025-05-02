@@ -6,7 +6,6 @@ export interface TrackType {
     name: string
     availableSamples: SampleType[]
     currentSample: SampleType
-    sampleImgFile: string
     trackButtons: boolean[]
     isMuted: boolean
     isSoloed: boolean
