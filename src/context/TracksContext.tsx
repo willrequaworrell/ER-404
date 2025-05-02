@@ -165,6 +165,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
         Tone.getTransport().stop()
         Tone.getTransport().cancel()
+        Tone.getDraw().cancel(0)
 
         scheduleIdRef.current = null
 
