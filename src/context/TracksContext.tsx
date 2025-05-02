@@ -188,7 +188,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
         const resetMasterFXSettings = {
             lowCut: 0,
-            highCut: 0,
+            highCut: 100,
             reverb: 0,
             delay: 0,
             compressorRatio: 0,
