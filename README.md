@@ -6,4 +6,5 @@ Built with React + TypeScript app to emulate a retro drum machine (e.g. TR-909) 
 
 Styled with Tailwind 
 
-<img width="1470" alt="er404-4192025" src="https://github.com/user-attachments/assets/cf05bb2b-6741-45ac-9331-400264edfd79" />
+<img width="1470" alt="ER-404 050525" src="https://github.com/user-attachments/assets/3ce6edd4-cfa0-474d-b71e-0f5dd5782e2c" />
+
