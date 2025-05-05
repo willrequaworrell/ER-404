@@ -1,7 +1,7 @@
 // import { useState } from "react"
 import Knob from "./Knob"
 import { useTracksContext } from "../context/TracksContext"
-import { formatHighCutFrequency, formatLowCutFrequency, formatMasterCompressorRatio, formatMasterCompressorThreshold, formatMasterVolume } from "../util/knobValueHelpers"
+import {formatMasterCompressorRatio, formatMasterCompressorThreshold, formatMasterEQKnob, formatMasterVolume } from "../util/knobValueHelpers"
 
 
 const MasterFXSection = () => {
@@ -9,17 +9,19 @@ const MasterFXSection = () => {
 
 
     const handleKnobChange = (knobId: string, newValue: number) => {
-        if (knobId === "masterLowCut") {
-            handleSetMasterFXSettings("lowCut", newValue)
-        } else if (knobId === "masterHiCut") {
-            handleSetMasterFXSettings("highCut", newValue)
+        if (knobId === "masterVolume") {
+            handleSetMasterFXSettings("volume", newValue)
+        } else if (knobId === "masterEQLow") {
+            handleSetMasterFXSettings("eqLow", newValue)
+        } else if (knobId === "masterEQMid") {
+            handleSetMasterFXSettings("eqMid", newValue)
+        } else if (knobId === "masterEQHigh") {
+            handleSetMasterFXSettings("eqHigh", newValue)
         } else if (knobId === "masterCompressorRatio") {
             handleSetMasterFXSettings("compressorRatio", newValue)
         } else if (knobId === "masterCompressorThreshold") {
             handleSetMasterFXSettings("compressorThreshold", newValue)
-        } else if (knobId === "masterVolume") {
-            handleSetMasterFXSettings("volume", newValue)
-        }
+        } 
     }
 
     
@@ -29,24 +31,34 @@ const MasterFXSection = () => {
                 <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">MASTER</span>
                 
                 <Knob 
-                    id="masterLowCut"
-                    label="HP Freq"
-                    value={masterFXSettings.lowCut}
+                    id="masterEQLow"
+                    label="Bass"
+                    value={masterFXSettings.eqLow}
                     min={0}
                     max={100}
-                    valueFormatter={formatLowCutFrequency}
+                    valueFormatter={formatMasterEQKnob}
                     onChange={handleKnobChange}
-                    onDoubleClick={() => resetMasterFXKnobValue("masterLowCut")}
+                    onDoubleClick={() => resetMasterFXKnobValue("masterEQLow")}
                 />
                 <Knob 
-                    id="masterHiCut"
-                    label="LP Freq"
-                    value={masterFXSettings.highCut}
+                    id="masterEQMid"
+                    label="Mid"
+                    value={masterFXSettings.eqMid}
                     min={0}
                     max={100}
-                    valueFormatter={formatHighCutFrequency}
+                    valueFormatter={formatMasterEQKnob}
                     onChange={handleKnobChange}
-                    onDoubleClick={() => resetMasterFXKnobValue("masterHiCut")}
+                    onDoubleClick={() => resetMasterFXKnobValue("masterEQMid")}
+                />
+                <Knob 
+                    id="masterEQHigh"
+                    label="Treble"
+                    value={masterFXSettings.eqHigh}
+                    min={0}
+                    max={100}
+                    valueFormatter={formatMasterEQKnob}
+                    onChange={handleKnobChange}
+                    onDoubleClick={() => resetMasterFXKnobValue("masterEQHigh")}
                 />
                 
                 <div className="relative flex gap-x-[1vw] justify-between  border-text-primary">

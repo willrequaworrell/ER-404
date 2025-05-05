@@ -13,6 +13,9 @@ export const mapKnobIdToProperty = (knobId: string): keyof TrackType['knobSettin
         sampleHighCut: 'highCut',
         masterLowCut: 'lowCut',
         masterHiCut: 'highCut',
+        masterEQLow: 'eqLow',
+        masterEQMid: 'eqMid',
+        masterEQHigh: 'eqHigh',
         masterDelay: 'delay',
         masterCompressorRatio: 'compressorRatio',
         masterCompressorThreshold: 'compressorThreshold',
@@ -73,10 +76,11 @@ export const formatDecay = (value: number) => {
 
 // Master Knob formatters
 
-export const formatMasterVolume = (value: number) => {
-    const converted = mapKnobValueToRange(value, -60, 0)
-    const formatted = `${converted.toFixed(0)} dB`
 
+export const formatMasterEQKnob = (value: number) => {
+    const converted = Math.trunc(mapKnobValueToRange(value, -6, 6))
+    const formatted = `${converted > 0 ? "+": ""}${converted.toFixed(0)} dB`
+    
     return formatted
 }
 
@@ -90,6 +94,13 @@ export const formatMasterCompressorThreshold = (value: number) => {
 export const formatMasterCompressorRatio = (value: number) => {
     const converted = mapKnobValueToRange(value, 1, 8)
     const formatted = `${converted.toFixed(0)}:1`
+
+    return formatted
+}
+
+export const formatMasterVolume = (value: number) => {
+    const converted = mapKnobValueToRange(value, -60, 0)
+    const formatted = `${converted.toFixed(0)} dB`
 
     return formatted
 }

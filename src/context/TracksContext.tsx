@@ -68,8 +68,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const beatRef = useRef(0)
     const tracksRef = useRef(tracks)
     const scheduleIdRef = useRef<number | null>(null)
-    const masterLowCutRef = useRef<Tone.Filter | null>(null)
-    const masterHighCutRef = useRef<Tone.Filter | null>(null)
+    const masterEQLowRef = useRef<Tone.Filter | null>(null)
+    const masterEQMidRef = useRef<Tone.Filter | null>(null)
+    const masterEQHighRef = useRef<Tone.Filter | null>(null)
     const masterCompressorRef = useRef<Tone.Compressor | null>(null)
     const masterLimiterRef = useRef<Tone.Limiter | null>(null)
     const masterMeterRef = useRef<Tone.Meter | null>(null)
@@ -95,7 +96,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 // play each track according to solo/mute state
                 tracksRef.current.forEach(track => {
                     const activatedNote = track.trackButtons[current]
-
+                    
                     // if solos exist, skip non-soloed tracks
                     if (anySoloed && !track.isSoloed) return
 
@@ -130,8 +131,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             setCurrentBeat(0)
 
             const masterNodes = [
-                masterLowCutRef.current!,
-                masterHighCutRef.current!,
+                masterEQLowRef.current!,
+                masterEQMidRef.current!,
+                masterEQHighRef.current!,
                 masterCompressorRef.current!,
                 masterLimiterRef.current!,
                 masterMeterRef.current!,
@@ -141,8 +143,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             applyMasterKnobSettings(
                 masterFXSettings,
                 masterCompressorRef,
-                masterLowCutRef,
-                masterHighCutRef
+                masterEQLowRef,
+                masterEQMidRef,
+                masterEQHighRef
             );
             tracksRef.current.forEach(track =>
                 rebuildTrackChain(track, masterNodes)
@@ -188,10 +191,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         }))
 
         const resetMasterFXSettings = {
-            lowCut: 0,
-            highCut: 100,
-            reverb: 0,
-            delay: 0,
+            eqLow: 50,
+            eqMid: 50,
+            eqHigh: 50,
             compressorRatio: 0,
             compressorThreshold: 100,
             volume: 100,
@@ -219,29 +221,30 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         })
 
         if (property === 'volume') {
-            Tone.getDestination().volume.value =
-                mapKnobValueToRange(defaultValue, -60, 0)
+            Tone.getDestination().volume.value = mapKnobValueToRange(defaultValue, -60, 0)
         } else if (property === 'compressorThreshold') {
             if (masterCompressorRef.current) {
-                masterCompressorRef.current.threshold.value =
-                    mapKnobValueToRange(defaultValue, -30, 0)
+                masterCompressorRef.current.threshold.value = mapKnobValueToRange(defaultValue, -30, 0)
             }
         } else if (property === 'compressorRatio') {
             if (masterCompressorRef.current) {
-                masterCompressorRef.current.ratio.value =
-                    mapKnobValueToRange(defaultValue, 1, 8)
+                masterCompressorRef.current.ratio.value = mapKnobValueToRange(defaultValue, 1, 8)
             }
-        } else if (property === 'lowCut') {
-            if (masterLowCutRef.current) {
-                masterLowCutRef.current.frequency.value =
-                    mapKnobValueToRange(defaultValue, 0, 2000)
+        } else if (property === 'eqLow') {
+            if (masterEQLowRef.current) {
+                masterEQLowRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
             }
-        } else if (property === 'highCut') {
-            if (masterHighCutRef.current) {
-                masterHighCutRef.current.frequency.value =
-                    mapKnobValueToRange(defaultValue, 2000, 20000)
+        } 
+        else if (property === 'eqMid') {
+            if (masterEQMidRef.current) {
+                masterEQMidRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
             }
-        }
+        } 
+        else if (property === 'eqHigh') {
+            if (masterEQHighRef.current) {
+                masterEQHighRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
+            }
+        } 
           
     }
 
@@ -306,13 +309,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                     track.lowCut,
                     track.highCut,
                     track.volume,
-                    // track.delay,
+                    track.delay,
                     track.reverb,
-                    masterLowCutRef.current!,
-                    masterHighCutRef.current!,
-                    masterCompressorRef.current!,
-                    masterLimiterRef.current!,
-                    masterMeterRef.current!,
                     Tone.getDestination()
 
                 )
@@ -388,16 +386,20 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             masterCompressorRef.current.ratio.value = mapKnobValueToRange(value, 1, 8)
         }
 
-
-        if (settingName === "highCut") {
-            if (!masterHighCutRef.current) return 
-            masterHighCutRef.current.frequency.value = mapKnobValueToRange(value, 2000, 20000)
+        if (settingName === "eqLow") {
+            if (!masterEQLowRef.current) return
+            console.log(mapKnobValueToRange(value, -6, 6))
+            masterEQLowRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
+        }
+        if (settingName === "eqMid") {
+            if (!masterEQMidRef.current) return
+            masterEQMidRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
+        }
+        if (settingName === "eqHigh") {
+            if (!masterEQHighRef.current) return
+            masterEQHighRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
         }
 
-        if (settingName === "lowCut") {
-            if (!masterLowCutRef.current) return 
-            masterLowCutRef.current.frequency.value = mapKnobValueToRange(value, 0, 2000)
-        }
 
     }
 
@@ -441,8 +443,6 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             }
 
             const masterNodes = [
-                masterLowCutRef.current!,
-                masterHighCutRef.current!,
                 masterCompressorRef.current!,
                 masterLimiterRef.current!,
                 masterMeterRef.current!,
@@ -467,8 +467,14 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     // initialize master chain refs & dispose on unmount
     useEffect(() => {
-        masterLowCutRef.current = new Tone.Filter(0, "highpass")
-        masterHighCutRef.current = new Tone.Filter(20000, "lowpass")
+        masterEQLowRef.current = new Tone.Filter(200, "lowshelf")
+        masterEQMidRef.current = new Tone.Filter({
+            type: "peaking",
+            frequency: 1000, 
+            Q: 1,
+            gain: 0
+        })
+        masterEQHighRef.current = new Tone.Filter(5000, "highshelf")
         masterCompressorRef.current = new Tone.Compressor({
             ratio: 8,
             threshold: 0,
@@ -480,8 +486,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     
         
         return () => {
-            masterLowCutRef.current?.dispose()
-            masterHighCutRef.current?.dispose()
+            masterEQLowRef.current?.dispose()
+            masterEQMidRef.current?.dispose()
+            masterEQHighRef.current?.dispose()
             masterCompressorRef.current?.dispose()
             masterLimiterRef.current?.dispose()
             masterMeterRef.current?.dispose()
@@ -517,13 +524,13 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     // Set up chain for each track
     useEffect( () => {
         const masterNodes = [
-            masterLowCutRef.current!,
-            masterHighCutRef.current!,
+            masterEQLowRef.current!,
+            masterEQMidRef.current!,
+            masterEQHighRef.current!,
             masterCompressorRef.current!,
             masterLimiterRef.current!,
             masterMeterRef.current!,
         ];
-
 
         // 1) apply all track FX values (including delay wet = 0)
         applySampleKnobSettings(tracks);
@@ -532,8 +539,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         applyMasterKnobSettings(
             masterFXSettings,
             masterCompressorRef,
-            masterLowCutRef,
-            masterHighCutRef
+            masterEQLowRef,
+            masterEQMidRef,
+            masterEQHighRef
         );
 
         // 3) rebuild each track’s chain, skipping delay when delay=0
@@ -578,8 +586,9 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         applyMasterKnobSettings(
             masterFXSettings,
             masterCompressorRef,
-            masterLowCutRef,
-            masterHighCutRef
+            masterEQLowRef,
+            masterEQMidRef,
+            masterEQHighRef
         )
     }, [])
 

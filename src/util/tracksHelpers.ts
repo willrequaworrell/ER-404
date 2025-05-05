@@ -29,9 +29,10 @@ export const applySampleKnobSettings = (tracks: TrackType[], ) => {
 
 export const applyMasterKnobSettings = (
     masterFXSettings: MasterFXSettingsType,
-    masterCompressorRef: React.RefObject<Tone.Compressor | null>, 
-    masterLowCutRef: React.RefObject<Tone.Filter | null>, 
-    masterHighCutRef: React.RefObject<Tone.Filter | null>) => {
+    masterCompressorRef: React.RefObject<Tone.Compressor | null>,
+    masterEQLowRef: React.RefObject<Tone.Filter | null>, 
+	masterEQMidRef: React.RefObject<Tone.Filter | null>,
+    masterEQHighRef: React.RefObject<Tone.Filter | null>) => {
 
      // Apply master FX settings
 
@@ -42,11 +43,13 @@ export const applyMasterKnobSettings = (
       }
       
       // Apply Hi/Lo Cut
-      if (masterLowCutRef.current && masterHighCutRef.current) {
-        masterLowCutRef.current.frequency.value = mapKnobValueToRange(masterFXSettings.lowCut, 0, 2000)
+      if (masterEQLowRef.current && masterEQMidRef.current && masterEQHighRef.current) {
+        masterEQLowRef.current.gain.value = mapKnobValueToRange(masterFXSettings.eqLow, -6, 6)
         
-        masterHighCutRef.current.frequency.value = mapKnobValueToRange(masterFXSettings.highCut, 2000, 20000)
+        masterEQHighRef.current.gain.value = mapKnobValueToRange(masterFXSettings.eqHigh, -6, 6)
       }
+
+      
       
       const masterVolumeDb = -60 + ((masterFXSettings.volume / 100) * 60);
       Tone.getDestination().volume.value = masterVolumeDb;
@@ -55,11 +58,13 @@ export const applyMasterKnobSettings = (
 
 
 
-export function rebuildTrackChain(track: TrackType, masterNodes: Array<Tone.ToneAudioNode>) {
+export const rebuildTrackChain = (track: TrackType, masterNodes: Array<Tone.ToneAudioNode>) => {
 	// 1. Disconnect everything
-	track.player.disconnect();
-	track.delay?.disconnect();   
-  	track.reverb.disconnect();  
+	track.player.disconnect()
+	track.envelope.disconnect()
+	track.volume.disconnect()
+	track.delay?.disconnect()
+	track.reverb.disconnect()
 
 	// 2. Build an array: always include these
 	const nodes: Tone.ToneAudioNode[] = [
@@ -83,7 +88,6 @@ export function rebuildTrackChain(track: TrackType, masterNodes: Array<Tone.Tone
 	// 6. Finally the destination
 	nodes.push(Tone.getDestination());
 
-	console.log(nodes)
 	// 7. Chain them all
 	track.player.chain(...nodes);
 }
