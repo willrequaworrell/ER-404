@@ -33,7 +33,7 @@ const MasterFXSection = () => {
                 <div className="absolute w-full  h-[2px] -top-3 bg-text-primary "></div>
                     <div className="absolute h-2 border-l left-0 -top-3 border-1 border-text-primary"></div>
                     <div className="absolute h-2 border-r right-0 -top-3 border-1 border-text-primary"></div>
-                    <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -top-6 left-1/2">EQ</span>
+                    <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -top-6 left-1/2">EQUALIZER</span>
                     <Knob 
                         id="masterEQLow"
                         label="Bass"
