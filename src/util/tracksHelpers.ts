@@ -45,7 +45,7 @@ export const applyMasterKnobSettings = (
       // Apply Hi/Lo Cut
       if (masterEQLowRef.current && masterEQMidRef.current && masterEQHighRef.current) {
         masterEQLowRef.current.gain.value = mapKnobValueToRange(masterFXSettings.eqLow, -6, 6)
-        
+        masterEQMidRef.current.gain.value = mapKnobValueToRange(masterFXSettings.eqMid, -6, 6)
         masterEQHighRef.current.gain.value = mapKnobValueToRange(masterFXSettings.eqHigh, -6, 6)
       }
 

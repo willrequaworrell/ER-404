@@ -36,7 +36,7 @@ const SpectrumAnalyzer = () => {
             const barWidth = canvas.width /  spectrumData.length
             const gapWidth = barWidth
             spectrumData.forEach( (val, i) => {
-                const barHeight = (typeof val === "number" ? val : 0) + 60 //check that array val is number, not array, handle edge case
+                const barHeight = (typeof val === "number" ? val : 0) + 80 //check that array val is number, not array, handle edge case
                 const x = i * (barWidth + gapWidth)
                 const y = canvas.height - barHeight
                 canvasContext.fillStyle = "#8e68d0"
