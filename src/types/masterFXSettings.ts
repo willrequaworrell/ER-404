@@ -1,16 +1,16 @@
 export interface MasterFXSettingsType {
-    lowCut: number
-    highCut: number
-    delay: number
+    eqLow: number
+    eqMid: number
+    eqHigh: number
     compressorRatio: number
     compressorThreshold: number
     volume: number
 }
 
 export const defaultMasterFXSettings: MasterFXSettingsType = {
-    lowCut: 0,
-    highCut: 100,
-    delay: 0,
+    eqLow: 50,
+    eqMid: 50,
+    eqHigh: 50,
     compressorRatio: 0,
     compressorThreshold: 100,
     volume: 100,
