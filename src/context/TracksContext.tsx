@@ -1,12 +1,13 @@
 import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import * as Tone from 'tone';
 import { TrackType } from "../types/track";
-import { initialTracks } from "../util/initialTrackData";
+import { initialTracksMetadata } from "../util/initialTrackData";
 import { defaultMasterFXSettings, MasterFXSettingsType } from "../types/masterFXSettings";
 import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 import { SampleType } from "../types/sample";
 import { applyMasterKnobSettings, applySampleKnobSettings, rebuildTrackChain } from "../util/tracksHelpers";
 import { mapKnobIdToProperty, mapKnobValueToRange } from "../util/knobValueHelpers";
+import { allSamples } from "../util/samplesData";
 
 
 interface TracksContextType {
@@ -37,26 +38,54 @@ interface TracksContextType {
 const TracksContext = createContext<TracksContextType | null>(null)
 const NUM_BUTTONS = 16
 
-export const TracksProvider = ({children}: {children: ReactNode}) => {
+export const TracksProvider = ({ children }: { children: ReactNode }) => {
     const savedState = LoadStateFromLocalStorage()
 
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
     const [BPM, setBPM] = useState<number>(savedState?.BPM || 120)
-    const [tracks, setTracks] = useState<TrackType[]>(initialTracks.map((track, index) => {
-        // get saved sample if it exists, otherwise fallback on initial
-        const playerSample = savedState?.tracks[index].currentSample.file || track.currentSample.file
-        const newPlayer = new Tone.Player({url: playerSample, autostart: false})
-        
-        return {
-            ...track, 
-            trackButtons: savedState?.tracks[index].trackButtons || track.trackButtons,
-            knobSettings: savedState?.tracks[index].knobSettings || track.knobSettings,
-            isMuted: savedState?.tracks[index].isMuted || track.isMuted,
-            isSoloed: savedState?.tracks[index].isSoloed || track.isSoloed,
-            currentSample: savedState?.tracks[index].currentSample || track.currentSample,
-            player: savedState?.tracks[index].currentSample ? newPlayer : track.player
-        }
-    }))
+
+    const trackPlayersRef = useRef<Record<string, Tone.Player>>({})
+    const [tracks, setTracks] = useState<TrackType[]>(() => {
+        return initialTracksMetadata.map((defaultTrack):TrackType => {
+            // get sample from localStorage or defaults
+            const trackIndex = defaultTrack.index
+            const sample = savedState?.tracks[trackIndex].currentSample ?? defaultTrack.currentSample
+            // get the preloaded Player for this sample
+            const pre = trackPlayersRef.current[sample.file];
+            // 2) decide whether buffer is ready
+            const player = pre?.buffer?.loaded
+                ? new Tone.Player(pre.buffer.get() as AudioBuffer)
+                : new Tone.Player({ url: defaultTrack.currentSample.file, autostart: false });
+
+            // 3) instantiate the rest of the nodes
+            const volume = new Tone.Volume(0);
+            const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.05 });
+            const reverb = new Tone.Reverb({ wet: 0, decay: 0.1, preDelay: 0.01 });
+            const lowCut = new Tone.Filter(0, "highpass");
+            const highCut = new Tone.Filter(20000, "lowpass");
+            const envelope = new Tone.AmplitudeEnvelope({ attack: 0, decay: 3, sustain: 0, release: 0 });
+
+            // 4) wire them once into your chain
+            player.chain(envelope, lowCut, highCut, volume, delay, reverb, Tone.getDestination());
+
+            return {
+                ...defaultTrack,
+                currentSample: sample,
+                trackButtons: savedState?.tracks[trackIndex]?.trackButtons ?? defaultTrack.trackButtons,
+                knobSettings: savedState?.tracks[trackIndex]?.knobSettings ?? defaultTrack.knobSettings,
+                isMuted: savedState?.tracks[trackIndex]?.isMuted ?? false,
+                isSoloed: savedState?.tracks[trackIndex]?.isSoloed ?? false,
+                player,
+                volume,
+                delay,
+                reverb,
+                lowCut,
+                highCut,
+                envelope
+            };
+        });
+    });
+
 
 
     const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(savedState?.masterFXSettings || defaultMasterFXSettings)
@@ -66,15 +95,15 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const [masterVolumeLevel, setMasterVolumeLevel] = useState<number>(0)
 
     const beatRef = useRef(0)
-    const tracksRef = useRef(tracks)
     const scheduleIdRef = useRef<number | null>(null)
+    const tracksRef = useRef<TrackType[]>(tracks)
     const masterEQLowRef = useRef<Tone.Filter | null>(null)
     const masterEQMidRef = useRef<Tone.Filter | null>(null)
     const masterEQHighRef = useRef<Tone.Filter | null>(null)
     const masterCompressorRef = useRef<Tone.Compressor | null>(null)
     const masterLimiterRef = useRef<Tone.Limiter | null>(null)
     const masterMeterRef = useRef<Tone.Meter | null>(null)
-    
+
 
 
     const confirmOrCreateSchedule = () => {
@@ -86,7 +115,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 beatRef.current = next
                 // update UI
                 Tone.getDraw().schedule(() => {
-                    
+
                     setCurrentBeat(next)
                 }, time)
 
@@ -96,14 +125,14 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 // play each track according to solo/mute state
                 tracksRef.current.forEach(track => {
                     const activatedNote = track.trackButtons[current]
-                    
+
                     // if solos exist, skip non-soloed tracks
                     if (anySoloed && !track.isSoloed) return
 
                     // if no solos, skip muted tracks
                     if (!anySoloed && track.isMuted) return
 
-                    if (activatedNote) {
+                    if (activatedNote && track.player.buffer?.loaded) {
                         track.player.start(time)
                         track.envelope.triggerAttack(time)
                         track.envelope.triggerRelease(
@@ -117,13 +146,13 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             }, "16n")
         }
     }
-      
+
 
     const globalPlay = async () => {
 
         try {
             await Tone.start()
-            
+
             Tone.getTransport().stop()
             Tone.getTransport().cancel()
             Tone.getTransport().position = 0
@@ -155,8 +184,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
             Tone.getTransport().start()
             setIsPlaying(true)
-    
-            
+
+
         } catch (error) {
             console.error("Audio context startup failed.", error)
         }
@@ -182,13 +211,50 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const globalReset = () => {
         globalStop()
 
-        const resetTracks = initialTracks.map(track => ({
-            ...track,
-            trackButtons: new Array(NUM_BUTTONS).fill(false),
-            isMuted: false,
-            isSoloed: false,
-            knobSettings: { ...track.knobSettings }
-        }))
+        const resetTracks = initialTracksMetadata.map((track) => {
+            const preloadedPlayer = trackPlayersRef.current[track.currentSample.file]
+            const player = (preloadedPlayer.buffer.loaded) ?
+                new Tone.Player(preloadedPlayer.buffer) :
+                new Tone.Player({ url: track.currentSample.file, autostart: false })
+
+            const volume = new Tone.Volume(0);
+            const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.05 });
+            const reverb = new Tone.Reverb({ wet: 0, decay: 0.1, preDelay: 0.01 });
+            const lowCut = new Tone.Filter(0, "highpass");
+            const highCut = new Tone.Filter(20000, "lowpass");
+            const envelope = new Tone.AmplitudeEnvelope({ attack: 0, decay: 3, sustain: 0, release: 0 });
+
+            player.chain(
+                envelope,
+                lowCut,
+                highCut,
+                volume,
+                delay,
+                reverb
+            )
+
+            return {
+                ...track,
+                trackButtons: new Array(NUM_BUTTONS).fill(false),
+                isMuted: false,
+                isSoloed: false,
+                knobSettings: { ...track.knobSettings },
+                player,
+                volume,
+                delay,
+                reverb,
+                lowCut,
+                highCut,
+                envelope
+            };
+        })
+        // const resetTracks = initialTracks.map(track => ({
+        //     ...track,
+        //     trackButtons: new Array(NUM_BUTTONS).fill(false),
+        //     isMuted: false,
+        //     isSoloed: false,
+        //     knobSettings: { ...track.knobSettings }
+        // }))
 
         const resetMasterFXSettings = {
             eqLow: 50,
@@ -210,7 +276,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         const property = mapKnobIdToProperty(knobId) as keyof MasterFXSettingsType
         if (!property) return
 
-        const defaultValue = defaultMasterFXSettings[property] 
+        const defaultValue = defaultMasterFXSettings[property]
 
         setMasterFXSettings(prevSettings => {
             const newSettings = {
@@ -234,21 +300,21 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             if (masterEQLowRef.current) {
                 masterEQLowRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
             }
-        } 
+        }
         else if (property === 'eqMid') {
             if (masterEQMidRef.current) {
                 masterEQMidRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
             }
-        } 
+        }
         else if (property === 'eqHigh') {
             if (masterEQHighRef.current) {
                 masterEQHighRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
             }
-        } 
-          
+        }
+
     }
 
-    const resetSampleFXKnobValue = (trackIndex: number, knobId: string ) => {
+    const resetSampleFXKnobValue = (trackIndex: number, knobId: string) => {
 
         setTracks(prevTracks => {
             return prevTracks.map(track => {
@@ -257,7 +323,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 // update ui state to default 
                 const property = mapKnobIdToProperty(knobId) as keyof TrackType['knobSettings']
                 if (!property) return track
-                const defaultValue = initialTracks[trackIndex].knobSettings[property]
+                const defaultValue = initialTracksMetadata[trackIndex].knobSettings[property]
 
                 const newKnobSettings = {
                     ...track.knobSettings,
@@ -299,11 +365,22 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 // get rid of old track player
                 track.player.stop()
                 track.player.dispose()
-                const newTrack: TrackType = {
-                    ...track,
+
+                // get preloaded sample 
+                const preloadedPlayer = trackPlayersRef.current[newSample.file]
+                if (!preloadedPlayer) {
+                    console.warn("No preload found for", newSample.file)
+                    return track
+                } else if (!preloadedPlayer.buffer?.loaded) {
+                    console.warn("Buffer still loading for", newSample.file)
                 }
+
+                // clone preloaded buffer into new player
+                const audioBuf = preloadedPlayer.buffer.get() as AudioBuffer
+                const newPlayer = new Tone.Player(audioBuf)
+
                 // create new player with new sample and connect it to signal chain 
-                const newPlayer = new Tone.Player({url: newSample.file, autostart: false})
+                // const newPlayer = new Tone.Player({url: newSample.file, autostart: false})
                 newPlayer.chain(
                     track.envelope,
                     track.lowCut,
@@ -317,17 +394,16 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
                 // return the track with the new sample & player
                 return {
-                    ...newTrack,
+                    ...track,
                     currentSample: newSample,
                     player: newPlayer,
-                    sampleImgFile: newSample.img
                 }
             })
         })
     }
 
     const handleToggleTrackMute = (trackIndex: number) => {
-        
+
         setTracks(prevTracks => {
             return prevTracks.map((track, index) => {
                 if (index !== trackIndex) return track
@@ -338,7 +414,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                     ...track,
                     isMuted: newMuteState
                 }
-                
+
                 return updatedTrack
             })
         })
@@ -347,10 +423,10 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     const handleToggleTrackSolo = (trackIndex: number) => {
         console.log("solo toggle for", tracks[trackIndex].name)
         setTracks(prevTracks => {
-            
+
             return prevTracks.map(track => {
                 if (trackIndex !== track.index) return track
-                
+
                 const newSoloState = !track.isSoloed
 
                 return {
@@ -377,12 +453,12 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         }
 
         if (settingName === "compressorThreshold") {
-            if (!masterCompressorRef.current) return 
+            if (!masterCompressorRef.current) return
             masterCompressorRef.current.threshold.value = mapKnobValueToRange(value, -30, 0)
         }
 
         if (settingName === "compressorRatio") {
-            if (!masterCompressorRef.current) return 
+            if (!masterCompressorRef.current) return
             masterCompressorRef.current.ratio.value = mapKnobValueToRange(value, 1, 8)
         }
 
@@ -404,7 +480,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     }
 
     const setTrackSetting = (settingName: keyof TrackType['knobSettings'], value: number) => {
-        setTracks( prevTracks => {
+        setTracks(prevTracks => {
             const newTracks = [...prevTracks]
             const trackToUpdate = newTracks[currentTrack]
 
@@ -420,7 +496,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             if (settingName === "lowCut") {
                 trackToUpdate.lowCut.frequency.value = mapKnobValueToRange(value, 0, 2000)
             }
-            
+
             if (settingName === "highCut") {
                 trackToUpdate.highCut.frequency.value = mapKnobValueToRange(value, 2000, 20000)
             }
@@ -428,7 +504,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             if (settingName === "attack") {
                 trackToUpdate.envelope.attack = mapKnobValueToRange(value, 0, 20)
             }
-            
+
             if (settingName === "decay") {
                 trackToUpdate.envelope.decay = mapKnobValueToRange(value, 0.05, 3)
             }
@@ -437,7 +513,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 trackToUpdate.reverb.wet.value = mapKnobValueToRange(value, 0, 0.5)
                 trackToUpdate.reverb.decay = mapKnobValueToRange(value, 0.1, 3)
             }
-            
+
             if (settingName === "delay") {
                 trackToUpdate.delay.wet.value = mapKnobValueToRange(value, 0, .75)
             }
@@ -453,16 +529,37 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         })
     }
 
+    // preload samples 
+    useEffect(() => {
+
+        const allSampleFilePaths = Object.values(allSamples).flat().map(sample => sample.file)
+
+        allSampleFilePaths.forEach(async (filePath) => {
+            if (!trackPlayersRef.current[filePath]) {
+                const player = new Tone.Player({ autostart: false })
+                trackPlayersRef.current[filePath] = player
+                try {
+                    await player.load(filePath)
+                    console.log("Successfully preloaded", filePath)
+                } catch (error) {
+                    console.log("Failed to preload", filePath, error)
+                }
+            }
+        });
+
+
+    }, [])
+
     // handle previous transport schedule cleanup
     useEffect(() => {
-        
+
         return () => {
             if (scheduleIdRef.current !== null) {
                 Tone.getTransport().clear(scheduleIdRef.current);
                 scheduleIdRef.current = null;
             }
         };
-       
+
     }, [])
 
     // initialize master chain refs & dispose on unmount
@@ -470,7 +567,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         masterEQLowRef.current = new Tone.Filter(200, "lowshelf")
         masterEQMidRef.current = new Tone.Filter({
             type: "peaking",
-            frequency: 1000, 
+            frequency: 1000,
             Q: 1,
             gain: 0
         })
@@ -483,8 +580,8 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
         })
         masterLimiterRef.current = new Tone.Limiter(-0.5)
         masterMeterRef.current = new Tone.Meter();
-    
-        
+
+
         return () => {
             masterEQLowRef.current?.dispose()
             masterEQMidRef.current?.dispose()
@@ -502,16 +599,16 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
                 tracks: tracks.map(track => ({
                     trackButtons: track.trackButtons,
                     knobSettings: track.knobSettings,
-                    isMuted: track.isMuted, 
+                    isMuted: track.isMuted,
                     isSoloed: track.isSoloed,
                     currentSample: track.currentSample
-                })), 
+                })),
                 masterFXSettings: masterFXSettings,
                 BPM: BPM,
             }
             saveStateToLocalStorage(state)
         }
-        
+
         const localStorageUpdateInterval = setInterval(saveCurrentState, 1000)
 
         return () => {
@@ -522,7 +619,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
     }, [tracks, masterFXSettings, BPM])
 
     // Set up chain for each track
-    useEffect( () => {
+    useEffect(() => {
         const masterNodes = [
             masterEQLowRef.current!,
             masterEQMidRef.current!,
@@ -546,23 +643,23 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
         // 3) rebuild each track’s chain, skipping delay when delay=0
         tracks.forEach(track => rebuildTrackChain(track, masterNodes));
-        
+
     }, [tracks, masterFXSettings])
 
     // handle master volume tracking
     useEffect(() => {
         if (!isPlaying || !masterMeterRef.current) return;
-        
+
         const meterInterval = setInterval(() => {
             const level = masterMeterRef.current!.getValue();
-            
-            const levelDB = typeof level === 'number' 
-                ? level 
+
+            const levelDB = typeof level === 'number'
+                ? level
                 : 20 * Math.log10(Math.max(level[0], level[1]));
-                
+
             setMasterVolumeLevel(levelDB)
-        }, 100); 
-        
+        }, 100);
+
         // Clean up interval when not playing
         return () => clearInterval(meterInterval);
     }, [isPlaying]);
@@ -570,16 +667,16 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
 
     // keep tracks Ref in sync with tracks state
-    useEffect( () => {
+    useEffect(() => {
         tracksRef.current = tracks
     }, [tracks])
 
     // keep BPM in sync with UI state
-    useEffect( () => {
+    useEffect(() => {
         Tone.getTransport().bpm.value = BPM
     }, [BPM])
 
-    
+
 
     useEffect(() => {
         applySampleKnobSettings(tracks)
@@ -594,15 +691,15 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
     return (
         <TracksContext.Provider value={{
-            tracks: tracks, 
-            setTracks: setTracks, 
+            tracks: tracks,
+            setTracks: setTracks,
             currentTrack: currentTrack,
             setCurrentTrack: setCurrentTrack,
-            BPM: BPM, 
+            BPM: BPM,
             setBPM: setBPM,
-            currentBeat: currentBeat, 
+            currentBeat: currentBeat,
             isPlaying: isPlaying,
-            globalPlay: globalPlay, 
+            globalPlay: globalPlay,
             globalStop: globalStop,
             globalReset: globalReset,
             resetMasterFXKnobValue: resetMasterFXKnobValue,
@@ -611,7 +708,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
             handleToggleTrackSolo: handleToggleTrackSolo,
             handleChangeTrackSample,
             setTrackSetting: setTrackSetting,
-            masterFXSettings: masterFXSettings, 
+            masterFXSettings: masterFXSettings,
             handleSetMasterFXSettings: handleSetMasterFXSettings,
             masterVolumeLevel: masterVolumeLevel
         }}>
@@ -622,7 +719,7 @@ export const TracksProvider = ({children}: {children: ReactNode}) => {
 
 export const useTracksContext = () => {
     const context = useContext(TracksContext)
-    
+
     if (!context) {
         throw new Error('No Tracks Context')
     }
