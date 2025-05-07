@@ -61,7 +61,7 @@ export const applyMasterKnobSettings = (
 
 
 export const rebuildTrackChain = (track: TrackType, masterNodes: Array<Tone.ToneAudioNode>) => {
-	// 1. Disconnect everything
+	// Disconnect everything
 	track.player.disconnect()
 	track.envelope.disconnect()
 	track.lowCut.disconnect()
@@ -70,7 +70,7 @@ export const rebuildTrackChain = (track: TrackType, masterNodes: Array<Tone.Tone
 	track.delay?.disconnect()
 	track.reverb.disconnect()
 
-	// 2. Build an array: always include these
+	// create array of definitely included fx
 	const nodes: Tone.ToneAudioNode[] = [
 		track.envelope,
 		track.lowCut,
@@ -78,20 +78,18 @@ export const rebuildTrackChain = (track: TrackType, masterNodes: Array<Tone.Tone
 		track.volume,
 	];
 
-	// 3. Conditionally insert delay
+	// Conditionally insert delay
 	if (track.knobSettings.delay > 0) {
 		nodes.push(track.delay);
 	}
 
-	// 4. Then reverb
+	// push reverb node (always)
 	nodes.push(track.reverb);
 
-	// 5. Then any master chain nodes
-	nodes.push(...masterNodes);
+	// push master chain nodes + destination
+	nodes.push(...masterNodes, Tone.getDestination());
 
-	// 6. Finally the destination
-	nodes.push(Tone.getDestination());
 
-	// 7. Chain them all
+	// connect player to the chain
 	track.player.chain(...nodes);
 }
