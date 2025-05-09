@@ -4,6 +4,18 @@
 
 @import "tailwindcss";
 
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+  }
+  
+
 @theme {
     --color-background: #E9EDF0;
     --color-text-primary: #8C9FB1;

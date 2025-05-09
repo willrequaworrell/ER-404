@@ -52,12 +52,17 @@ const SpectrumAnalyzer = () => {
 
 
     return (
-        <ScreenContainer
-            styles='h-full w-min px-4'
-        >
-            <canvas ref={canvasRef} width={250} height={40}></canvas>
+        <div className='h-5/6 flex justify-center items-center'>
+            <p className="absolute -top-[2vh] font-sans text-[.75rem]">ANALYZER</p>
+            <ScreenContainer
+                styles='h-full w-min px-4'
+            >
+                <canvas ref={canvasRef} width={250} height={40}></canvas>
 
-        </ScreenContainer>
+            </ScreenContainer>
+            
+        </div>
+        
             
     )
 }
