@@ -15,7 +15,7 @@ const Home = () => {
 						<GlobalControls/>
 						
 					</div>
-					<div className="flex items-center justify-center h-1/16">
+					<div className="flex items-center justify-center h-1/12">
 						<div className="w-1/10"></div>
 						<Timeline/>
 					</div>

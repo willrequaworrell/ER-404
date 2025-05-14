@@ -50,12 +50,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             // get sample from localStorage or fallback to default
             const sample = savedState?.tracks[trackIndex].currentSample ?? defaultTrack.currentSample
 
-            // get the preloaded Player for this sample
-            const pre = trackPlayersRef.current[sample.file];
-    
-            const player = pre?.buffer?.loaded
-                ? new Tone.Player(pre.buffer.get() as AudioBuffer)
-                : new Tone.Player({ url: defaultTrack.currentSample.file, autostart: false });
+            const player = new Tone.Player({ url: sample.file, autostart: false })
 
             // Instantiate the track chain nodes and chain them to the Player
             const volume = new Tone.Volume(0);
@@ -71,7 +66,8 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 highCut, 
                 volume, 
                 delay, 
-                reverb);
+                reverb
+            )
             
             // Return the default track, but substitute in any saved state from local storage if it exists
             return {
@@ -437,6 +433,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     const handleSetMasterFXSettings = (settingName: keyof MasterFXSettingsType, value: number) => {
         // update given setting in state
+        console.log(settingName, value)
         setMasterFXSettings(prevSettings => {
             return {
                 ...prevSettings,
@@ -661,7 +658,13 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         return () => clearInterval(meterInterval);
     }, [isPlaying]);
 
+    useEffect(() => {
+        console.log("swing Effect")
+        const newSwing = mapKnobValueToRange(masterFXSettings.swing, 0, 0.5)
+        Tone.getTransport().swingSubdivision = "16n"
+        Tone.getTransport().swing = newSwing
 
+    }, [masterFXSettings.swing])
 
     // keep tracks Ref in sync with tracks state
     useEffect(() => {

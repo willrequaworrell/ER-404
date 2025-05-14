@@ -48,6 +48,7 @@ const SampleFXSection = () => {
                 value={currentSettings.volume}
                 min={0}
                 max={100}
+                size="md"
                 valueFormatter={formatSampleVolume}
                 onChange={handleKnobChange}
                 onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleVolume")}
@@ -58,6 +59,7 @@ const SampleFXSection = () => {
                 value={currentSettings.attack}
                 min={0}
                 max={100}
+                size="md"
                 valueFormatter={formatAttack}
                 onChange={handleKnobChange}
                 onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleAttack")}
@@ -68,6 +70,7 @@ const SampleFXSection = () => {
                 value={currentSettings.decay}
                 min={0}
                 max={100}
+                size="md"
                 valueFormatter={formatDecay}
                 onChange={handleKnobChange}
                 onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleDecay")}
@@ -78,6 +81,7 @@ const SampleFXSection = () => {
                 value={currentSettings.reverb}
                 min={0}
                 max={100}
+                size="md"
                 onChange={handleKnobChange}
                 onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleReverb")}
             />
@@ -87,6 +91,7 @@ const SampleFXSection = () => {
                 value={currentSettings.delay}
                 min={0}
                 max={100}
+                size="md"
                 onChange={handleKnobChange}
                 onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleDelay")}
             />
@@ -96,6 +101,7 @@ const SampleFXSection = () => {
                 value={currentSettings.lowCut}
                 min={0}
                 max={100}
+                size="md"
                 valueFormatter={formatLowCutFrequency}
                 onChange={handleKnobChange}
                 onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleLowCut")}
@@ -106,6 +112,7 @@ const SampleFXSection = () => {
                 value={currentSettings.highCut}
                 min={0}
                 max={100}
+                size="md"
                 valueFormatter={formatHighCutFrequency}
                 onChange={handleKnobChange}
                 onDoubleClick={() => resetSampleFXKnobValue(currentTrack, "sampleHighCut")}

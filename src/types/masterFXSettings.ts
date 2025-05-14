@@ -5,6 +5,7 @@ export interface MasterFXSettingsType {
     compressorRatio: number
     compressorThreshold: number
     volume: number
+    swing: number
 }
 
 export const defaultMasterFXSettings: MasterFXSettingsType = {
@@ -14,4 +15,5 @@ export const defaultMasterFXSettings: MasterFXSettingsType = {
     compressorRatio: 0,
     compressorThreshold: 100,
     volume: 100,
+    swing: 0
 }

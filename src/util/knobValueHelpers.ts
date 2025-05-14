@@ -2,7 +2,7 @@ import { MasterFXSettingsType } from "../types/masterFXSettings"
 import { TrackType } from "../types/track"
 
 // Helper to convert a knobId into the corresponding property name in a track object
-export const mapKnobIdToProperty = (knobId: string): keyof TrackType['knobSettings'] | keyof MasterFXSettingsType | undefined => {
+export const mapKnobIdToProperty = (knobId: string): keyof TrackType['knobSettings'] | keyof MasterFXSettingsType => {
     const map: Record<string, (keyof TrackType['knobSettings'] | keyof MasterFXSettingsType)> = {
         sampleVolume: 'volume',
         sampleAttack: 'attack',
@@ -20,6 +20,7 @@ export const mapKnobIdToProperty = (knobId: string): keyof TrackType['knobSettin
         masterCompressorRatio: 'compressorRatio',
         masterCompressorThreshold: 'compressorThreshold',
         masterVolume: 'volume',
+        masterSwing: 'swing',
         
     }
 
@@ -104,4 +105,5 @@ export const formatMasterVolume = (value: number) => {
 
     return formatted
 }
+
 

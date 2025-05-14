@@ -42,7 +42,7 @@ const GlobalControls = () => {
                 />
             </div>
             <SpectrumAnalyzer/>
-            <div className="h-full w-1/4">
+            <div className="h-full flex items-center w-1/4">
                 <BPMDisplay/>
             </div>
         </div>
