@@ -29,6 +29,7 @@ const MasterFXSection = () => {
                         value={masterFXSettings.eqLow}
                         min={0}
                         max={100}
+                        size="md"
                         valueFormatter={formatMasterEQKnob}
                         onChange={handleKnobChange}
                         onDoubleClick={() => resetMasterFXKnobValue("masterEQLow")}
@@ -39,6 +40,7 @@ const MasterFXSection = () => {
                         value={masterFXSettings.eqMid}
                         min={0}
                         max={100}
+                        size="md"
                         valueFormatter={formatMasterEQKnob}
                         onChange={handleKnobChange}
                         onDoubleClick={() => resetMasterFXKnobValue("masterEQMid")}
@@ -49,6 +51,7 @@ const MasterFXSection = () => {
                         value={masterFXSettings.eqHigh}
                         min={0}
                         max={100}
+                        size="md"
                         valueFormatter={formatMasterEQKnob}
                         onChange={handleKnobChange}
                         onDoubleClick={() => resetMasterFXKnobValue("masterEQHigh")}
@@ -66,6 +69,7 @@ const MasterFXSection = () => {
                         value={masterFXSettings.compressorRatio}
                         min={0}
                         max={100}
+                        size="md"
                         valueFormatter={formatMasterCompressorRatio}
                         onChange={handleKnobChange}
                         onDoubleClick={() => resetMasterFXKnobValue("masterCompressorRatio")}
@@ -76,6 +80,7 @@ const MasterFXSection = () => {
                         value={masterFXSettings.compressorThreshold}
                         min={0}
                         max={100}
+                        size="md"
                         valueFormatter={formatMasterCompressorThreshold}
                         onChange={handleKnobChange}
                         onDoubleClick={() => resetMasterFXKnobValue("masterCompressorThreshold")}
@@ -87,10 +92,10 @@ const MasterFXSection = () => {
                     value={masterFXSettings.volume}
                     min={0}
                     max={100}
+                    size="lg"
                     valueFormatter={formatMasterVolume}
                     onChange={handleKnobChange}
                     onDoubleClick={() => resetMasterFXKnobValue("masterVolume")}
-                    isMasterVol
                 />
 
                 <div className="absolute bottom-0 left-0 h-2 border-l border-1 border-text-primary"></div>

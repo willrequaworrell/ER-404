@@ -7,8 +7,7 @@ interface KnobPropsType {
     value: number
     min?: number
     max?: number
-    isMasterVol?: boolean
-    isMasterSwing?: boolean
+    size?: "sm" | "md" | "lg"
     valueFormatter?: (value: number) => string
     onChange: (id: string, value: number) => void
     onDoubleClick?: () => void
@@ -18,14 +17,20 @@ const ROTATION_RANGE = 300;
 const ROTATION_OFFSET = 10;
 const DRAG_RANGE = 200
 
+const SIZE_MAP: Record<"sm" | "md" | "lg", { containerWidth: string; outerWidth: string; innerWidth: string }> = {
+    sm: { containerWidth: "",outerWidth: "size-[2.3rem]", innerWidth: "size-[2rem]" },
+    md: { containerWidth: "w-[4vw]",outerWidth: "size-[3rem]", innerWidth: "size-[2.65rem]" },
+    lg: { containerWidth: "w-[6vw]",outerWidth: "size-[5rem]", innerWidth: "size-[4.5rem]" },
+}
 
-const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, isMasterSwing=false, valueFormatter, onChange, onDoubleClick}: KnobPropsType) => {
+
+const Knob = ({id, label, value, min=0, max=100, size="sm", valueFormatter, onChange, onDoubleClick}: KnobPropsType) => {
+
+    const {innerWidth, outerWidth, containerWidth} = SIZE_MAP[size]
 
     const [isDragging, setIsDragging] = useState<boolean>(false)
-
     const initialDragY = ((value - min) / (max - min)) * DRAG_RANGE;
     const dragY = useMotionValue(initialDragY)
-
     const rotationDegreesFromDragValue = useTransform(
         dragY, 
         [0,DRAG_RANGE], 
@@ -52,9 +57,9 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, isMasterSwin
     }, [value, min, max])
 
   return (
-    <div className={`flex flex-col items-center justify-end h-full gap-y-2 ${isMasterVol ? "w-[6vw]" : "w-[4vw]"}`}>
+    <div className={`flex flex-col items-center ${size !== "sm" && "justify-end gap-y-2"} h-full  ${containerWidth}`}>
 
-        <div className={`relative flex items-center justify-center ${isMasterVol ? "size-[5rem]" : "size-[3rem]"}`}>
+        <div className={`relative flex items-center justify-center ${outerWidth}`}>
         {/* Outer bevel ring */}
         <div
             style={{
@@ -83,7 +88,7 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, isMasterSwin
             onDrag={handleDrag}
             onDragEnd={() => setIsDragging(false)}
             onDoubleClick={onDoubleClick}
-            className={`relative ${isMasterVol ? "size-[4.5rem]" : "size-[2.65rem]"} rounded-full bg-background 
+            className={`relative ${innerWidth} rounded-full bg-background 
             `}
         >
             {/* Small recessed circular area (dot) */}
@@ -98,7 +103,9 @@ const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, isMasterSwin
         </motion.div>
         
         </div>
-        <div className="text-[.75rem] text-text-primary">{isDragging ? (valueFormatter ? valueFormatter(value) : value) : label}</div>
+        <div 
+            className={`text-[.75rem] text-text-primary ${size === "sm" && "absolute -bottom-6 left-1/2 -translate-x-1/2"}`}>{isDragging ? (valueFormatter ? valueFormatter(value) : value) : label}
+        </div>
     </div>
     
   );

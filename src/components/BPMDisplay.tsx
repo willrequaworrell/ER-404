@@ -3,7 +3,7 @@ import { useTracksContext } from "../context/TracksContext"
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react"
 import Button from "./Button"
 import { FaCaretDown, FaCaretUp } from "react-icons/fa"
-import SwingKnob from "./SwingKnob"
+import Knob from "./Knob"
 
 const MIN_BPM = 50
 const MAX_BPM = 200
@@ -147,14 +147,13 @@ const BPMDisplay = () => {
 
             </div>
             <div className="relative w-1/4">
-                {/* <div className="absolute w-full  h-[2px] -bottom-3 bg-text-primary "></div>
-                <div className="absolute h-2 border-l left-0 -bottom-3 border-1 border-text-primary"></div>
-                <div className="absolute h-2 border-r right-0 -bottom-3 border-1 border-text-primary"></div>
-                <span className="absolute px-2 text-[.6rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">SWING</span> */}
-                <SwingKnob
+                <Knob
                     id="masterSwing"
                     label="Swing"
                     value={masterFXSettings.swing}
+                    min={0}
+                    max={100}
+                    size="sm"
                     onChange={(_, value) => handleSetMasterFXSettings("swing", value)}
                     onDoubleClick={() => resetMasterFXKnobValue("masterSwing")}
                 />
