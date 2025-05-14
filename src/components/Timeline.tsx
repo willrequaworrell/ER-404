@@ -21,23 +21,6 @@ const Timeline = () => {
                 <TimelineTick text="•" beatIndex={13}/>
                 <TimelineTick text="•" beatIndex={14}/>
                 <TimelineTick text="•" beatIndex={15}/>
-                
-                {/* <p>1</p>
-                <p>•</p>
-                <p>2</p>
-                <p>•</p>
-                <p>3</p>
-                <p>•</p>
-                <p>4</p>
-                <p>•</p>
-                <p>5</p>
-                <p>•</p>
-                <p>6</p>
-                <p>•</p>
-                <p>7</p>
-                <p>•</p>
-                <p>8</p>
-                <p>•</p> */}
             </div>
         </ScreenContainer>
     )

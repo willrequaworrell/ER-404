@@ -8,6 +8,7 @@ interface KnobPropsType {
     min?: number
     max?: number
     isMasterVol?: boolean
+    isMasterSwing?: boolean
     valueFormatter?: (value: number) => string
     onChange: (id: string, value: number) => void
     onDoubleClick?: () => void
@@ -18,7 +19,7 @@ const ROTATION_OFFSET = 10;
 const DRAG_RANGE = 200
 
 
-const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, valueFormatter, onChange, onDoubleClick}: KnobPropsType) => {
+const Knob = ({id, label, value, min=0, max=100, isMasterVol=false, isMasterSwing=false, valueFormatter, onChange, onDoubleClick}: KnobPropsType) => {
 
     const [isDragging, setIsDragging] = useState<boolean>(false)
 
