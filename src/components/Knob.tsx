@@ -57,7 +57,7 @@ const Knob = ({id, label, value, min=0, max=100, size="sm", valueFormatter, onCh
     }, [value, min, max])
 
   return (
-    <div className={`flex flex-col items-center ${size !== "sm" && "justify-end gap-y-2"} h-full  ${containerWidth}`}>
+    <div className={`flex flex-col items-center ${size !== "sm" && "justify-end gap-y-2"} ${containerWidth}`}>
 
         <div className={`relative flex items-center justify-center ${outerWidth}`}>
         {/* Outer bevel ring */}
