@@ -1,14 +1,16 @@
 import { Outlet } from "react-router-dom"
 
-
-const Layout = () => {
-    return (
-        <main>
-            <div className="flex flex-col min-h-screen bg-background text-text-primary">
-                <Outlet/>
-            </div>
-        </main>
-    )
-}
+const Layout = () => (
+  <main
+    className="
+      min-h-screen backdrop-blur-3xl flex flex-col text-text-primary
+      bg-gradient-to-br
+      from-background
+      to-[#5740807b]
+    "
+  >
+    <Outlet/>
+  </main>
+)
 
 export default Layout
