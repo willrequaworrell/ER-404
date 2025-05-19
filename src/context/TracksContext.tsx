@@ -659,12 +659,33 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     }, [isPlaying]);
 
     useEffect(() => {
-        console.log("swing Effect")
         const newSwing = mapKnobValueToRange(masterFXSettings.swing, 0, 0.5)
         Tone.getTransport().swingSubdivision = "16n"
         Tone.getTransport().swing = newSwing
 
     }, [masterFXSettings.swing])
+    
+    useEffect( () => {
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.code === "Space") {
+                e.preventDefault();
+                if (isPlaying) {
+                    globalStop();
+                } else {
+                    globalPlay();
+                }
+            } else if (e.code === "KeyS") {
+                handleToggleTrackSolo(currentTrack)
+            } else if (e.code === "KeyM") {
+                handleToggleTrackMute(currentTrack)
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown)
+
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [[isPlaying, globalPlay, globalStop]])
 
     // keep tracks Ref in sync with tracks state
     useEffect(() => {
