@@ -37,23 +37,36 @@ npm run dev
 ## Usage
 
 **Programming Beats**  
-Click grid cells to toggle steps. Press Play to start your sequence and Stop to pause. Press Reset to clear all patterns & settings
+- Each row is a drum track (Kick, Clap, Snare, Open Hat, Closed Hat), each with 16 buttons representing steps in the sequence.
+- Click buttons to toggle notes on/off.
+- Switch between available sample kits for a track by hovering over the track name and selecting from the dropdown.
 
-**Sound Customization**  
-- Drag knobs to adjust volume, attack, decay, low-cut, and high-cut.  
-- Double-click any knob to reset it to its default.  
+**Playback Section**  
+- Global controls:
+  - **Play**: Start sequence playback.
+  - **Stop**: Pause playback.
+  - **Reset**: Clear all patterns and settings.
+  - **Spacebar**: Toggle play/pause.
+- **BPM**: Adjust using up/down carets (hold to quickly change), or double-click the BPM to enter a custom tempo (50–200 BPM).
+- **Swing**: Use the swing knob to add groove to your pattern.
 
-**Sample FX**  
-Enable and tweak filters, reverb and delay directly on each track for tone, depth and space.
+**Sample Section**  
+- Each track features:
+  - Envelope controls (**Attack**, **Decay**)
+  - FX controls (**High Cut**, **Low Cut** filters, **Reverb**, **Delay**)
+  - **Mute** and **Solo** buttons for quick auditioning and isolation
+  - **Keyboard Shortcuts**:  
+    - Press `m` to mute the currently selected track  
+    - Press `s` to solo the currently selected track
 
-**Master FX**  
-Use compressor, master volume, and the three-band EQ (low, mid, high) to shape your overall mix.
+**Master Section**  
+- Sculpt your overall mix using:
+  - **3-band EQ** (Low, Mid, High)
+  - **Compressor** (Ratio, Threshold)
+  - **Master Volume**
 
-**Sample Selection**  
-Hover over a track name, click the arrow to open a dropdown, and choose from available kits.
-
-**BPM Control**  
-Click the caret icons to increment or decrement tempo, or hold them down for continuous adjustment. Alternatively, double click the BPM to enter a custom tempo from 50-200
+**General**  
+- **Double-click any knob** to reset it to its default value.
 
 ## Future Enhancements
 
