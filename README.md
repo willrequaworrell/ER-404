@@ -1,9 +1,9 @@
-# Sequencer.js - ER-404 Drum Machine
+ER-404 Drum Machine
 
 Work in Progress...
 
 Built with React + TypeScript app to emulate a retro drum machine (e.g. TR-909) on the web using Tone.js. 
 
-Styled with Tailwind 
+Styled/Animated with Tailwind & Motion
 
-<img width="1470" alt="er404 051425" src="https://github.com/user-attachments/assets/ba598a1b-7dc5-47eb-bddf-c786e372e71b" />
+<img width="1470" alt="Screenshot 2025-05-18 at 10 29 42 PM" src="https://github.com/user-attachments/assets/59cd5c58-8e0f-4c62-8c23-55dcd141ff47" />
