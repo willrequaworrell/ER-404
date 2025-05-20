@@ -110,7 +110,10 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     // Set up Transport playback schedule 
     const confirmOrCreateSchedule = () => {
-        if (!scheduleIdRef.current) {
+        if (scheduleIdRef.current != null) {
+            Tone.getTransport().clear(scheduleIdRef.current)     
+            scheduleIdRef.current = null
+        } else {
             scheduleIdRef.current = Tone.getTransport().scheduleRepeat(time => {
 
                 const current = beatRef.current
@@ -154,6 +157,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
 
     const globalPlay = async () => {
+        if (isPlaying) return 
 
         try {
             await Tone.start()
