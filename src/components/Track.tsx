@@ -55,7 +55,7 @@ const Track = ({track, setTracks}:TrackPropsType) => {
                 className="h-full pr-4 cursor-pointer w-1/9"
             >
                 <ScreenContainer 
-                    styles={`relative flex-row-reverse px-4 h-full gap-2 text-[.9rem] ${currentTrack === track.index && "text-white"}`}
+                    styles={`relative flex-row-reverse px-4 h-full gap-2 text-[.8rem] ${currentTrack === track.index && "text-white"}`}
                 >
                     <DropdownSelect 
                         trackIndex={track.index}

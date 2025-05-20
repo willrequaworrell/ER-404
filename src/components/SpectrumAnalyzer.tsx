@@ -36,7 +36,7 @@ const SpectrumAnalyzer = () => {
             const barWidth = canvas.width /  spectrumData.length
             const gapWidth = barWidth
             spectrumData.forEach( (val, i) => {
-                const barHeight = (typeof val === "number" ? val : 0) + 80 //check that array val is number, not array, handle edge case
+                const barHeight = (typeof val === "number" ? val : 0) + ((canvas.height) + Number(val)) //check that array val is number, not array, handle edge case + do some weird math
                 const x = i * (barWidth + gapWidth)
                 const y = canvas.height - barHeight
                 canvasContext.fillStyle = "#8e68d0"
@@ -52,16 +52,15 @@ const SpectrumAnalyzer = () => {
 
 
     return (
-        <div className='relative h-5/6 flex justify-center items-center'>
-            {/* <p className="absolute -top-[2vh] font-sans text-[.75rem]">ANALYZER</p> */}
+        <div className='relative h-5/6 w-full flex justify-center items-center'>
             <div className="absolute w-full  h-[2px] -top-3 bg-text-primary "></div>
             <div className="absolute h-2 border-l left-0 -top-3 border-1 border-text-primary"></div>
             <div className="absolute h-2 border-r right-0 -top-3 border-1 border-text-primary"></div>
             <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -top-6 left-1/2">ANALYZER</span>
             <ScreenContainer
-                styles='h-full w-min px-4'
+                styles='h-full w-full px-4 pb-2  overflow-clip'
             >
-                <canvas ref={canvasRef} width={250} height={40}></canvas>
+                <canvas ref={canvasRef} className='w-full h-full '></canvas>
 
             </ScreenContainer>
             

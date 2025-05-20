@@ -7,7 +7,7 @@ import TracksSection from "../components/TracksSection"
 const Home = () => {
 
 	return (
-		<div className="flex flex-col min-h-screen p-18 ">
+		<div className="flex flex-col min-h-screen lg:p-10 xl:p-18 ">
 			<RaisedContainer
 			styles="
 				flex-1

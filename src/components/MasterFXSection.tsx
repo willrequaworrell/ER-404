@@ -19,7 +19,7 @@ const MasterFXSection = () => {
         <div>
             <div className="relative flex items-end h-full pb-3 border-b-2 gap-x-[1vw] border-text-primary">
                 <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">MASTER</span>
-                <div className="relative flex gap-x-[1vw] h-[9vh]  ">
+                <div className="relative flex gap-x-[1vw] h-[10vh] items-end">
                     <div className="absolute w-full  h-[2px] -top-3 bg-text-primary "></div>
                     <div className="absolute h-2 border-l left-0 -top-3 border-1 border-text-primary"></div>
                     <div className="absolute h-2 border-r right-0 -top-3 border-1 border-text-primary"></div>
@@ -44,17 +44,6 @@ const MasterFXSection = () => {
                         onChange={handleKnobChange}
                         onDoubleClick={() => resetMasterFXKnobValue("masterEQMid")}
                     />
-                    {/* <Knob 
-                        id="masterEQHigh"
-                        label="Treble"
-                        value={masterFXSettings.eqHigh}
-                        min={0}
-                        max={100}
-                        size="md"
-                        valueFormatter={formatMasterEQKnob}
-                        onChange={handleKnobChange}
-                        onDoubleClick={() => resetMasterFXKnobValue("masterEQHigh")}
-                    /> */}
                     <Fader
                        id="masterEQHigh"
                        label="Treble"
@@ -67,7 +56,7 @@ const MasterFXSection = () => {
                     />
                 </div>
                 
-                <div className="relative flex gap-x-[1vw] justify-between  h-[9vh] border-text-primary ">
+                <div className="relative flex gap-x-[1vw] justify-between  h-[10vh] border-text-primary ">
                     <div className="absolute w-full h-[2px] -top-3 bg-text-primary "></div>
                     <div className="absolute h-2 border-l left-0 -top-3 border-1 border-text-primary"></div>
                     <div className="absolute h-2 border-r right-0 -top-3 border-1 border-text-primary"></div>
