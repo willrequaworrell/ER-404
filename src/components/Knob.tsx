@@ -17,16 +17,16 @@ const ROTATION_RANGE = 300;
 const ROTATION_OFFSET = 10;
 const DRAG_RANGE = 200
 
-const SIZE_MAP: Record<"sm" | "md" | "lg", { containerWidth: string; outerWidth: string; innerWidth: string }> = {
-    sm: { containerWidth: "",outerWidth: "size-[2.3rem]", innerWidth: "size-[2rem]" },
-    md: { containerWidth: "w-[4vw]",outerWidth: "size-[3rem]", innerWidth: "size-[2.65rem]" },
-    lg: { containerWidth: "w-[6vw]",outerWidth: "size-[5rem]", innerWidth: "size-[4.5rem]" },
+const SIZE_MAP: Record<"sm" | "md" | "lg", { containerWidth: string; outerWidth: string; innerWidth: string, dotSize: string }> = {
+    sm: { containerWidth: "",outerWidth: "size-[4vh]", innerWidth: "size-[3.4vh]" , dotSize: "size-[0.4vh]"},
+    md: { containerWidth: "w-[4vw]",outerWidth: "size-[3.5vw]", innerWidth: "size-[3.1vw]" , dotSize: "size-[0.5vh]"},
+    lg: { containerWidth: "w-[6vw]",outerWidth: "size-[5.5vw]", innerWidth: "size-[5vw]" , dotSize: "size-[0.75vh]"},
 }
 
 
 const Knob = ({id, label, value, min=0, max=100, size="sm", valueFormatter, onChange, onDoubleClick}: KnobPropsType) => {
 
-    const {innerWidth, outerWidth, containerWidth} = SIZE_MAP[size]
+    const {innerWidth, outerWidth, containerWidth, dotSize} = SIZE_MAP[size]
 
     const [isDragging, setIsDragging] = useState<boolean>(false)
     const initialDragY = ((value - min) / (max - min)) * DRAG_RANGE;
@@ -93,8 +93,8 @@ const Knob = ({id, label, value, min=0, max=100, size="sm", valueFormatter, onCh
         >
             {/* Small recessed circular area (dot) */}
             <div
-            className="absolute size-[0.25rem] bg-accent rounded-full 
-                shadow-[inset_1px_1px_2px_rgba(0,0,0,0.3),inset_-1px_-1px_2px_rgba(255,255,255,0.5)]"
+            className={`absolute ${dotSize} bg-accent rounded-full 
+                shadow-[inset_1px_1px_2px_rgba(0,0,0,0.3),inset_-1px_-1px_2px_rgba(255,255,255,0.5)]`}
             style={{
                 top: "75%",
                 left: "35%",
@@ -104,7 +104,7 @@ const Knob = ({id, label, value, min=0, max=100, size="sm", valueFormatter, onCh
         
         </div>
         <div 
-            className={`text-[.75rem] text-text-primary ${size === "sm" && "absolute -bottom-6 left-1/2 -translate-x-1/2"}`}>{isDragging ? (valueFormatter ? valueFormatter(value) : value) : label}
+            className={`text-[.75rem] text-text-primary text-nowrap ${size === "sm" && "absolute -bottom-[3.2vh] left-1/2 -translate-x-1/2"}`}>{isDragging ? (valueFormatter ? valueFormatter(value) : value) : label}
         </div>
     </div>
     
