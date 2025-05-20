@@ -54,7 +54,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
             // Instantiate the track chain nodes and chain them to the Player
             const volume = new Tone.Volume(0);
-            const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.05 });
+            const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.3 });
             const reverb = new Tone.Reverb({ wet: 0, decay: 0.1, preDelay: 0.01 });
             const lowCut = new Tone.Filter(0, "highpass");
             const highCut = new Tone.Filter(20000, "lowpass");
