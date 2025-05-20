@@ -21,8 +21,8 @@ const GlobalControls = () => {
     }
 
     return (
-        <div className="flex items-center w-3/5 h-full gap-x-4">
-            <div className="flex h-full w-1/3 items-center justify-end gap-x-4 ">
+        <div className="flex items-center justify-end w-3/5 h-full gap-x-4 ">
+            <div className="flex h-full w-1/3 items-center justify-end gap-x-4  ">
 
                 <Button
                     icon={<FaPlay />}
@@ -41,8 +41,10 @@ const GlobalControls = () => {
                     onClick={handleReset}
                 />
             </div>
-            <SpectrumAnalyzer/>
-            <div className="h-full flex items-center w-1/4">
+            <div className="flex items-center flex-1 h-full justify-center w-full min-w-[100px] max-w-[300px]">
+                <SpectrumAnalyzer/>
+            </div>
+            <div className="h-full flex items-center w-1/4 ">
                 <BPMDisplay/>
             </div>
         </div>
