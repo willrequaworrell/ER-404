@@ -9,7 +9,7 @@ const TimelineTick = ({text, beatIndex}: TimelineTickPropsType) => {
     const {currentBeat} = useTracksContext()
 
     return (
-        <p className={`${currentBeat === beatIndex + 1 && "text-white"}`}>{text}</p>
+        <p className={`text-sm ${currentBeat === beatIndex + 1 && "text-white"}`}>{text}</p>
     )
 }
 

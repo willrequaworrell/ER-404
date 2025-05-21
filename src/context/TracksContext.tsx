@@ -54,7 +54,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
             // Instantiate the track chain nodes and chain them to the Player
             const volume = new Tone.Volume(0);
-            const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.3 });
+            const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.1 });
             const reverb = new Tone.Reverb({ wet: 0, decay: 0.1, preDelay: 0.01 });
             const lowCut = new Tone.Filter(0, "highpass");
             const highCut = new Tone.Filter(20000, "lowpass");
@@ -230,7 +230,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 new Tone.Player({ url: track.currentSample.file, autostart: false })
 
             const volume = new Tone.Volume(0);
-            const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.05 });
+            const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.1});
             const reverb = new Tone.Reverb({ wet: 0, decay: 0.1, preDelay: 0.01 });
             const lowCut = new Tone.Filter(0, "highpass");
             const highCut = new Tone.Filter(20000, "lowpass");
@@ -508,7 +508,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 trackToUpdate.reverb.decay = mapKnobValueToRange(value, 0.1, 3)
             }
             else if (settingName === "delay") {
-                trackToUpdate.delay.wet.value = mapKnobValueToRange(value, 0, .75)
+                trackToUpdate.delay.wet.value = mapKnobValueToRange(value, 0, .5)
             }
 
             // rebuild track + connect to master chain

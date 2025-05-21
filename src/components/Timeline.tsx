@@ -3,8 +3,8 @@ import TimelineTick from "./TimelineTick"
 
 const Timeline = () => {
     return (
-        <ScreenContainer styles="flex-1">
-            <div className="flex justify-between flex-1 px-8">
+        <ScreenContainer styles="flex-1 py-[.1vh]">
+            <div className="flex justify-between flex-1 px-[2.1vw]">
                 <TimelineTick text="1" beatIndex={0}/>
                 <TimelineTick text="•" beatIndex={1}/>
                 <TimelineTick text="•" beatIndex={2}/>
