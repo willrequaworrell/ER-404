@@ -113,46 +113,46 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         if (scheduleIdRef.current != null) {
             Tone.getTransport().clear(scheduleIdRef.current)     
             scheduleIdRef.current = null
-        } else {
-            scheduleIdRef.current = Tone.getTransport().scheduleRepeat(time => {
-
-                const current = beatRef.current
-                const next = (current + 1) % NUM_BUTTONS
-                beatRef.current = next
-                
-            
-                Tone.getDraw().schedule(() => {
-
-                    setCurrentBeat(next)
-                }, time)
-
-                // determine if any track is soloed
-                const anySoloed = tracksRef.current.some(t => t.isSoloed)
-
-                // play each track according to solo/mute state
-                tracksRef.current.forEach(track => {
-                    const activatedNote = track.trackButtons[current]
-
-                    // if solos exist, skip non-soloed tracks
-                    if (anySoloed && !track.isSoloed) return
-
-                    // if no solos, skip muted tracks
-                    if (!anySoloed && track.isMuted) return
-
-                    // otherwise play sample if button activated and buffer loaded
-                    if (activatedNote && track.player.buffer?.loaded) {
-                        track.player.start(time)
-                        track.envelope.triggerAttack(time)
-                        track.envelope.triggerRelease(
-                            time + Number(track.envelope.attack)
-                            + Number(track.envelope.decay)
-                            + 0.001
-                        )
-                    }
-                })
-
-            }, "16n")
         }
+        scheduleIdRef.current = Tone.getTransport().scheduleRepeat(time => {
+
+            const current = beatRef.current
+            const next = (current + 1) % NUM_BUTTONS
+            beatRef.current = next
+            
+        
+            Tone.getDraw().schedule(() => {
+
+                setCurrentBeat(next)
+            }, time)
+
+            // determine if any track is soloed
+            const anySoloed = tracksRef.current.some(t => t.isSoloed)
+
+            // play each track according to solo/mute state
+            tracksRef.current.forEach(track => {
+                const activatedNote = track.trackButtons[current]
+
+                // if solos exist, skip non-soloed tracks
+                if (anySoloed && !track.isSoloed) return
+
+                // if no solos, skip muted tracks
+                if (!anySoloed && track.isMuted) return
+
+                // otherwise play sample if button activated and buffer loaded
+                if (activatedNote && track.player.buffer?.loaded) {
+                    track.player.start(time)
+                    track.envelope.triggerAttack(time)
+                    track.envelope.triggerRelease(
+                        time + Number(track.envelope.attack)
+                        + Number(track.envelope.decay)
+                        + 0.001
+                    )
+                }
+            })
+
+        }, "16n")
+        
     }
 
 
@@ -689,7 +689,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         window.addEventListener("keydown", handleKeyDown)
 
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [[isPlaying, globalPlay, globalStop]])
+    }, [isPlaying, globalPlay, globalStop])
 
     // keep tracks Ref in sync with tracks state
     useEffect(() => {
