@@ -69,7 +69,7 @@ const Track = ({track, setTracks}:TrackPropsType) => {
                     </div>
                 </ScreenContainer>
             </div>
-            <div className="flex h-full items-center w-9/10 gap-x-[1vw]">
+            <div className="flex h-full items-center w-8/9 gap-x-[1vw]">
                 {track.trackButtons.map( (_, i)  => {
                     const isDownbeat = (i + 4) % 4 === 0
                     return <TrackButton trackIndex={track.index} buttonIndex={i} isDownbeat={isDownbeat} trackButtons={track.trackButtons} setTracks={setTracks} key={`${track.index}-${i}`}/>
