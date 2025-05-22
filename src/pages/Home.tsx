@@ -25,7 +25,7 @@ const Home = () => {
 
 					</div>
 					<div className="flex items-center justify-center h-1/14">
-						<div className="w-1/10"></div>
+						<div className="w-1/9"></div>
 						<Timeline />
 					</div>
 					<div className="flex flex-col flex-1 gap-y-4 ">
