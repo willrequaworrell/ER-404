@@ -11,7 +11,7 @@ const MobileUnsupported = () => (
 )
 
 const Layout = () => (
-	<main className="relative min-h-screen overflow-hidden">
+	<main className="relative min-h-screen overflow-y-hidden">
 		<div className="flex w-full lg:hidden">
 			<MobileUnsupported />
 		</div>
