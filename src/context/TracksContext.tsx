@@ -97,7 +97,8 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     const [masterVolumeLevel, setMasterVolumeLevel] = useState<number>(0)
 
     // Initialize other app Refs
-    const beatRef = useRef(0)
+    const isPlayingRef = useRef<boolean>(false)
+    const beatRef = useRef<number>(0)
     const scheduleIdRef = useRef<number | null>(null)
     const tracksRef = useRef<TrackType[]>(tracks)
     const masterEQLowRef = useRef<Tone.Filter | null>(null)
@@ -125,14 +126,15 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             
         
             Tone.getDraw().schedule(() => {
-
-                setCurrentBeat(next)
+                if (isPlayingRef.current) {
+                    setCurrentBeat(next)
+                }
             }, time)
 
             // determine if any track is soloed
             const anySoloed = tracksRef.current.some(t => t.isSoloed)
 
-            // play each track according to solo/mute state
+            // play each track a ccording to solo/mute state
             tracksRef.current.forEach(track => {
                 const activatedNote = track.trackButtons[current]
 
@@ -225,10 +227,11 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         }
 
         transport.position = 0;
-        beatRef.current = 0;
-        setCurrentBeat(0);
         setIsPlaying(false)
-    }
+        // beatRef.current = 0;
+        // setCurrentBeat(0)
+        
+    } 
 
     const globalReset = () => {
         // stop playback
@@ -564,13 +567,17 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
 
         return () => {
+            const transport = Tone.getTransport()
             if (scheduleIdRef.current !== null) {
-                Tone.getTransport().clear(scheduleIdRef.current);
+                transport.clear(scheduleIdRef.current);
                 scheduleIdRef.current = null;
             }
+            if (isPlayingRef.current) {
+                transport.stop();
+              }
         };
 
-    }, [])
+    }, []) 
 
     // initialize master chain refs & dispose on unmount
     useEffect(() => {
@@ -707,6 +714,17 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         tracksRef.current = tracks
     }, [tracks])
+
+    useEffect( () => {
+        if (!isPlaying) {
+            beatRef.current = 0 
+            setCurrentBeat(0)
+        }
+    }, [isPlaying])
+
+    useEffect(() => {
+        isPlayingRef.current = isPlaying;
+    }, [isPlaying]);
 
     // keep BPM in sync with UI state
     useEffect(() => {
