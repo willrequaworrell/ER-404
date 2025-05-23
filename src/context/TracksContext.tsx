@@ -110,11 +110,14 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     // Set up Transport playback schedule 
     const confirmOrCreateSchedule = () => {
+        const transport = Tone.getTransport()
+
         if (scheduleIdRef.current != null) {
-            Tone.getTransport().clear(scheduleIdRef.current)     
+            transport.clear(scheduleIdRef.current)     
             scheduleIdRef.current = null
         }
-        scheduleIdRef.current = Tone.getTransport().scheduleRepeat(time => {
+        scheduleIdRef.current = transport.scheduleRepeat(time => {
+
 
             const current = beatRef.current
             const next = (current + 1) % NUM_BUTTONS
@@ -158,14 +161,16 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     const globalPlay = async () => {
         if (isPlaying) return 
+        const transport = Tone.getTransport()
 
         try {
             await Tone.start()
 
             // reset Transport and playback state
-            Tone.getTransport().stop()
-            Tone.getTransport().cancel()
-            Tone.getTransport().position = 0
+            transport.stop()
+            transport.cancel()
+            Tone.getDraw().cancel()
+            transport.position = 0
             beatRef.current = 0
             setCurrentBeat(0)
 
@@ -194,7 +199,8 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
             // create new transport schedule and start playback
             confirmOrCreateSchedule()
-            Tone.getTransport().start()
+            await new Promise(resolve => setTimeout(resolve, 10))
+            transport.start()
             setIsPlaying(true)
 
 
@@ -206,13 +212,19 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     const globalStop = () => {
         if (!isPlaying) return
-
+        const transport = Tone.getTransport()
+        
         // reset transport and playback state
-        Tone.getTransport().stop()
-        Tone.getTransport().cancel()
-        Tone.getDraw().cancel(0)
-        scheduleIdRef.current = null
-        Tone.getTransport().position = 0;
+        transport.stop()
+        transport.cancel()
+        Tone.getDraw().cancel()
+        
+        if (scheduleIdRef.current != null) {
+            transport.clear(scheduleIdRef.current)
+            scheduleIdRef.current = null
+        }
+
+        transport.position = 0;
         beatRef.current = 0;
         setCurrentBeat(0);
         setIsPlaying(false)
