@@ -7,7 +7,7 @@ import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/loca
 import { SampleType } from "../types/sample";
 import { applyMasterKnobSettings, applySampleKnobSettings, rebuildTrackChain } from "../util/tracksHelpers";
 import { mapKnobIdToProperty, mapKnobValueToRange } from "../util/knobValueHelpers";
-import { allSamples } from "../util/samplesData";
+import { useSamplePreload } from "../hooks/useSamplePreload";
 
 
 interface TracksContextType {
@@ -40,9 +40,10 @@ const NUM_BUTTONS = 16
 
 export const TracksProvider = ({ children }: { children: ReactNode }) => {
     const savedState = LoadStateFromLocalStorage()
+    const trackPlayers = useSamplePreload()
 
     // Initialize tracks State & Ref
-    const trackPlayersRef = useRef<Record<string, Tone.Player>>({})
+    // const trackPlayersRef = useRef<Record<string, Tone.Player>>({})
     const [tracks, setTracks] = useState<TrackType[]>(() => {
         return initialTracksMetadata.map((defaultTrack):TrackType => {
             const trackIndex = defaultTrack.index
@@ -134,7 +135,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             // determine if any track is soloed
             const anySoloed = tracksRef.current.some(t => t.isSoloed)
 
-            // play each track a ccording to solo/mute state
+            // play each track according to solo/mute state
             tracksRef.current.forEach(track => {
                 const activatedNote = track.trackButtons[current]
 
@@ -240,7 +241,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
         // rebuild each track with default settings
         const resetTracks = initialTracksMetadata.map((track) => {
-            const preloadedPlayer = trackPlayersRef.current[track.currentSample.file]
+            const preloadedPlayer = trackPlayers.current[track.currentSample.file]
             const player = (preloadedPlayer.buffer.loaded) ?
                 new Tone.Player(preloadedPlayer.buffer) :
                 new Tone.Player({ url: track.currentSample.file, autostart: false })
@@ -382,7 +383,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 track.player.dispose()
 
                 // get preloaded sample or return or return original track if no preload
-                const preloadedPlayer = trackPlayersRef.current[newSample.file]
+                const preloadedPlayer = trackPlayers.current[newSample.file]
                 if (!preloadedPlayer) {
                     console.warn("No preload found for", newSample.file)
                     return track
@@ -542,26 +543,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         })
     }
 
-    // preload samples 
-    useEffect(() => {
-
-        const allSampleFilePaths = Object.values(allSamples).flat().map(sample => sample.file)
-
-        allSampleFilePaths.forEach(async (filePath) => {
-            if (!trackPlayersRef.current[filePath]) {
-                const player = new Tone.Player({ autostart: false })
-                trackPlayersRef.current[filePath] = player
-                try {
-                    await player.load(filePath)
-                    console.log("Successfully preloaded", filePath)
-                } catch (error) {
-                    console.log("Failed to preload", filePath, error)
-                }
-            }
-        });
-
-
-    }, [])
 
     // handle previous transport schedule cleanup
     useEffect(() => {
