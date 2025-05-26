@@ -715,6 +715,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         tracksRef.current = tracks
     }, [tracks])
 
+    // reset timeline if playback is stopped
     useEffect( () => {
         if (!isPlaying) {
             beatRef.current = 0 
@@ -722,9 +723,36 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [isPlaying])
 
+
+    // keep isPlayingRef in sync with state
     useEffect(() => {
         isPlayingRef.current = isPlaying;
     }, [isPlaying]);
+
+
+    // reset transport when the user leaves the tab so that a fresh one is created when they return
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+
+            if (document.hidden && !isPlayingRef.current) {
+                console.log("user left page")
+                const transport = Tone.getTransport()
+                transport.stop()
+                transport.cancel()
+                Tone.getDraw().cancel()
+                if (scheduleIdRef.current != null) {
+                    transport.clear(scheduleIdRef.current)
+                    scheduleIdRef.current = null
+                }
+
+            }
+            
+        }
+        document.addEventListener("visibilitychange", handleVisibilityChange)
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange)
+        }
+    }, [])
 
     // keep BPM in sync with UI state
     useEffect(() => {
