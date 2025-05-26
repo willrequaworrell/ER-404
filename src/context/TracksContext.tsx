@@ -119,12 +119,12 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         }
         scheduleIdRef.current = transport.scheduleRepeat(time => {
 
-
+            // handle current beat ref update
             const current = beatRef.current
             const next = (current + 1) % NUM_BUTTONS
             beatRef.current = next
-            
-        
+
+            // also set new current beat state inside Draw callback to sync w/ playback 
             Tone.getDraw().schedule(() => {
                 if (isPlayingRef.current) {
                     setCurrentBeat(next)
@@ -195,6 +195,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 masterLimiterRef.current!,
                 masterMeterRef.current!,
             ]
+            
             tracksRef.current.forEach(track =>
                 rebuildTrackChain(track, masterNodes)
             );
@@ -376,12 +377,11 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             return prevTracks.map((track, index) => {
                 if (index !== trackIndex) return track
 
-
                 // get rid of old track player
                 track.player.stop()
                 track.player.dispose()
 
-                // get preloaded sample 
+                // get preloaded sample or return or return original track if no preload
                 const preloadedPlayer = trackPlayersRef.current[newSample.file]
                 if (!preloadedPlayer) {
                     console.warn("No preload found for", newSample.file)
@@ -635,7 +635,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     }, [tracks, masterFXSettings, BPM])
 
-    // Set up chain for each track
+    // Set up chain for each track any time tracks or master chain changes
     useEffect(() => {
         const masterNodes = [
             masterEQLowRef.current!,
@@ -658,7 +658,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             masterEQHighRef
         );
 
-        // 3) rebuild each track’s chain, skipping delay when delay=0
+        // 3) rebuild each track’s chain
         tracks.forEach(track => rebuildTrackChain(track, masterNodes));
 
     }, [tracks, masterFXSettings])
@@ -681,6 +681,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         return () => clearInterval(meterInterval);
     }, [isPlaying]);
 
+    // handle changes in swing knob by applying them to transport 
     useEffect(() => {
         const newSwing = mapKnobValueToRange(masterFXSettings.swing, 0, 0.5)
         Tone.getTransport().swingSubdivision = "16n"
@@ -688,6 +689,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     }, [masterFXSettings.swing])
     
+    // handle key stroke functionality
     useEffect( () => {
 
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -760,7 +762,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     }, [BPM])
 
 
-
+    
     useEffect(() => {
         applySampleKnobSettings(tracks)
         applyMasterKnobSettings(
