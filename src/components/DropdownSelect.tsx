@@ -4,7 +4,6 @@ interface DropdownSelectPropsType {
     trackIndex: number
     options: string[]
     value: string
-    // onChange: () => void
     onChange: (trackIndex: number, newSampleName: string) => void
     arrowVisible?: boolean
 }
@@ -18,8 +17,8 @@ const DropdownSelect = ({trackIndex, options, value, onChange, arrowVisible=true
         setIsOpen(prev => !prev)
     }
 
-    const handleSelectSample = (event: React.MouseEvent<HTMLLIElement>, selectedSample: string) => {
-        event.stopPropagation()
+    const handleSelectSample = (_: React.MouseEvent<HTMLLIElement>, selectedSample: string) => {
+        // event.stopPropagation()
         onChange(trackIndex, selectedSample)
         setIsOpen(false)
     }
