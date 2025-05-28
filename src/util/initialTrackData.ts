@@ -1,4 +1,5 @@
 // import * as Tone from "tone";
+import { defaultMasterFXSettings } from "../types/masterFXSettings"
 import { SampleType } from "../types/sample"
 import { allSamples } from "./samplesData"
 
@@ -116,3 +117,14 @@ export const initialTracksMetadata: TrackMetadata[] = [
     }
 ]
 
+export const defaultLocalStorageData = {
+    tracks: initialTracksMetadata.map(track => ({
+        trackButtons: track.trackButtons,
+        knobSettings: track.knobSettings,
+        isMuted: false,
+        isSoloed: false, 
+        currentSample: track.currentSample
+    })),
+    masterFXSettings: defaultMasterFXSettings,
+    BPM: 120
+} 
