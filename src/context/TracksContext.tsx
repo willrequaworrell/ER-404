@@ -3,11 +3,11 @@ import * as Tone from 'tone';
 import { TrackType } from "../types/track";
 import { initialTracksMetadata } from "../util/initialTrackData";
 import { defaultMasterFXSettings, MasterFXSettingsType } from "../types/masterFXSettings";
-import { LoadStateFromLocalStorage, saveStateToLocalStorage } from "../util/localStorageinteraction";
 import { SampleType } from "../types/sample";
 import { applyMasterKnobSettings, applySampleKnobSettings, rebuildTrackChain } from "../util/tracksHelpers";
 import { mapKnobIdToProperty, mapKnobValueToRange } from "../util/knobValueHelpers";
 import { useSamplePreload } from "../hooks/useSamplePreload";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 
 interface TracksContextType {
@@ -38,21 +38,21 @@ interface TracksContextType {
 const TracksContext = createContext<TracksContextType | null>(null)
 const NUM_BUTTONS = 16
 
+
 export const TracksProvider = ({ children }: { children: ReactNode }) => {
-    const savedState = LoadStateFromLocalStorage()
-    const trackPlayers = useSamplePreload()
+    const trackPlayersRef = useSamplePreload()
+    const [localStorageData, setLocalStorageData] = useLocalStorage()
 
-    // Initialize tracks State & Ref
-    // const trackPlayersRef = useRef<Record<string, Tone.Player>>({})
+    // initialize tracks state from local storage or defaults
     const [tracks, setTracks] = useState<TrackType[]>(() => {
-        return initialTracksMetadata.map((defaultTrack):TrackType => {
-            const trackIndex = defaultTrack.index
+        return localStorageData.tracks.map((track, i) => {
+            const preloadedPlayer = trackPlayersRef.current[track.currentSample.file]
 
-            // get sample from localStorage or fallback to default
-            const sample = savedState?.tracks[trackIndex].currentSample ?? defaultTrack.currentSample
-
-            const player = new Tone.Player({ url: sample.file, autostart: false })
-
+            // get player from preloaded buffer ro fallback on new one from sample file
+            const player = preloadedPlayer?.buffer.loaded ? 
+                new Tone.Player(preloadedPlayer?.buffer) : 
+                new Tone.Player({url: track.currentSample.file, autostart: false})
+            
             // Instantiate the track chain nodes and chain them to the Player
             const volume = new Tone.Volume(0);
             const delay = new Tone.PingPongDelay({ wet: 0, delayTime: "8n", feedback: 0.1 });
@@ -60,7 +60,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             const lowCut = new Tone.Filter(0, "highpass");
             const highCut = new Tone.Filter(20000, "lowpass");
             const envelope = new Tone.AmplitudeEnvelope({ attack: 0, decay: 3, sustain: 0, release: 0 });
-
             player.chain(
                 envelope, 
                 lowCut, 
@@ -69,30 +68,28 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 delay, 
                 reverb
             )
-            
-            // Return the default track, but substitute in any saved state from local storage if it exists
+
             return {
-                ...defaultTrack,
-                currentSample: sample,
-                trackButtons: savedState?.tracks[trackIndex]?.trackButtons ?? defaultTrack.trackButtons,
-                knobSettings: savedState?.tracks[trackIndex]?.knobSettings ?? defaultTrack.knobSettings,
-                isMuted: savedState?.tracks[trackIndex]?.isMuted ?? false,
-                isSoloed: savedState?.tracks[trackIndex]?.isSoloed ?? false,
-                player,
-                volume,
-                delay,
-                reverb,
-                lowCut,
-                highCut,
-                envelope
-            };
-        });
-    });
+                ...initialTracksMetadata[i],
+                currentSample: track.currentSample,
+                trackButtons: track.trackButtons,
+                knobSettings: track.knobSettings,
+                isMuted: track.isMuted,
+                isSoloed: track.isSoloed,
+                player: player,
+                volume: volume, 
+                delay: delay,
+                reverb: reverb,
+                lowCut: lowCut,
+                highCut: highCut,
+                envelope: envelope
+            }
+        })})
 
     // Initialize other app State
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
-    const [BPM, setBPM] = useState<number>(savedState?.BPM || 120)
-    const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(savedState?.masterFXSettings || defaultMasterFXSettings)
+    const [BPM, setBPM] = useState<number>(localStorageData.BPM)
+    const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(localStorageData.masterFXSettings)
     const [currentTrack, setCurrentTrack] = useState<number>(0)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
     const [masterVolumeLevel, setMasterVolumeLevel] = useState<number>(0)
@@ -241,7 +238,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
         // rebuild each track with default settings
         const resetTracks = initialTracksMetadata.map((track) => {
-            const preloadedPlayer = trackPlayers.current[track.currentSample.file]
+            const preloadedPlayer = trackPlayersRef.current[track.currentSample.file]
             const player = (preloadedPlayer.buffer.loaded) ?
                 new Tone.Player(preloadedPlayer.buffer) :
                 new Tone.Player({ url: track.currentSample.file, autostart: false })
@@ -383,7 +380,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 track.player.dispose()
 
                 // get preloaded sample or return or return original track if no preload
-                const preloadedPlayer = trackPlayers.current[newSample.file]
+                const preloadedPlayer = trackPlayersRef.current[newSample.file]
                 if (!preloadedPlayer) {
                     console.warn("No preload found for", newSample.file)
                     return track
@@ -396,7 +393,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 const newPlayer = new Tone.Player(audioBuf)
 
                 // create new player with new sample and connect it to signal chain 
-                // const newPlayer = new Tone.Player({url: newSample.file, autostart: false})
                 newPlayer.chain(
                     track.envelope,
                     track.lowCut,
@@ -592,29 +588,18 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     // setup local storage sync interval
     useEffect(() => {
-        const saveCurrentState = () => {
-            const state = {
-                tracks: tracks.map(track => ({
-                    trackButtons: track.trackButtons,
-                    knobSettings: track.knobSettings,
-                    isMuted: track.isMuted,
-                    isSoloed: track.isSoloed,
-                    currentSample: track.currentSample
-                })),
-                masterFXSettings: masterFXSettings,
-                BPM: BPM,
-            }
-            saveStateToLocalStorage(state)
-        }
-
-        const localStorageUpdateInterval = setInterval(saveCurrentState, 1000)
-
-        return () => {
-            clearInterval(localStorageUpdateInterval)
-            saveCurrentState()
-        }
-
-    }, [tracks, masterFXSettings, BPM])
+        setLocalStorageData({
+            tracks: tracks.map(track => ({
+                trackButtons: track.trackButtons,
+                knobSettings: track.knobSettings,
+                isMuted: track.isMuted,
+                isSoloed: track.isSoloed,
+                currentSample: track.currentSample,
+            })),
+            masterFXSettings: masterFXSettings,
+            BPM: BPM
+        })
+    }, [tracks, masterFXSettings, BPM, setLocalStorageData])
 
     // Set up chain for each track any time tracks or master chain changes
     useEffect(() => {
