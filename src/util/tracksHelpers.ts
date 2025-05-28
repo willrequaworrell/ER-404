@@ -60,7 +60,7 @@ export const applyMasterKnobSettings = (
 
 
 
-export const rebuildTrackChain = (track: TrackType, masterNodes: Array<Tone.ToneAudioNode>) => {
+export const rebuildTrackChain = (track: TrackType, masterNodes: Tone.ToneAudioNode[]) => {
 	// Disconnect everything
 	track.player.disconnect()
 	track.envelope.disconnect()
