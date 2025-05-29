@@ -62,7 +62,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         setTrackSetting
     } = useTracksState(trackPlayersRef, localStorageData, masterNodeRefs)
     
-
    
     // Initialize other app State
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
@@ -119,7 +118,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             })
 
         }, "16n")
-        
     }
 
 
@@ -315,12 +313,10 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             if (!masterNodeRefs.masterEQHighRef.current) return
             masterNodeRefs.masterEQHighRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
         }
-
     }
     
     // handle previous transport schedule cleanup
     useEffect(() => {
-
         return () => {
             const transport = Tone.getTransport()
             if (scheduleIdRef.current !== null) {
@@ -329,12 +325,12 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             }
             if (isPlayingRef.current) {
                 transport.stop();
-              }
+            }
         };
 
     }, []) 
 
-    // setup local storage sync interval
+    // setup local storage sync 
     useEffect(() => {
         setLocalStorageData({
             tracks: tracks.map(track => ({
@@ -371,7 +367,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     }, [tracks, masterFXSettings, masterNodes, masterChainReady])
 
-
     // handle changes in swing knob by applying them to transport 
     useEffect(() => {
         const newSwing = mapKnobValueToRange(masterFXSettings.swing, 0, 0.5)
@@ -403,7 +398,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isPlaying, globalPlay, globalStop])
 
-    
 
     // reset timeline if playback is stopped
     useEffect( () => {
@@ -412,7 +406,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             setCurrentBeat(0)
         }
     }, [isPlaying])
-
 
     // keep isPlayingRef in sync with state
     useEffect(() => {
@@ -434,9 +427,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                     transport.clear(scheduleIdRef.current)
                     scheduleIdRef.current = null
                 }
-
             }
-            
         }
         document.addEventListener("visibilitychange", handleVisibilityChange)
         return () => {
