@@ -5,6 +5,7 @@ import { MasterNodeRefsType } from "../types/MasterNodeRefs"
 interface UseMasterChainReturnType {
     masterNodeRefs: MasterNodeRefsType
     masterNodes: Tone.ToneAudioNode[]
+    masterChainReady: boolean
 }
 
 export const useMasterChain = (): UseMasterChainReturnType => {
@@ -58,12 +59,12 @@ export const useMasterChain = (): UseMasterChainReturnType => {
             masterEQHighRef.current?.dispose()
             masterCompressorRef.current?.dispose()
             masterLimiterRef.current?.dispose()
-            setMasterNodes([])
         };
     }, []);
 
+    const masterChainReady = (masterNodes.length === 5)
 
-    return {masterNodeRefs, masterNodes}
+    return {masterNodeRefs, masterNodes, masterChainReady}
 
 
 }

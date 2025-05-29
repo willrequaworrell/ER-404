@@ -35,7 +35,6 @@ interface TracksContextType {
 }
 
 
-
 const TracksContext = createContext<TracksContextType | null>(null)
 const NUM_BUTTONS = 16
 
@@ -46,23 +45,10 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     const isPlayingRef = useRef<boolean>(false)
     const beatRef = useRef<number>(0)
     const scheduleIdRef = useRef<number | null>(null)
-    // const masterEQLowRef = useRef<Tone.Filter | null>(null)
-    // const masterEQMidRef = useRef<Tone.Filter | null>(null)
-    // const masterEQHighRef = useRef<Tone.Filter | null>(null)
-    // const masterCompressorRef = useRef<Tone.Compressor | null>(null)
-    // const masterLimiterRef = useRef<Tone.Limiter | null>(null)
-
-    // const masterNodeRefs: MasterNodeRefsType = {
-    //     masterEQLowRef: masterEQLowRef,
-    //     masterEQMidRef: masterEQMidRef,
-    //     masterEQHighRef: masterEQHighRef,
-    //     masterCompressorRef: masterCompressorRef,
-    //     masterLimiterRef: masterLimiterRef,
-    // }
 
     // Get state & functions from hooks
     const [localStorageData, setLocalStorageData] = useLocalStorage()
-    const {masterNodeRefs, masterNodes} = useMasterChain()
+    const {masterNodeRefs, masterNodes, masterChainReady} = useMasterChain()
     const {
         tracks, 
         setTracks, 
@@ -138,7 +124,8 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
 
     const globalPlay = async () => {
-        if (isPlaying) return 
+        if (isPlaying || !masterChainReady) return 
+
         const transport = Tone.getTransport()
 
         try {
@@ -162,15 +149,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
                 masterNodeRefs.masterEQHighRef
             );
 
-            // rebuild track chain to go through masterNodes
-            // const masterNodes = [
-            //     masterEQLowRef.current!,
-            //     masterEQMidRef.current!,
-            //     masterEQHighRef.current!,
-            //     masterCompressorRef.current!,
-            //     masterLimiterRef.current!,
-            // ]
-            
             tracksRef.current.forEach(track =>
                 rebuildTrackChain(track, masterNodes)
             );
@@ -189,7 +167,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const globalStop = () => {
-        if (!isPlaying) return
+        if (!isPlaying || !masterChainReady) return
         const transport = Tone.getTransport()
         
         // reset transport and playback state
@@ -356,33 +334,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     }, []) 
 
-    // // initialize master chain refs & dispose on unmount
-    // useEffect(() => {
-    //     masterEQLowRef.current = new Tone.Filter(200, "lowshelf")
-    //     masterEQMidRef.current = new Tone.Filter({
-    //         type: "peaking",
-    //         frequency: 1000,
-    //         Q: 1,
-    //         gain: 0
-    //     })
-    //     masterEQHighRef.current = new Tone.Filter(5000, "highshelf")
-    //     masterCompressorRef.current = new Tone.Compressor({
-    //         ratio: 8,
-    //         threshold: 0,
-    //         attack: 0.02,
-    //         release: 0.1
-    //     })
-    //     masterLimiterRef.current = new Tone.Limiter(-0.5)
-
-    //     return () => {
-    //         masterEQLowRef.current?.dispose()
-    //         masterEQMidRef.current?.dispose()
-    //         masterEQHighRef.current?.dispose()
-    //         masterCompressorRef.current?.dispose()
-    //         masterLimiterRef.current?.dispose()
-    //     };
-    // }, []);
-
     // setup local storage sync interval
     useEffect(() => {
         setLocalStorageData({
@@ -400,21 +351,9 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     // Set up chain for each track any time tracks or master chain changes
     useEffect(() => {
-        // const masterNodes = [
-        //     masterEQLowRef.current!,
-        //     masterEQMidRef.current!,
-        //     masterEQHighRef.current!,
-        //     masterCompressorRef.current!,
-        //     masterLimiterRef.current!,
-        // ];
 
-        if (
-            !masterNodeRefs.masterEQLowRef.current ||
-            !masterNodeRefs.masterEQMidRef.current ||
-            !masterNodeRefs.masterEQHighRef.current ||
-            !masterNodeRefs.masterCompressorRef.current ||
-            !masterNodeRefs.masterLimiterRef.current
-        ) return;
+        if (!masterChainReady) return 
+
         // 1) apply all track FX values (including delay wet = 0)
         applySampleKnobSettings(tracks);
 
@@ -430,7 +369,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         // 3) rebuild each track’s chain
         tracks.forEach(track => rebuildTrackChain(track, masterNodes));
 
-    }, [tracks, masterFXSettings])
+    }, [tracks, masterFXSettings, masterNodes, masterChainReady])
 
 
     // handle changes in swing knob by applying them to transport 
@@ -510,9 +449,9 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         Tone.getTransport().bpm.value = BPM
     }, [BPM])
 
-
     
     useEffect(() => {
+        if (!masterChainReady) return 
         applySampleKnobSettings(tracks)
         applyMasterKnobSettings(
             masterFXSettings,
