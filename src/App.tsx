@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Layout from "./components/Layout"
 import Home from "./pages/Home"
+import { MasterFXProvider } from "./context/MasterFXContext"
 import { TracksProvider } from "./context/TracksContext"
 
 
@@ -10,9 +11,11 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Layout />}>
 					<Route index element={
-						<TracksProvider>
-							<Home />
-						</TracksProvider>
+						<MasterFXProvider>
+							<TracksProvider>
+								<Home />
+							</TracksProvider>
+						</MasterFXProvider>
 					} />
 				</Route>
 			</Routes>
