@@ -224,7 +224,6 @@ export const useTracksState = (trackPlayersRef: React.RefObject<Record<string, T
                     masterNodeRefs.masterEQHighRef.current!,
                     masterNodeRefs.masterCompressorRef.current!,
                     masterNodeRefs.masterLimiterRef.current!,
-                    masterNodeRefs.masterMeterRef.current!,
                 ]
             
                 // rebuild track + connect to master chain

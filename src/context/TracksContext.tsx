@@ -9,7 +9,7 @@ import { mapKnobIdToProperty, mapKnobValueToRange } from "../util/knobValueHelpe
 import { useSamplePreload } from "../hooks/useSamplePreload";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useTracksState } from "../hooks/useTracksState";
-import { MasterNodeRefsType } from "../types/MasterNodeRefs";
+import { useMasterChain } from "../hooks/useMasterChain";
 
 
 interface TracksContextType {
@@ -32,7 +32,6 @@ interface TracksContextType {
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
     masterFXSettings: MasterFXSettingsType
     handleSetMasterFXSettings: (settingName: keyof MasterFXSettingsType, value: number) => void
-    masterVolumeLevel: number
 }
 
 
@@ -47,24 +46,23 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     const isPlayingRef = useRef<boolean>(false)
     const beatRef = useRef<number>(0)
     const scheduleIdRef = useRef<number | null>(null)
-    const masterEQLowRef = useRef<Tone.Filter | null>(null)
-    const masterEQMidRef = useRef<Tone.Filter | null>(null)
-    const masterEQHighRef = useRef<Tone.Filter | null>(null)
-    const masterCompressorRef = useRef<Tone.Compressor | null>(null)
-    const masterLimiterRef = useRef<Tone.Limiter | null>(null)
-    const masterMeterRef = useRef<Tone.Meter | null>(null)
+    // const masterEQLowRef = useRef<Tone.Filter | null>(null)
+    // const masterEQMidRef = useRef<Tone.Filter | null>(null)
+    // const masterEQHighRef = useRef<Tone.Filter | null>(null)
+    // const masterCompressorRef = useRef<Tone.Compressor | null>(null)
+    // const masterLimiterRef = useRef<Tone.Limiter | null>(null)
 
-    const masterNodeRefs: MasterNodeRefsType = {
-        masterEQLowRef: masterEQLowRef,
-        masterEQMidRef: masterEQMidRef,
-        masterEQHighRef: masterEQHighRef,
-        masterCompressorRef: masterCompressorRef,
-        masterLimiterRef: masterLimiterRef,
-        masterMeterRef: masterMeterRef,
-    }
+    // const masterNodeRefs: MasterNodeRefsType = {
+    //     masterEQLowRef: masterEQLowRef,
+    //     masterEQMidRef: masterEQMidRef,
+    //     masterEQHighRef: masterEQHighRef,
+    //     masterCompressorRef: masterCompressorRef,
+    //     masterLimiterRef: masterLimiterRef,
+    // }
 
     // Get state & functions from hooks
     const [localStorageData, setLocalStorageData] = useLocalStorage()
+    const {masterNodeRefs, masterNodes} = useMasterChain()
     const {
         tracks, 
         setTracks, 
@@ -77,6 +75,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         resetSampleFXKnobValue,
         setTrackSetting
     } = useTracksState(trackPlayersRef, localStorageData, masterNodeRefs)
+    
 
    
     // Initialize other app State
@@ -84,7 +83,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     const [BPM, setBPM] = useState<number>(localStorageData.BPM)
     const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(localStorageData.masterFXSettings)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
-    const [masterVolumeLevel, setMasterVolumeLevel] = useState<number>(0)
 
    
     // Set up Transport playback schedule 
@@ -158,21 +156,20 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             applySampleKnobSettings(tracksRef.current);
             applyMasterKnobSettings(
                 masterFXSettings,
-                masterCompressorRef,
-                masterEQLowRef,
-                masterEQMidRef,
-                masterEQHighRef
+                masterNodeRefs.masterCompressorRef,
+                masterNodeRefs.masterEQLowRef,
+                masterNodeRefs.masterEQMidRef,
+                masterNodeRefs.masterEQHighRef
             );
 
             // rebuild track chain to go through masterNodes
-            const masterNodes = [
-                masterEQLowRef.current!,
-                masterEQMidRef.current!,
-                masterEQHighRef.current!,
-                masterCompressorRef.current!,
-                masterLimiterRef.current!,
-                masterMeterRef.current!,
-            ]
+            // const masterNodes = [
+            //     masterEQLowRef.current!,
+            //     masterEQMidRef.current!,
+            //     masterEQHighRef.current!,
+            //     masterCompressorRef.current!,
+            //     masterLimiterRef.current!,
+            // ]
             
             tracksRef.current.forEach(track =>
                 rebuildTrackChain(track, masterNodes)
@@ -280,26 +277,26 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         if (property === 'volume') {
             Tone.getDestination().volume.value = mapKnobValueToRange(defaultValue, -60, 0)
         } else if (property === 'compressorThreshold') {
-            if (masterCompressorRef.current) {
-                masterCompressorRef.current.threshold.value = mapKnobValueToRange(defaultValue, -30, 0)
+            if (masterNodeRefs.masterCompressorRef.current) {
+                masterNodeRefs.masterCompressorRef.current.threshold.value = mapKnobValueToRange(defaultValue, -30, 0)
             }
         } else if (property === 'compressorRatio') {
-            if (masterCompressorRef.current) {
-                masterCompressorRef.current.ratio.value = mapKnobValueToRange(defaultValue, 1, 8)
+            if (masterNodeRefs.masterCompressorRef.current) {
+                masterNodeRefs.masterCompressorRef.current.ratio.value = mapKnobValueToRange(defaultValue, 1, 8)
             }
         } else if (property === 'eqLow') {
-            if (masterEQLowRef.current) {
-                masterEQLowRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
+            if (masterNodeRefs.masterEQLowRef.current) {
+                masterNodeRefs.masterEQLowRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
             }
         }
         else if (property === 'eqMid') {
-            if (masterEQMidRef.current) {
-                masterEQMidRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
+            if (masterNodeRefs.masterEQMidRef.current) {
+                masterNodeRefs.masterEQMidRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
             }
         }
         else if (property === 'eqHigh') {
-            if (masterEQHighRef.current) {
-                masterEQHighRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
+            if (masterNodeRefs.masterEQHighRef.current) {
+                masterNodeRefs.masterEQHighRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
             }
         }
 
@@ -321,24 +318,24 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             Tone.getDestination().volume.value = mapKnobValueToRange(value, -60, 0)
         }
         else if (settingName === "compressorThreshold") {
-            if (!masterCompressorRef.current) return
-            masterCompressorRef.current.threshold.value = mapKnobValueToRange(value, -30, 0)
+            if (!masterNodeRefs.masterCompressorRef.current) return
+            masterNodeRefs.masterCompressorRef.current.threshold.value = mapKnobValueToRange(value, -30, 0)
         }
         else if (settingName === "compressorRatio") {
-            if (!masterCompressorRef.current) return
-            masterCompressorRef.current.ratio.value = mapKnobValueToRange(value, 1, 8)
+            if (!masterNodeRefs.masterCompressorRef.current) return
+            masterNodeRefs.masterCompressorRef.current.ratio.value = mapKnobValueToRange(value, 1, 8)
         }
         else if (settingName === "eqLow") {
-            if (!masterEQLowRef.current) return
-            masterEQLowRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
+            if (!masterNodeRefs.masterEQLowRef.current) return
+            masterNodeRefs.masterEQLowRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
         }
         else if (settingName === "eqMid") {
-            if (!masterEQMidRef.current) return
-            masterEQMidRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
+            if (!masterNodeRefs.masterEQMidRef.current) return
+            masterNodeRefs.masterEQMidRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
         }
         else if (settingName === "eqHigh") {
-            if (!masterEQHighRef.current) return
-            masterEQHighRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
+            if (!masterNodeRefs.masterEQHighRef.current) return
+            masterNodeRefs.masterEQHighRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
         }
 
     }
@@ -359,35 +356,32 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     }, []) 
 
-    // initialize master chain refs & dispose on unmount
-    useEffect(() => {
-        masterEQLowRef.current = new Tone.Filter(200, "lowshelf")
-        masterEQMidRef.current = new Tone.Filter({
-            type: "peaking",
-            frequency: 1000,
-            Q: 1,
-            gain: 0
-        })
-        masterEQHighRef.current = new Tone.Filter(5000, "highshelf")
-        masterCompressorRef.current = new Tone.Compressor({
-            ratio: 8,
-            threshold: 0,
-            attack: 0.02,
-            release: 0.1
-        })
-        masterLimiterRef.current = new Tone.Limiter(-0.5)
-        masterMeterRef.current = new Tone.Meter();
+    // // initialize master chain refs & dispose on unmount
+    // useEffect(() => {
+    //     masterEQLowRef.current = new Tone.Filter(200, "lowshelf")
+    //     masterEQMidRef.current = new Tone.Filter({
+    //         type: "peaking",
+    //         frequency: 1000,
+    //         Q: 1,
+    //         gain: 0
+    //     })
+    //     masterEQHighRef.current = new Tone.Filter(5000, "highshelf")
+    //     masterCompressorRef.current = new Tone.Compressor({
+    //         ratio: 8,
+    //         threshold: 0,
+    //         attack: 0.02,
+    //         release: 0.1
+    //     })
+    //     masterLimiterRef.current = new Tone.Limiter(-0.5)
 
-
-        return () => {
-            masterEQLowRef.current?.dispose()
-            masterEQMidRef.current?.dispose()
-            masterEQHighRef.current?.dispose()
-            masterCompressorRef.current?.dispose()
-            masterLimiterRef.current?.dispose()
-            masterMeterRef.current?.dispose()
-        };
-    }, []);
+    //     return () => {
+    //         masterEQLowRef.current?.dispose()
+    //         masterEQMidRef.current?.dispose()
+    //         masterEQHighRef.current?.dispose()
+    //         masterCompressorRef.current?.dispose()
+    //         masterLimiterRef.current?.dispose()
+    //     };
+    // }, []);
 
     // setup local storage sync interval
     useEffect(() => {
@@ -406,25 +400,31 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     // Set up chain for each track any time tracks or master chain changes
     useEffect(() => {
-        const masterNodes = [
-            masterEQLowRef.current!,
-            masterEQMidRef.current!,
-            masterEQHighRef.current!,
-            masterCompressorRef.current!,
-            masterLimiterRef.current!,
-            masterMeterRef.current!,
-        ];
+        // const masterNodes = [
+        //     masterEQLowRef.current!,
+        //     masterEQMidRef.current!,
+        //     masterEQHighRef.current!,
+        //     masterCompressorRef.current!,
+        //     masterLimiterRef.current!,
+        // ];
 
+        if (
+            !masterNodeRefs.masterEQLowRef.current ||
+            !masterNodeRefs.masterEQMidRef.current ||
+            !masterNodeRefs.masterEQHighRef.current ||
+            !masterNodeRefs.masterCompressorRef.current ||
+            !masterNodeRefs.masterLimiterRef.current
+        ) return;
         // 1) apply all track FX values (including delay wet = 0)
         applySampleKnobSettings(tracks);
 
         // 2) apply master FX values
         applyMasterKnobSettings(
             masterFXSettings,
-            masterCompressorRef,
-            masterEQLowRef,
-            masterEQMidRef,
-            masterEQHighRef
+            masterNodeRefs.masterCompressorRef,
+            masterNodeRefs.masterEQLowRef,
+            masterNodeRefs.masterEQMidRef,
+            masterNodeRefs.masterEQHighRef
         );
 
         // 3) rebuild each track’s chain
@@ -432,23 +432,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     }, [tracks, masterFXSettings])
 
-    // handle master volume tracking
-    useEffect(() => {
-        if (!isPlaying || !masterMeterRef.current) return;
-
-        const meterInterval = setInterval(() => {
-            const level = masterMeterRef.current!.getValue();
-
-            const levelDB = typeof level === 'number'
-                ? level
-                : 20 * Math.log10(Math.max(level[0], level[1]));
-
-            setMasterVolumeLevel(levelDB)
-        }, 100);
-
-        // Clean up interval when not playing
-        return () => clearInterval(meterInterval);
-    }, [isPlaying]);
 
     // handle changes in swing knob by applying them to transport 
     useEffect(() => {
@@ -533,10 +516,10 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         applySampleKnobSettings(tracks)
         applyMasterKnobSettings(
             masterFXSettings,
-            masterCompressorRef,
-            masterEQLowRef,
-            masterEQMidRef,
-            masterEQHighRef
+            masterNodeRefs.masterCompressorRef,
+            masterNodeRefs.masterEQLowRef,
+            masterNodeRefs.masterEQMidRef,
+            masterNodeRefs.masterEQHighRef
         )
     }, [])
 
@@ -561,7 +544,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             setTrackSetting: setTrackSetting,
             masterFXSettings: masterFXSettings,
             handleSetMasterFXSettings: handleSetMasterFXSettings,
-            masterVolumeLevel: masterVolumeLevel
         }}>
             {children}
         </TracksContext.Provider>
@@ -570,10 +552,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
 export const useTracksContext = () => {
     const context = useContext(TracksContext)
-
-    if (!context) {
-        throw new Error('No Tracks Context')
-    }
+    if (!context) throw new Error('No Tracks Context')
     return context
 }
 
