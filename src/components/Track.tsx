@@ -2,7 +2,7 @@ import * as Tone from 'tone'
 import ScreenContainer from "./ScreenContainer"
 import TrackButton from "./TrackButton"
 import { TrackType } from '../types/track';
-import { useTracksContext } from "../context/TracksContext";
+import { usePlaybackContext } from "../context/PlaybackContext";
 import DropdownSelect from './DropdownSelect';
 import { useState } from 'react';
 
@@ -13,7 +13,7 @@ interface TrackPropsType {
 }
 
 const Track = ({track, setTracks}:TrackPropsType) => {
-    const {currentTrack, setCurrentTrack, isPlaying, handleChangeTrackSample} = useTracksContext()
+    const {currentTrack, setCurrentTrack, isPlaying, handleChangeTrackSample} = usePlaybackContext()
     const [showDropdownSelectArrow, setShowDropdownSelectArrow] = useState<boolean>(false)
 
     const sampleOptions = track.availableSamples.map(sample => sample.kit)

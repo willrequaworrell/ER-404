@@ -1,9 +1,9 @@
 import ScreenContainer from "./ScreenContainer"
-import { useTracksContext } from "../context/TracksContext"
+import { usePlaybackContext } from "../context/PlaybackContext"
 
 
 const SampleViewer = () => {
-    const { tracks, currentTrack } = useTracksContext()
+    const { tracks, currentTrack } = usePlaybackContext()
 
     return (
         <ScreenContainer

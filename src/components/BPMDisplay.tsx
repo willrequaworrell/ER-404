@@ -1,15 +1,17 @@
 import ScreenContainer from "./ScreenContainer"
-import { useTracksContext } from "../context/TracksContext"
+import { usePlaybackContext } from "../context/PlaybackContext"
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react"
 import Button from "./Button"
 import { FaCaretDown, FaCaretUp } from "react-icons/fa"
 import Knob from "./Knob"
+import { useMasterFXContext } from "../context/MasterFXContext"
 
 const MIN_BPM = 50
 const MAX_BPM = 200
 
 const BPMDisplay = () => {
-    const { BPM, setBPM, masterFXSettings, handleSetMasterFXSettings, resetMasterFXKnobValue} = useTracksContext()
+    const {masterFXSettings, handleSetMasterFXSettings, resetMasterFXKnobValue} = useMasterFXContext()
+    const { BPM, setBPM} = usePlaybackContext()
 
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [BPMDraft, setBPMDraft] = useState<string>(BPM.toString())
@@ -86,16 +88,16 @@ const BPMDisplay = () => {
 
 
     return (
-        <div className="relative flex items-center  w-full h-5/6 gap-x-2">
+        <div className="relative flex items-center w-full h-5/6 gap-x-2">
             <div className="absolute w-full  h-[2px] -top-3 bg-text-primary "></div>
-            <div className="absolute h-2 border-l left-0 -top-3 border-1 border-text-primary"></div>
-            <div className="absolute h-2 border-r right-0 -top-3 border-1 border-text-primary"></div>
+            <div className="absolute left-0 h-2 border-l -top-3 border-1 border-text-primary"></div>
+            <div className="absolute right-0 h-2 border-r -top-3 border-1 border-text-primary"></div>
             <span className="absolute px-2 text-[.8rem] -translate-x-1/2 text-text-primary bg-background -top-6 left-1/2">TEMPO</span>
             <div className="relative flex w-3/4 h-full gap-x-4" >
                 
                 <div className="absolute w-full  h-[2px] -bottom-3 bg-text-primary "></div>
-                <div className="absolute h-2 border-l left-0 -bottom-3 border-1 border-text-primary"></div>
-                <div className="absolute h-2 border-r right-0 -bottom-3 border-1 border-text-primary"></div>
+                <div className="absolute left-0 h-2 border-l -bottom-3 border-1 border-text-primary"></div>
+                <div className="absolute right-0 h-2 border-r -bottom-3 border-1 border-text-primary"></div>
                 <span className="absolute px-2 text-[.75rem] -translate-x-1/2 text-text-primary bg-background -bottom-5 left-1/2">BPM</span>
 
                 <div className="flex flex-col justify-between w-1/3 h-full py-1 gap-y-2">
@@ -118,7 +120,7 @@ const BPMDisplay = () => {
                         onTouchEnd={handleButtonCleanup}
                     />
                 </div>
-                <div className="relative flex  items-center h-full w-2/3">
+                <div className="relative flex items-center w-2/3 h-full">
                     
                     <ScreenContainer
                         styles="h-full w-full text-[1.5rem]"
@@ -132,7 +134,7 @@ const BPMDisplay = () => {
                                 value={BPMDraft}
                                 min={MIN_BPM}
                                 max={MAX_BPM}
-                                className="w-full text-accent text-center" 
+                                className="w-full text-center text-accent" 
                                 onChange={handleChange}
                                 onKeyDown={handleKeydown}
                                 onBlur={() => setIsEditing(false)}

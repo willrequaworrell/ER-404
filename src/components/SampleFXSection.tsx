@@ -1,12 +1,12 @@
 import Knob from "./Knob"
 import SampleViewer from "./SampleViewer"
-import { useTracksContext } from "../context/TracksContext"
+import { usePlaybackContext } from "../context/PlaybackContext"
 import { formatAttack, formatDecay, formatHighCutFrequency, formatLowCutFrequency, formatSampleVolume } from "../util/knobValueHelpers"
 import MuteSoloControl from "./MuteSoloControl"
 
 
 const SampleFXSection = () => {
-    const {tracks, currentTrack, setTrackSetting, handleToggleTrackMute, handleToggleTrackSolo, resetSampleFXKnobValue} = useTracksContext()
+    const {tracks, currentTrack, setTrackSetting, handleToggleTrackMute, handleToggleTrackSolo, resetSampleFXKnobValue} = usePlaybackContext()
     const currentSettings = tracks[currentTrack].knobSettings
 
 

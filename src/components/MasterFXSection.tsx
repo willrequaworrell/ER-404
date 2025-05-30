@@ -1,13 +1,12 @@
-// import { useState } from "react"
 import Knob from "./Knob"
-import { useTracksContext } from "../context/TracksContext"
 import {formatMasterCompressorRatio, formatMasterCompressorThreshold, formatMasterEQKnob, formatMasterVolume, mapKnobIdToProperty } from "../util/knobValueHelpers"
 import { MasterFXSettingsType } from "../types/masterFXSettings"
 import Fader from "./Fader"
+import { useMasterFXContext } from "../context/MasterFXContext"
 
 
 const MasterFXSection = () => {
-    const {masterFXSettings, handleSetMasterFXSettings, resetMasterFXKnobValue} = useTracksContext()
+    const {masterFXSettings, handleSetMasterFXSettings, resetMasterFXKnobValue} = useMasterFXContext()
 
 
     const handleKnobChange = (knobId: string, newValue: number) => {
@@ -21,8 +20,8 @@ const MasterFXSection = () => {
                 <span className="absolute px-2 text-[.85rem] -translate-x-1/2 text-text-primary bg-background -bottom-3 left-1/2">MASTER</span>
                 <div className="relative flex gap-x-[1vw] h-[10vh] items-end">
                     <div className="absolute w-full  h-[2px] -top-3 bg-text-primary "></div>
-                    <div className="absolute h-2 border-l left-0 -top-3 border-1 border-text-primary"></div>
-                    <div className="absolute h-2 border-r right-0 -top-3 border-1 border-text-primary"></div>
+                    <div className="absolute left-0 h-2 border-l -top-3 border-1 border-text-primary"></div>
+                    <div className="absolute right-0 h-2 border-r -top-3 border-1 border-text-primary"></div>
                     <span className="absolute px-2 text-[.8rem] -translate-x-1/2 text-text-primary bg-background -top-6 left-1/2">EQUALIZER</span>
                     <Fader 
                         id="masterEQLow"
@@ -58,8 +57,8 @@ const MasterFXSection = () => {
                 
                 <div className="relative flex gap-x-[1vw] justify-between  h-[10vh] border-text-primary ">
                     <div className="absolute w-full h-[2px] -top-3 bg-text-primary "></div>
-                    <div className="absolute h-2 border-l left-0 -top-3 border-1 border-text-primary"></div>
-                    <div className="absolute h-2 border-r right-0 -top-3 border-1 border-text-primary"></div>
+                    <div className="absolute left-0 h-2 border-l -top-3 border-1 border-text-primary"></div>
+                    <div className="absolute right-0 h-2 border-r -top-3 border-1 border-text-primary"></div>
                     <span className="absolute px-2 text-[.8rem] -translate-x-1/2 text-text-primary bg-background -top-6 left-1/2">COMPRESSOR</span>
                     <Knob
                         id="masterCompressorRatio"

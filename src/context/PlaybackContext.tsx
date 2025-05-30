@@ -2,17 +2,17 @@ import { createContext, ReactNode, useContext, useEffect, useRef, useState } fro
 import * as Tone from 'tone';
 import { TrackType } from "../types/track";
 import { initialTracksMetadata } from "../util/initialTrackData";
-import { defaultMasterFXSettings, MasterFXSettingsType } from "../types/masterFXSettings";
+import { defaultMasterFXSettings } from "../types/masterFXSettings";
 import { SampleType } from "../types/sample";
 import { applyMasterKnobSettings, applySampleKnobSettings, rebuildTrackChain } from "../util/tracksHelpers";
-import { mapKnobIdToProperty, mapKnobValueToRange } from "../util/knobValueHelpers";
+import { mapKnobValueToRange } from "../util/knobValueHelpers";
 import { useSamplePreload } from "../hooks/useSamplePreload";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useTracksState } from "../hooks/useTracksState";
-import { useMasterChain } from "../hooks/useMasterChain";
+import { MasterFXContextType, useMasterFXContext } from "./MasterFXContext";
+import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 
 
-interface TracksContextType {
+interface PlaybackContextType {
     tracks: TrackType[]
     setTracks: React.Dispatch<React.SetStateAction<TrackType[]>>
     currentTrack: number
@@ -24,22 +24,29 @@ interface TracksContextType {
     globalPlay: () => void
     globalStop: () => void
     globalReset: () => void
-    resetMasterFXKnobValue: (knobId: string) => void
     resetSampleFXKnobValue: (trackIndex: number, knobId: string) => void
     handleToggleTrackMute: (trackIndex: number) => void
     handleToggleTrackSolo: (trackIndex: number) => void
     handleChangeTrackSample: (trackIndex: number, newSample: SampleType) => void
     setTrackSetting: (settingName: keyof TrackType['knobSettings'], value: number) => void
-    masterFXSettings: MasterFXSettingsType
-    handleSetMasterFXSettings: (settingName: keyof MasterFXSettingsType, value: number) => void
 }
 
 
-const TracksContext = createContext<TracksContextType | null>(null)
+const PlaybackContext = createContext<PlaybackContextType | null>(null)
 const NUM_BUTTONS = 16
 
 
-export const TracksProvider = ({ children }: { children: ReactNode }) => {
+export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
+    const {
+        masterFXSettings,
+        setMasterFXSettings,
+        masterNodeRefs,
+        masterNodes,
+        masterChainReady,
+        localStorageData,
+        setLocalStorageData
+    }: MasterFXContextType = useMasterFXContext()
+
     // Initialize app Refs
     const trackPlayersRef = useSamplePreload()
     const isPlayingRef = useRef<boolean>(false)
@@ -47,8 +54,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     const scheduleIdRef = useRef<number | null>(null)
 
     // Get state & functions from hooks
-    const [localStorageData, setLocalStorageData] = useLocalStorage()
-    const {masterNodeRefs, masterNodes, masterChainReady} = useMasterChain()
     const {
         tracks, 
         setTracks, 
@@ -62,13 +67,12 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         setTrackSetting
     } = useTracksState(trackPlayersRef, localStorageData, masterNodeRefs)
     
+    
    
     // Initialize other app State
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
     const [BPM, setBPM] = useState<number>(localStorageData.BPM)
-    const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(localStorageData.masterFXSettings)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
-
    
     // Set up Transport playback schedule 
     const confirmOrCreateSchedule = () => {
@@ -231,90 +235,16 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         setMasterFXSettings(defaultMasterFXSettings);
     }
 
-
-    const resetMasterFXKnobValue = (knobId: string) => {
-        // turn knob element id into masterSettings state property
-        const property = mapKnobIdToProperty(knobId) as keyof MasterFXSettingsType
-        if (!property) return
-
-        // get default value for knob
-        const defaultValue = defaultMasterFXSettings[property]
-
-        // set state to default setting
-        setMasterFXSettings(prevSettings => {
-            const newSettings = {
-                ...prevSettings,
-                [property]: defaultValue
-            }
-            return newSettings
-        })
-
-        // sync audio nodes with state
-        if (property === 'volume') {
-            Tone.getDestination().volume.value = mapKnobValueToRange(defaultValue, -60, 0)
-        } else if (property === 'compressorThreshold') {
-            if (masterNodeRefs.masterCompressorRef.current) {
-                masterNodeRefs.masterCompressorRef.current.threshold.value = mapKnobValueToRange(defaultValue, -30, 0)
-            }
-        } else if (property === 'compressorRatio') {
-            if (masterNodeRefs.masterCompressorRef.current) {
-                masterNodeRefs.masterCompressorRef.current.ratio.value = mapKnobValueToRange(defaultValue, 1, 8)
-            }
-        } else if (property === 'eqLow') {
-            if (masterNodeRefs.masterEQLowRef.current) {
-                masterNodeRefs.masterEQLowRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
-            }
-        }
-        else if (property === 'eqMid') {
-            if (masterNodeRefs.masterEQMidRef.current) {
-                masterNodeRefs.masterEQMidRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
-            }
-        }
-        else if (property === 'eqHigh') {
-            if (masterNodeRefs.masterEQHighRef.current) {
-                masterNodeRefs.masterEQHighRef.current.gain.value = mapKnobValueToRange(defaultValue, -6, 6)
-            }
-        }
-
-    }
+    useKeyboardShortcuts({
+        isPlaying, 
+        globalPlay, 
+        globalStop, 
+        handleToggleTrackMute, 
+        handleToggleTrackSolo,
+        currentTrack
+    })
 
 
-    const handleSetMasterFXSettings = (settingName: keyof MasterFXSettingsType, value: number) => {
-        // update given setting in state
-        console.log(settingName, value)
-        setMasterFXSettings(prevSettings => {
-            return {
-                ...prevSettings,
-                [settingName]: value
-            }
-        })
-
-        // sync audio nodes with updated state
-        if (settingName === "volume") {
-            Tone.getDestination().volume.value = mapKnobValueToRange(value, -60, 0)
-        }
-        else if (settingName === "compressorThreshold") {
-            if (!masterNodeRefs.masterCompressorRef.current) return
-            masterNodeRefs.masterCompressorRef.current.threshold.value = mapKnobValueToRange(value, -30, 0)
-        }
-        else if (settingName === "compressorRatio") {
-            if (!masterNodeRefs.masterCompressorRef.current) return
-            masterNodeRefs.masterCompressorRef.current.ratio.value = mapKnobValueToRange(value, 1, 8)
-        }
-        else if (settingName === "eqLow") {
-            if (!masterNodeRefs.masterEQLowRef.current) return
-            masterNodeRefs.masterEQLowRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
-        }
-        else if (settingName === "eqMid") {
-            if (!masterNodeRefs.masterEQMidRef.current) return
-            masterNodeRefs.masterEQMidRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
-        }
-        else if (settingName === "eqHigh") {
-            if (!masterNodeRefs.masterEQHighRef.current) return
-            masterNodeRefs.masterEQHighRef.current.gain.value = mapKnobValueToRange(value, -6, 6)
-        }
-    }
-    
     // handle previous transport schedule cleanup
     useEffect(() => {
         return () => {
@@ -375,29 +305,6 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
 
     }, [masterFXSettings.swing])
     
-    // handle key stroke functionality
-    useEffect( () => {
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.code === "Space") {
-                e.preventDefault();
-                if (isPlaying) {
-                    globalStop();
-                } else {
-                    globalPlay();
-                }
-            } else if (e.code === "KeyS") {
-                handleToggleTrackSolo(currentTrack)
-            } else if (e.code === "KeyM") {
-                handleToggleTrackMute(currentTrack)
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyDown)
-
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isPlaying, globalPlay, globalStop])
-
 
     // reset timeline if playback is stopped
     useEffect( () => {
@@ -440,21 +347,9 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
         Tone.getTransport().bpm.value = BPM
     }, [BPM])
 
-    
-    useEffect(() => {
-        if (!masterChainReady) return 
-        applySampleKnobSettings(tracks)
-        applyMasterKnobSettings(
-            masterFXSettings,
-            masterNodeRefs.masterCompressorRef,
-            masterNodeRefs.masterEQLowRef,
-            masterNodeRefs.masterEQMidRef,
-            masterNodeRefs.masterEQHighRef
-        )
-    }, [])
 
     return (
-        <TracksContext.Provider value={{
+        <PlaybackContext.Provider value={{
             tracks: tracks,
             setTracks: setTracks,
             currentTrack: currentTrack,
@@ -466,22 +361,19 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             globalPlay: globalPlay,
             globalStop: globalStop,
             globalReset: globalReset,
-            resetMasterFXKnobValue: resetMasterFXKnobValue,
             resetSampleFXKnobValue: resetSampleFXKnobValue,
             handleToggleTrackMute: handleToggleTrackMute,
             handleToggleTrackSolo: handleToggleTrackSolo,
             handleChangeTrackSample,
             setTrackSetting: setTrackSetting,
-            masterFXSettings: masterFXSettings,
-            handleSetMasterFXSettings: handleSetMasterFXSettings,
         }}>
             {children}
-        </TracksContext.Provider>
+        </PlaybackContext.Provider>
     )
 }
 
-export const useTracksContext = () => {
-    const context = useContext(TracksContext)
+export const usePlaybackContext = () => {
+    const context = useContext(PlaybackContext)
     if (!context) throw new Error('No Tracks Context')
     return context
 }

@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Layout from "./components/Layout"
 import Home from "./pages/Home"
-import { TracksProvider } from "./context/TracksContext"
+import { MasterFXProvider } from "./context/MasterFXContext"
+import { PlaybackProvider } from "./context/PlaybackContext"
 
 
 function App() {
@@ -10,9 +11,11 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Layout />}>
 					<Route index element={
-						<TracksProvider>
-							<Home />
-						</TracksProvider>
+						<MasterFXProvider>
+							<PlaybackProvider>
+								<Home />
+							</PlaybackProvider>
+						</MasterFXProvider>
 					} />
 				</Route>
 			</Routes>
