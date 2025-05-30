@@ -9,6 +9,7 @@ import { mapKnobValueToRange } from "../util/knobValueHelpers";
 import { useSamplePreload } from "../hooks/useSamplePreload";
 import { useTracksState } from "../hooks/useTracksState";
 import { MasterFXContextType, useMasterFXContext } from "./MasterFXContext";
+import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 
 
 interface PlaybackContextType {
@@ -53,8 +54,6 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
     const scheduleIdRef = useRef<number | null>(null)
 
     // Get state & functions from hooks
-    // const [localStorageData, setLocalStorageData] = useLocalStorage()
-    // const {masterNodeRefs, masterNodes, masterChainReady} = useMasterChain()
     const {
         tracks, 
         setTracks, 
@@ -68,13 +67,12 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
         setTrackSetting
     } = useTracksState(trackPlayersRef, localStorageData, masterNodeRefs)
     
+    
    
     // Initialize other app State
     const [isPlaying, setIsPlaying] = useState<boolean>(false)
     const [BPM, setBPM] = useState<number>(localStorageData.BPM)
-    // const [masterFXSettings, setMasterFXSettings] = useState<MasterFXSettingsType>(localStorageData.masterFXSettings)
     const [currentBeat, setCurrentBeat] = useState<number>(0)
-
    
     // Set up Transport playback schedule 
     const confirmOrCreateSchedule = () => {
@@ -237,6 +235,15 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
         setMasterFXSettings(defaultMasterFXSettings);
     }
 
+    useKeyboardShortcuts({
+        isPlaying, 
+        globalPlay, 
+        globalStop, 
+        handleToggleTrackMute, 
+        handleToggleTrackSolo,
+        currentTrack
+    })
+
 
     // handle previous transport schedule cleanup
     useEffect(() => {
@@ -298,29 +305,6 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
 
     }, [masterFXSettings.swing])
     
-    // handle key stroke functionality
-    useEffect( () => {
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.code === "Space") {
-                e.preventDefault();
-                if (isPlaying) {
-                    globalStop();
-                } else {
-                    globalPlay();
-                }
-            } else if (e.code === "KeyS") {
-                handleToggleTrackSolo(currentTrack)
-            } else if (e.code === "KeyM") {
-                handleToggleTrackMute(currentTrack)
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyDown)
-
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isPlaying, globalPlay, globalStop])
-
 
     // reset timeline if playback is stopped
     useEffect( () => {
@@ -363,18 +347,6 @@ export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
         Tone.getTransport().bpm.value = BPM
     }, [BPM])
 
-    
-    useEffect(() => {
-        if (!masterChainReady) return 
-        applySampleKnobSettings(tracks)
-        applyMasterKnobSettings(
-            masterFXSettings,
-            masterNodeRefs.masterCompressorRef,
-            masterNodeRefs.masterEQLowRef,
-            masterNodeRefs.masterEQMidRef,
-            masterNodeRefs.masterEQHighRef
-        )
-    }, [])
 
     return (
         <PlaybackContext.Provider value={{
