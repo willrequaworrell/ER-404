@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Layout from "./components/Layout"
 import Home from "./pages/Home"
 import { MasterFXProvider } from "./context/MasterFXContext"
-import { TracksProvider } from "./context/PlaybackContext"
+import { PlaybackProvider } from "./context/PlaybackContext"
 
 
 function App() {
@@ -12,9 +12,9 @@ function App() {
 				<Route path="/" element={<Layout />}>
 					<Route index element={
 						<MasterFXProvider>
-							<TracksProvider>
+							<PlaybackProvider>
 								<Home />
-							</TracksProvider>
+							</PlaybackProvider>
 						</MasterFXProvider>
 					} />
 				</Route>

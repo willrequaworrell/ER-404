@@ -35,7 +35,7 @@ const PlaybackContext = createContext<PlaybackContextType | null>(null)
 const NUM_BUTTONS = 16
 
 
-export const TracksProvider = ({ children }: { children: ReactNode }) => {
+export const PlaybackProvider = ({ children }: { children: ReactNode }) => {
     const {
         masterFXSettings,
         setMasterFXSettings,
