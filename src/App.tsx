@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Layout from "./components/Layout"
 import Home from "./pages/Home"
 import { MasterFXProvider } from "./context/MasterFXContext"
-import { TracksProvider } from "./context/TracksContext"
+import { TracksProvider } from "./context/PlaybackContext"
 
 
 function App() {

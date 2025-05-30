@@ -1,4 +1,4 @@
-import { useTracksContext } from "../context/TracksContext"
+import { usePlaybackContext } from "../context/PlaybackContext"
 
 interface TimelineTickPropsType {
     text: string
@@ -6,7 +6,7 @@ interface TimelineTickPropsType {
 }
 
 const TimelineTick = ({text, beatIndex}: TimelineTickPropsType) => {
-    const {currentBeat} = useTracksContext()
+    const {currentBeat} = usePlaybackContext()
 
     return (
         <div className="w-full flex justify-center">

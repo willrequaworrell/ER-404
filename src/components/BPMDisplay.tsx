@@ -1,5 +1,5 @@
 import ScreenContainer from "./ScreenContainer"
-import { useTracksContext } from "../context/TracksContext"
+import { usePlaybackContext } from "../context/PlaybackContext"
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "react"
 import Button from "./Button"
 import { FaCaretDown, FaCaretUp } from "react-icons/fa"
@@ -11,7 +11,7 @@ const MAX_BPM = 200
 
 const BPMDisplay = () => {
     const {masterFXSettings, handleSetMasterFXSettings, resetMasterFXKnobValue} = useMasterFXContext()
-    const { BPM, setBPM} = useTracksContext()
+    const { BPM, setBPM} = usePlaybackContext()
 
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [BPMDraft, setBPMDraft] = useState<string>(BPM.toString())

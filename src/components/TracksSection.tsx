@@ -1,8 +1,8 @@
 import Track from "./Track"
-import { useTracksContext } from "../context/TracksContext";
+import { usePlaybackContext } from "../context/PlaybackContext";
 
 const TracksSection = () => {
-    const {tracks, setTracks} = useTracksContext()
+    const {tracks, setTracks} = usePlaybackContext()
 
     return (   
         <>

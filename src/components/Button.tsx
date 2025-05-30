@@ -1,5 +1,5 @@
 import { MouseEventHandler, ReactNode, TouchEventHandler } from "react"
-import { useTracksContext } from "../context/TracksContext"
+import { usePlaybackContext } from "../context/PlaybackContext"
 
 interface ButtonPropsType {
     icon: ReactNode
@@ -17,7 +17,7 @@ interface ButtonPropsType {
 const activatedStylesPlayButton = "shadow-[inset_-4px_-4px_9px_#ffffffe0,inset_2px_2px_4px_#718eab1a] cursor-not-allowed"
 
 const Button = ({ icon, playButton = false, styles = "", onClick, onMouseDown, onMouseUp, onMouseLeave, onTouchStart, onTouchEnd }: ButtonPropsType) => {
-    const { isPlaying } = useTracksContext()
+    const { isPlaying } = usePlaybackContext()
 
     return (
         <button

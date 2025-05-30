@@ -11,7 +11,7 @@ import { useTracksState } from "../hooks/useTracksState";
 import { MasterFXContextType, useMasterFXContext } from "./MasterFXContext";
 
 
-interface TracksContextType {
+interface PlaybackContextType {
     tracks: TrackType[]
     setTracks: React.Dispatch<React.SetStateAction<TrackType[]>>
     currentTrack: number
@@ -31,7 +31,7 @@ interface TracksContextType {
 }
 
 
-const TracksContext = createContext<TracksContextType | null>(null)
+const PlaybackContext = createContext<PlaybackContextType | null>(null)
 const NUM_BUTTONS = 16
 
 
@@ -377,7 +377,7 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
     }, [])
 
     return (
-        <TracksContext.Provider value={{
+        <PlaybackContext.Provider value={{
             tracks: tracks,
             setTracks: setTracks,
             currentTrack: currentTrack,
@@ -396,12 +396,12 @@ export const TracksProvider = ({ children }: { children: ReactNode }) => {
             setTrackSetting: setTrackSetting,
         }}>
             {children}
-        </TracksContext.Provider>
+        </PlaybackContext.Provider>
     )
 }
 
-export const useTracksContext = () => {
-    const context = useContext(TracksContext)
+export const usePlaybackContext = () => {
+    const context = useContext(PlaybackContext)
     if (!context) throw new Error('No Tracks Context')
     return context
 }

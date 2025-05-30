@@ -1,11 +1,11 @@
 import { FaPlay, FaStop, FaUndoAlt } from "react-icons/fa"
 import Button from "./Button"
-import { useTracksContext } from "../context/TracksContext"
+import { usePlaybackContext } from "../context/PlaybackContext"
 import BPMDisplay from "./BPMDisplay"
 import SpectrumAnalyzer from "./SpectrumAnalyzer"
 
 const GlobalControls = () => {
-    const {globalPlay, globalStop, globalReset} = useTracksContext()
+    const {globalPlay, globalStop, globalReset} = usePlaybackContext()
 
 
     const handlePlay = () => {
